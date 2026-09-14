@@ -1,4 +1,4 @@
-"""Accessible navigator for ChatGPT's embedded browser."""
+"""Accessible navigator for Claude's embedded browser."""
 
 import addonHandler
 import ui
@@ -78,7 +78,7 @@ class BrowserNavigatorDialog(wx.Dialog):
 		self.restoreButton = wx.Button(self, label=_("Restore &last location"))
 		self.copyAddressButton = wx.Button(self, label=_("&Copy address"))
 		self.externalButton = wx.Button(self, label=_("Open in default &browser"))
-		self.returnButton = wx.Button(self, label=_("Return to ChatGPT &prompt"))
+		self.returnButton = wx.Button(self, label=_("Return to Claude &prompt"))
 		for button in (
 			self.summaryButton, self.snapshotButton, self.refreshButton, self.restoreButton,
 			self.copyAddressButton, self.externalButton, self.returnButton,
@@ -217,7 +217,7 @@ class BrowserNavigatorDialog(wx.Dialog):
 		externalItem = menu.Append(wx.ID_ANY, _("Open page in default browser"))
 		externalItem.Enable(self.externalButton.IsEnabled())
 		menu.Bind(wx.EVT_MENU, lambda evt: chosen.append("external"), externalItem)
-		returnItem = menu.Append(wx.ID_ANY, _("Return to ChatGPT prompt"))
+		returnItem = menu.Append(wx.ID_ANY, _("Return to Claude prompt"))
 		menu.Bind(wx.EVT_MENU, lambda evt: chosen.append("returnPrompt"), returnItem)
 		try:
 			self.PopupMenu(menu)

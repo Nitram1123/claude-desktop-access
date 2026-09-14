@@ -1,3 +1,7 @@
+Claude Desktop Access is derived from ChatGPT Desktop Access.
+Copyright (C) 2026 Claude Desktop Access contributors.
+Original notices and license follow.
+
 ChatGPT Desktop Access for NVDA
 
 Copyright (C) 2026 ChatGPT Desktop Access contributors

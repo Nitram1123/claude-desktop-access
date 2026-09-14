@@ -1,4 +1,4 @@
-"""Isolated, failure-safe sound output for ChatGPT Desktop Access."""
+"""Isolated, failure-safe sound output for Claude Desktop Access."""
 
 import os
 
@@ -14,7 +14,7 @@ def safeBeep(frequency, duration):
 	try:
 		tones.beep(frequency, duration)
 	except Exception:
-		log.debugWarning("ChatGPT Desktop Access tone output failed", exc_info=True)
+		log.debugWarning("Claude Desktop Access tone output failed", exc_info=True)
 
 
 def _playProgressTone(category, message=""):
@@ -36,5 +36,5 @@ def playProgressSound(category, message="", style="clicks", volume="normal"):
 	try:
 		nvwave.playWaveFile(path)
 	except Exception:
-		log.debugWarning("ChatGPT Desktop Access could not play click earcon; using tones", exc_info=True)
+		log.debugWarning("Claude Desktop Access could not play click earcon; using tones", exc_info=True)
 		_playProgressTone(category, message)

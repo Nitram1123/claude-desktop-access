@@ -15,11 +15,11 @@ def packageFiles(projectRoot):
 	appModulesRoot = projectRoot / "appModules"
 	files.extend(sorted(appModulesRoot.glob("*.py"), key=lambda path: path.name.casefold()))
 	files.append(projectRoot / "globalPlugins" / "__init__.py")
-	pluginRoot = projectRoot / "globalPlugins" / "codexStatusAnnouncer"
+	pluginRoot = projectRoot / "globalPlugins" / "claudeDesktopAccess"
 	files.extend(sorted(pluginRoot.glob("*.py"), key=lambda path: path.name.casefold()))
 	localeRoot = projectRoot / "locale"
 	files.extend(sorted(localeRoot.glob("*/LC_MESSAGES/nvda.mo"), key=lambda path: path.as_posix().casefold()))
-	soundsRoot = projectRoot / "globalPlugins" / "codexStatusAnnouncer" / "sounds"
+	soundsRoot = projectRoot / "globalPlugins" / "claudeDesktopAccess" / "sounds"
 	for level in ("soft", "normal", "loud"):
 		files.extend(sorted((soundsRoot / level).glob("*.wav"), key=lambda path: path.name))
 	return files

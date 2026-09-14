@@ -1,4 +1,4 @@
-"""Application-scoped commands for the ChatGPT desktop app."""
+"""Application-scoped commands for the Claude desktop app."""
 
 import addonHandler
 import appModuleHandler
@@ -12,16 +12,16 @@ addonHandler.initTranslation()
 def _activeToolkitPlugin():
 	"""Return the running toolkit instance without creating another global plugin."""
 	try:
-		from globalPlugins import codexStatusAnnouncer
-		return codexStatusAnnouncer._activePluginInstance
+		from globalPlugins import claudeDesktopAccess
+		return claudeDesktopAccess._activePluginInstance
 	except Exception:
 		return None
 
 
 class AppModule(appModuleHandler.AppModule):
-	"""Expose commands only while ChatGPT or its Codex host has focus."""
+	"""Expose commands only while Claude or its Code host has focus."""
 
-	scriptCategory = _("ChatGPT Desktop Access")
+	scriptCategory = _("Claude Desktop Access")
 	__gestures = {
 		"kb:control+1": "readMostRecentChatMessage",
 		"kb:control+2": "readSecondMostRecentChatMessage",
@@ -42,59 +42,59 @@ class AppModule(appModuleHandler.AppModule):
 		plugin = _activeToolkitPlugin()
 		handler = getattr(plugin, methodName, None) if plugin is not None else None
 		if not callable(handler):
-			ui.message(_("ChatGPT Desktop Access is not ready"))
+			ui.message(_("Claude Desktop Access is not ready"))
 			return
 		handler(*args)
 
-	@script(description=_("Read the most recent ChatGPT message"))
+	@script(description=_("Read the most recent Claude message"))
 	def script_readMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 1)
 
-	@script(description=_("Read the second-most-recent ChatGPT message"))
+	@script(description=_("Read the second-most-recent Claude message"))
 	def script_readSecondMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 2)
 
-	@script(description=_("Read the third-most-recent ChatGPT message"))
+	@script(description=_("Read the third-most-recent Claude message"))
 	def script_readThirdMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 3)
 
-	@script(description=_("Read the fourth-most-recent ChatGPT message"))
+	@script(description=_("Read the fourth-most-recent Claude message"))
 	def script_readFourthMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 4)
 
-	@script(description=_("Read the fifth-most-recent ChatGPT message"))
+	@script(description=_("Read the fifth-most-recent Claude message"))
 	def script_readFifthMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 5)
 
-	@script(description=_("Read the sixth-most-recent ChatGPT message"))
+	@script(description=_("Read the sixth-most-recent Claude message"))
 	def script_readSixthMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 6)
 
-	@script(description=_("Read the seventh-most-recent ChatGPT message"))
+	@script(description=_("Read the seventh-most-recent Claude message"))
 	def script_readSeventhMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 7)
 
-	@script(description=_("Read the eighth-most-recent ChatGPT message"))
+	@script(description=_("Read the eighth-most-recent Claude message"))
 	def script_readEighthMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 8)
 
-	@script(description=_("Read the ninth-most-recent ChatGPT message"))
+	@script(description=_("Read the ninth-most-recent Claude message"))
 	def script_readNinthMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 9)
 
-	@script(description=_("Read the tenth-most-recent ChatGPT message"))
+	@script(description=_("Read the tenth-most-recent Claude message"))
 	def script_readTenthMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 10)
 
-	@script(description=_("Start or end ChatGPT voice mode"))
+	@script(description=_("Start or end Claude voice mode"))
 	def script_toggleVoiceMode(self, gesture):
 		self._runToolkitCommand("_activateVoiceControl", ("stop", "start"))
 
-	@script(description=_("Mute or unmute the ChatGPT microphone"))
+	@script(description=_("Mute or unmute the Claude microphone"))
 	def script_toggleMicrophoneMute(self, gesture):
 		self._runToolkitCommand("_activateVoiceControl", ("unmute", "mute"))
 
-	@script(description=_("Open and focus the ChatGPT and Codex mode selector"))
+	@script(description=_("Open Claude navigation for modes, artifacts and attachments"))
 	def script_toggleConversationMode(self, gesture):
-		"""Open ChatGPT's native selector for manual Arrow-key selection."""
+		"""Open the accessible Claude navigation list."""
 		self._runToolkitCommand("_openConversationModeSelector")

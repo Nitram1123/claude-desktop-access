@@ -1,298 +1,90 @@
-# ChatGPT Desktop Access for NVDA
+# Claude Desktop Access for NVDA
 
-ChatGPT Desktop Access supports both ChatGPT mode and Codex mode in the Windows app.
-It automatically reattaches after switching modes or returning from the usage page;
-no NVDA restart is required.
+**Version 2026.2.1 — experimental beta for stable NVDA 2026.2 on Windows.**
 
-[![Validate NVDA add-on](https://github.com/jcoffin1/chatgpt-desktop-access/actions/workflows/ci.yml/badge.svg)](https://github.com/jcoffin1/chatgpt-desktop-access/actions/workflows/ci.yml)
+This is a separate GPL-licensed adaptation of [ChatGPT Desktop Access](https://github.com/jcoffin1/chatgpt-desktop-access), with independent settings and an app module scoped to Claude Desktop. Both add-ons can remain installed.
 
-ChatGPT Desktop Access for NVDA provides live activity announcements,
-Braille, progress sounds, chat navigation and actions, and accessible dialog
-focus in both browse mode and focus mode. It was formerly named Codex Access
-Toolkit and Codex Status Announcer; the internal add-on identifier remains
-unchanged so existing settings and Input Gestures assignments continue working.
+This first beta has automated tests, but has **not been tested in a running Claude Desktop session with NVDA**. Claude-specific detection uses candidate English accessibility labels. Some app versions may expose different labels or no usable message boundaries. This release is for gathering that feedback, and does not claim feature parity has been verified. The manifest's last-tested version declares the NVDA compatibility target; it is not evidence of a completed manual test.
 
-## Download
+## Install and start
 
-Download tested packages from the
-[GitHub Releases page](https://github.com/jcoffin1/chatgpt-desktop-access/releases).
-The project is being prepared for the official NVDA Add-on Store, but it is not
-listed there yet.
+1. Use the stable NVDA 2026.2 release and install the official Claude Desktop Windows app.
+2. Download `claudeDesktopAccess-2026.2.1.nvda-addon` from this repository's Releases page. Open it, accept NVDA's installation dialog, and restart NVDA when prompted.
+3. Open NVDA Settings, then **Claude Desktop Access**. Test the selected speech, Braille and sound outputs.
+4. Open Claude and a disposable test conversation. Test in both focus mode and browse mode.
+
+The add-on does not require an API key or a paid subscription. Test whichever Claude features your account exposes. It does not unlock paid features. No purchase, message submission, or permission approval is performed automatically.
+
+## Default shortcuts in Claude
+
+| Shortcut | Action |
+| --- | --- |
+| Control+1 through Control+9 | Read the first through ninth most recent exposed message |
+| Control+0 | Read the tenth most recent exposed message |
+| NVDA+Alt+V | Try the exposed start/end voice control |
+| NVDA+Alt+M | Try the exposed microphone mute/unmute control |
+| NVDA+grave accent (backtick) | Open Claude navigation for modes, artifacts and attachments |
+
+Each default is separately assignable under NVDA Preferences > Input Gestures > Claude Desktop Access. Control+number replaces any native Claude action on those keys; remove or reassign the add-on gestures if you prefer Claude's shortcuts. Default gestures apply only while the `claude` application has focus. Terminal-based Claude Code and browser tabs are outside this beta's scope.
+
+Additional unassigned actions include returning to the prompt, searchable chat history, current activity, announcement history, pause/resume, verbosity, privacy redaction, support reports, and the inherited embedded-browser tools. Assign shortcuts only to the actions you want. General plug-in actions are unassigned by default; manually binding one may make that action available globally.
+
+## Features and beta status
+
+All rows require live tester verification; automated checks cover shared logic and synthetic Claude scenarios.
+
+| Feature | Implementation in this beta |
+| --- | --- |
+| Speech and Braille | Independent output, verbosity profiles, Braille detail, urgent alerts, custom wording and category routing |
+| Sounds | 17 sound signatures at Soft, Normal and Loud levels; clicks or tones; submission, working, background, completion and focus cues |
+| Activity | Candidate thinking/tool/search/file/build labels, busy-control observation, delayed completion and duplicate suppression |
+| Reading and typing | Inherited reading protection, typing debounce, Braille composition protection and bounded polling |
+| Message review | Explicit named user/assistant regions or speaker markers; drafts and nested documents excluded; no guessed speaker alternation |
+| Conversation history | Search exposed recent buttons/links; native Show more where available; exposed archive controls only |
+| Mode navigation | Selected Chat, Cowork and Code tabs refine monitoring; the navigation dialog finds recognized exposed controls |
+| Artifacts and attachments | Search recognized controls, move focus, or explicitly activate; never automatically publish artifacts or upload files |
+| Dialogs and permissions | Inherited focus handling and permission/input announcements; approvals stay with the user |
+| Voice | Experimental native-control actions; a missing-control message is expected where voice is not exposed |
+| Embedded browser | Inherited navigator, page summary, snapshot, native focus and loading support; detection remains unverified in Claude |
+| Support | Configuration repair, compatibility self-test, sanitized diagnostics, import/export and release notes |
+
+**Known limits:** Some Claude message containers may be unlabeled, causing recent-message review to report no messages. History is limited to what the app exposes; it does not retrieve hidden account history, read private databases, or assume Codex storage formats. Archive/pin actions are experimental and only work when matching native controls exist. Account-wide quotas, model identity, and complete artifact contents are not independently queried. English recognition patterns need tester samples before translation to other interface languages. Claude may change its interface without notice.
+
+In the navigation dialog, type to filter, Tab to the list, and use the Arrow keys. Enter or **Move to item** focuses the selected control. **Activate item** performs its native action. Escape closes. Scans happen only on request, stop at a bounded limit, and yield between slices. Native accessibility calls can still be slow on some machines; report delays.
+
+Completion is inferred from exposed activity and the disappearance of a Stop control after a settling delay. It means generation appears to have ended, not that Claude's work succeeded. Cancel/error scenarios are particularly important beta tests.
 
 ## Settings
 
-Open **NVDA Settings > ChatGPT Desktop Access**. The panel is divided into eight
-keyboard-accessible pages: **General**, **Speech and Braille**, **Sounds**,
-**Activity Output**, **Wording and Preview**, **Browser Access**, **Advanced**,
-and **Support**.
-Press Control+Tab or Shift+Control+Tab to move between pages. Every actionable
-control has a distinct Alt access key within its page. General contains the main
-output choices, Activity Output contains background timing and category routing,
-Advanced contains technical compatibility controls, and Support contains account,
-documentation, troubleshooting, and settings-file actions. Settings include:
+The keyboard-accessible pages are General, Speech and Braille, Sounds, Activity Output, Wording and Preview, Browser Access, Advanced, and Support. Use Control+Tab or Shift+Control+Tab to switch pages. Output settings, working intervals, sound levels, announcement wording, privacy redaction and per-category routing carry over from the original add-on.
 
-- Minimal or Full progress labels (Full is the default).
-- Essential, Balanced, or Informative Minimal-speech profiles. Balanced is the
-  default; Essential limits speech to critical states, while Informative adds
-  safe filenames, counts, and useful timing without exposing full commands.
-- Standard, Developer, or Raw Full-speech profiles. Standard announces an
-  action with concise targets, counts, and useful timing; Developer preserves
-  complete normalized commands and progress; Raw preserves the exact exposed
-  wording. Full braille remains complete independently of the speech profile.
-- Speech and braille independently.
-- Concise, Informative, or Full Braille detail independently of speech verbosity.
-- Optional conversation reading protection keeps routine add-on progress and ordinary
-  streamed-response live updates from interrupting speech, replacing the current Braille
-  line, or relocating browse-mode reading in ChatGPT. Focus-mode response output,
-  important results, permission dialogs, and urgent alerts continue normally.
-- Optional interruption of current NVDA speech for urgent permissions and failures.
-- Optional redaction of likely secrets and personal data.
-- The interval for elapsed working-time updates.
-- A recurring “Still working in background” pulse in Minimal and Full modes,
-  with gentle alternating two-note earcons.
-- Individual progress categories. Every category item states whether it is enabled
-  and its current output route, such as “Commands: enabled; speech only.”
-- Plain-language Codex commentary updates in both Minimal and Full modes.
-- Completion sounds and sanitized diagnostic logging.
-- Immediate, optional Prompt submitted sounds with a configurable delay before
-  continuous Working sounds begin.
-- Prompt submission detection for Enter and the Send button, prompt cancellation
-  detection, duplicate-event suppression, and isolated state across Codex tasks.
-- Immediate submission detection observes unmodified keyboard Enter and a Braille
-  display's standalone dot-8 Enter before ChatGPT replaces its content-editable
-  prompt. The observer never claims or re-sends the gesture; Shift+Enter and all
-  other input retain their native behavior.
-- Prompt-typing protection suspends full Chromium compatibility scans while text is
-  being entered. Prompt-local state checks are debounced until typing pauses, leaving
-  NVDA's main thread available for Braille translation, editor feedback, and ordinary
-  key processing.
-- A cancellable completion-settling window prevents commentary from being
-  mistaken for the end of a task when delayed tool work follows.
-- A choice of original soft click earcons or musical tones for every
-  announcement, including while speech is enabled. Clicks are the default.
-- Seventeen distinct percussive click signatures. Commands, code edits, searches,
-  tests, tools, commentary, attention, completion, failure, submission, background
-  work, and focus changes use different rhythms, pitch direction, and textures.
-- Idle polling frequency.
-- Soft, Normal, or Loud click levels, with an action selector and separate
-  sound-only and speech-only preview buttons.
-- Editable announcement wording for every action, with a restore button and
-  `{message}`, `{activity}`, `{seconds}`, and `{duration}` placeholders for live details.
-- Per-category routing to all enabled channels, speech, sound, braille, or off.
-- Configuration repair, compatibility self-test, sanitized support diagnostics,
-  a user-chosen-file sanitized support report, settings import/export, and focused
-  speech-profile reset.
-- Command punctuation and maximum spoken-length controls. Long complete commands
-  remain available to braille and an assignable clipboard action.
-- Search result counts and refresh for the Recent and Archived task lists.
-- A maximum background-activity timeout.
-- High-priority permission and user-input alerts.
-- High-priority usage-limit alerts that stop Working feedback, omit raw dashboard
-  URLs, and report any exposed reset time, upgrade option, and credit-purchase option.
-- Configurable application process names for future Codex hosts.
-- An optional continuous Working sound while Codex is busy. Its interval is
-  configurable, begins after a configurable start delay, and is postponed by
-  other progress sounds to prevent overlap. It follows the selected Clicks or
-  Musical tones style. A separate optional submission cue
-  plays immediately when a populated prompt is submitted with Enter or Send.
-- Optional rising and falling clicks when ChatGPT/Codex gains or loses focus,
-  including an inactive cue when the app closes.
-- Native embedded-browser access that leaves Chromium roles, states, actions,
-  focus, Enter, Space, Tab, Shift+Tab, NVDA+Space, quick navigation, and element
-  lists unchanged. There is no separate browser command layer to learn.
-- Optional **Loading page** and **Loading complete** speech and Braille messages.
-  Native document busy states and progress events are used when available, with a
-  bounded fallback for pages that expose no final event. Feedback never scans the
-  page or moves focus.
-- Direct buttons for checking Codex usage statistics and opening the official
-  credit-purchase area. The add-on never makes a purchase automatically.
+Use **Test current announcement outputs** before testing activity detection. Preview one sound or speech sample at a time. Custom announcement placeholders include `{message}`, `{activity}`, `{seconds}`, and `{duration}`. Import/export uses a file you choose and this add-on's own settings namespace; it does not automatically import or change ChatGPT settings.
 
-The **Test current announcement outputs** button verifies the selected speech
-and braille channels, including progress sounds. The **Test command progress sound** button plays the selected command sound
-directly, regardless of the current speech settings.
-Choose an action under **Preview action**, then use **Preview selected sound**
-or **Preview selected speech** to hear only that one output. Previews never run
-the full sound collection automatically.
-To customize an announcement, select its action, enter the desired wording in
-**Announcement text**, and save Settings. Leave the field blank—or choose
-**Restore built-in announcement**—to use the add-on's standard wording. For
-example, `Still busy with {activity} after {duration}` retains live
-background-progress details. Use `{message}` wherever the original Full-mode
-command or progress text should appear in custom wording.
+## Beta testing and feedback
 
-Settings export proposes `chatgpt-desktop-access-settings.json` as the filename;
-the user can choose a different name or location. Support reports continue to use
-a timestamped text filename. Neither file is created until the user approves its
-Save dialog.
+Start with a disposable chat containing no private information:
 
-After each newly installed version starts for the first time, NVDA opens a
-concise current-version summary and places focus at the top. **View current
-release notes…** and **View complete release history…** are also available in
-the add-on's Settings panel.
+1. Send a short request; verify submission and working feedback, then a single completion announcement.
+2. Send a longer request and cancel it. Check that the working cue stops and no success claim is made.
+3. Read messages using Control+1 through Control+0. Confirm speaker and order, and that an unsent draft is never read as a message.
+4. Type with a keyboard and, if available, Braille. Read older text during generation and check for interruptions or lost reading position.
+5. Open navigation, search, move to a control, and separately test explicit activation. Check artifacts, attachments and modes available to your account.
+6. Test recent history, dialogs, voice and embedded pages where available. Mark unavailable features as **not available**, rather than passed.
+7. Switch conversations and apps, close/reopen Claude, and confirm no stale announcements or changes to ChatGPT or other apps.
+8. With a paid account, optionally test Cowork and Code progress and permission requests. Do not grant a permission merely to test the add-on.
 
-## Input gestures
+Report add-on version, NVDA version, Windows version, Claude app version, interface language, account tier (no account identifiers), feature, steps, expected result, actual speech/Braille behavior, and whether it reproduces with this add-on disabled. A second clean reproduction is especially useful.
 
-Control+1 through Control+0 are assigned for direct chat-message review. Control+1
-reads the most recent user or ChatGPT message, Control+2 reads the
-second-most-recent, and so on through Control+0 for the tenth-most-recent. Each
-position is a separately named action under **NVDA > Preferences > Input
-Gestures > ChatGPT Desktop Access**, so every default can be replaced or removed.
-The shortcuts work in focus and browse modes. NVDA+Alt+V starts or ends ChatGPT
-voice mode, and NVDA+Alt+M mutes or unmutes the voice-mode microphone. These two
-actions can also be changed or removed in Input Gestures. All thirteen commands are
-implemented by ChatGPT's application module rather than a global plug-in binding,
-so both default and reassigned gestures are claimed only while ChatGPT has focus.
-Outside ChatGPT, NVDA and other add-ons remain free to use the same keystrokes.
-NVDA+grave accent—the key normally labeled backtick (`)—opens and focuses
-ChatGPT's native mode selector. Its **Open and focus the ChatGPT and Codex mode
-selector** action is in the same Input Gestures category, where the default can
-be changed or removed. The action works without navigating to the top of the
-page. NVDA announces the current mode; use Up or Down Arrow to choose ChatGPT or
-Codex, then press Enter. Assign only the additional commands
-you want. Available actions
-include repeat latest, previous/next history, show or clear history, pause or
-resume, toggle Minimal/Full, toggle privacy redaction, show or copy diagnostics,
-and save a sanitized support report. The embedded browser intentionally adds no
-Input Gesture actions; use NVDA's normal web-navigation commands instead.
-Unbound actions are also available for opening usage statistics and usage
-credits in the official Codex dashboard. **Open searchable and arrow-navigable
-ChatGPT or Codex chat history** opens a responsive, mode-specific dialog from
-focus or browse mode. ChatGPT's native Recents region intentionally combines
-ChatGPT chats and Codex tasks. The add-on separates that unified region using
-the active local Codex session index, so ChatGPT history excludes Codex task
-titles and Codex history retains only Codex task titles. Type to search both
-collections, Tab from Recent chats directly to Archived chats, use Up and Down
-Arrow to browse, and press Enter to open the selected chat. On a Recent chat,
-Shift+F10 closes the history dialog and places focus on ChatGPT's Pin, Unpin, or
-Archive button without activating it. The add-on reads ChatGPT's exposed
-current-mode control because
-the application document itself remains named ChatGPT in both modes. Codex
-archived titles are read from its local JSONL session
-metadata. ChatGPT archived titles come only from ChatGPT's accessible Archived
-chats view; if that view has not been exposed yet, the dialog explains how to
-load it. Message controls and source panels such as Share, Copy, Read aloud,
-response ratings, Sources, Outputs, and More actions are excluded from both
-lists. After changing modes, the add-on waits for the unified sidebar to settle,
-confirms two matching snapshots, and then partitions its entries. An early
-history command reports that the list is refreshing instead of showing an
-unclassified list. When the native Recents list offers **Show more**, opening
-history activates that exact Recents control one page at a time, waits for the
-accessible item count to grow, and then displays the settled searchable list.
-Each request is limited to 20 ten-item pages so a very large account cannot trap
-NVDA in an unlimited loading loop; reopening history continues if more pages
-remain. This expands every page currently offered through ChatGPT's native
-**Show more** control; it does not simulate scrolling when the app chooses its
-infinite-scroll layout. The expansion stops if focus leaves ChatGPT. No archive
-state is changed merely by opening history.
+Use the Support page or an assigned **Save a sanitized Claude Desktop Access support report** gesture. Reports are saved only to a user-chosen file and are not uploaded. Review them before sharing. Sanitized diagnostics omit conversation bodies, while normal NVDA debug logs can contain speech and private data. Do not attach a raw log without reviewing it. Recognition failures may require a manually reviewed, minimal accessible label sample from a harmless test chat.
 
-The add-on improves the native **Add files and more**, **model**, and **Change
-permissions** controls without adding commands or gestures. Reach them using normal
-Tab or browse-mode navigation. NVDA provides a concise description of each recognized
-control and its popup navigation while preserving its native name, state, and action.
-Use Enter or Space to open, arrow keys to navigate, Enter to choose, and Escape to
-close.
+File reports at [GitHub Issues](https://github.com/jcoffin1/claude-desktop-access/issues). Disable or remove the add-on using NVDA's add-on manager if it interferes with normal use, then restart NVDA.
 
-## Embedded browser access
+## Development
 
-When ChatGPT exposes a browser or web-preview container through Chromium
-accessibility, the add-on recognizes objects beneath that explicitly named
-container. It also recognizes a genuine web document nested inside ChatGPT's outer
-document, which is how some browser tabs are exposed. The native Browser submenu
-and its commands are deliberately excluded. The add-on does not click, submit,
-move focus, replace native roles, add control descriptions, or read the page on
-the user's behalf.
+Run `./build.ps1 -PythonPath python`. This runs automated tests, validates Python and the translation template, builds a deterministic archive, and audits its contents and compatibility metadata. Tests include inherited output/state logic and synthetic Claude controls; they do not replace manual NVDA testing. GitHub Actions runs the same checks. Versions follow stable NVDA: 2026.2.1 is the first release in the 2026.2 line. Beta status is expressed in release metadata and documentation without changing the requested version number.
 
-The result works like an ordinary Chromium page in NVDA. In focus mode, use Tab
-and Shift+Tab to move between controls, Enter or Space to activate the current
-native control, and arrow keys where the control supports them. Press NVDA+Space
-to switch between focus and browse modes. In browse mode, use normal NVDA web
-navigation, including H for headings, K for links, F for form fields, D for
-landmarks, T for tables, and NVDA+F7 for the Elements List. None of these keys are
-intercepted or simulated by the add-on.
+The project is not currently submitted to the NVDA Add-on Store. GitHub releases remain marked prerelease while live beta validation is outstanding.
 
-The add-on keeps its original Codex conversation virtual buffer while focus is
-inside the embedded page. This allows Codex activity monitoring to continue
-without treating the page as a new task or detaching from the conversation. All
-The Browser Access settings page has one option, enabled by default, for automatic
-**Loading page** and **Loading complete** messages. The add-on observes native
-Chromium document creation, busy-state changes, and exposed loading progress. A
-short settle timer completes fast pages that do not expose a final event; a longer
-safety fallback applies while Chromium reports the document as busy. Repeated
-events do not repeat the same message. Closing or leaving the embedded browser
-cancels pending loading state, so an old page cannot announce completion later.
-These status messages do not change focus, browse mode, the review cursor, or the
-Braille reading position.
+## Credits and license
 
-Announcement history contains at most 20 entries, stays in memory, and is
-cleared when the monitored Codex document changes or NVDA exits.
-
-## Testing and building
-
-Run `build.ps1` to execute the automated tests, validate the translation
-template and Python syntax, audit version consistency, dependencies, gesture
-policy, archive layout, CRCs, and sound inventory, and create a reproducible
-package under `outputs`. GitHub Actions runs the same release checks on pushes
-and pull requests. If Python is not available as
-`python`, pass its executable with `-PythonPath`. Identical source files produce
-an identical package checksum, including across LF and CRLF Git checkouts. See
-`docs/TESTING.md` for the manual NVDA test
-checklist used before publishing a release. Translation contributors should see
-`docs/TRANSLATING.md`; Add-on Store maintainers should see
-`docs/ADDON_STORE.md`.
-
-## Release versioning
-
-Add-on versions follow the current stable NVDA release. With NVDA 2026.2 stable,
-the base line is `2026.2.0` and add-on patches are `2026.2.1`, `2026.2.2`,
-`2026.2.3`, `2026.2.4`, `2026.2.5`, `2026.2.6`, and so on. A newer stable NVDA release starts a new matching line. Preview NVDA releases
-do not change the add-on version line. See `docs/VERSIONING.md` for full details.
-
-## Privacy
-
-Full mode may speak commands, commentary, paths, file names, URLs, and search terms. NVDA's
-debug log records spoken output, regardless of the add-on's sanitized internal
-logging. Enable redaction or Minimal mode before sharing an NVDA log, and review
-logs for private data before sending them to anyone.
-
-The privacy-redaction action can be assigned in Input Gestures for temporary
-privacy changes. Redaction also applies to complete commentary retained for Braille,
-history, and Copy latest full Codex progress. Sanitized diagnostics report configuration
-and monitoring state without including command text.
-
-## Braille timing
-
-Progress uses NVDA's standard braille flash-message mechanism. Its duration is
-controlled by NVDA's global braille message-timeout setting. Routine add-on Braille
-messages are suppressed while focus is in ChatGPT when Keep conversation reading stable
-is enabled. While the user reads in browse mode, ordinary streamed `Response:`,
-`ChatGPT said:`, and `Response complete` live-region updates are also withheld from
-NVDA's native output handler, preventing them from replacing speech, the browse cursor,
-or the Braille viewport. Non-urgent add-on completion flashes are withheld from Braille
-at the same time, while their selected speech and sound output continues. Focus-mode
-response output, permission prompts, dialogs, and urgent alerts are never suppressed.
-Full conversation-buffer inspection is paused while the prompt is being edited and for
-three seconds after keyboard or Braille navigation in a conversation. Direct status and
-permission events remain available without waiting for a scan. When Chromium replaces
-its buffer, the add-on inspects only a bounded tail instead of copying the full chat.
-After a final response, Working pulses and continuous sounds pause while the add-on
-waits five seconds for another operation and requires the Stop control to be absent; it
-then confirms the task is idle. Closing or hiding the ChatGPT window for two seconds
-clears retained activity even if Electron helper processes remain. Simply moving to
-another application keeps monitoring active.
-While contracted Braille is entered in the focused ChatGPT prompt, the add-on also
-protects an active new-word composition from the delayed caret event Chromium can emit
-for the preceding word. This does not change translation tables, consume Braille
-gestures, replace NVDA's input handler, or run outside the ChatGPT prompt.
-
-## Installation and removal
-
-Install the `.nvda-addon` package through NVDA's Add-on Store manager. Restart
-NVDA when requested. Remove or disable it from the same manager. Upgrades retain
-saved settings; new features use safe defaults.
-
-## Support and compatibility
-
-The add-on supports NVDA 2023.1 and later and has been tested with stable NVDA
-2026.2.
-If a Codex interface update stops announcements, enable sanitized diagnostics
-and provide an NVDA log after removing remote keys and other personal data.
+Based on ChatGPT Desktop Access 2026.2.6. Original copyright and GPL v2-or-later terms are retained in LICENSE.txt. Claude Desktop Access is an independent community add-on, not an Anthropic or NV Access product.

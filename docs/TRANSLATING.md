@@ -1,7 +1,7 @@
-# Translating ChatGPT Desktop Access
+# Translating Claude Desktop Access
 
-All user-facing Python strings use NVDA's gettext translation mechanism. The
-current template is `locale/chatGPTDesktopAccess.pot`.
+Settings and announcements use NVDA's gettext translation mechanism. Claude recognition and the experimental navigation category labels currently assume English. The
+current template is `locale/claudeDesktopAccess.pot`.
 
 ## Update the template
 

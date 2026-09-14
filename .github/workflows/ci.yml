@@ -33,8 +33,8 @@ jobs:
         shell: pwsh
         run: |
           $manifestVersion = ((Select-String -Path manifest.ini -Pattern '^version = (.+)$').Matches[0].Groups[1].Value).Trim()
-          $package = "outputs/chatGPTDesktopAccess-$manifestVersion.nvda-addon"
-          $reproduction = "outputs/chatGPTDesktopAccess-$manifestVersion-reproduction.nvda-addon"
+          $package = "outputs/claudeDesktopAccess-$manifestVersion.nvda-addon"
+          $reproduction = "outputs/claudeDesktopAccess-$manifestVersion-reproduction.nvda-addon"
           python tools/build_addon.py $reproduction
           $packageHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $package).Hash
           $reproductionHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $reproduction).Hash
@@ -46,9 +46,9 @@ jobs:
       - name: Upload validated package
         uses: actions/upload-artifact@v7
         with:
-          name: chatgpt-desktop-access-validated
+          name: claude-desktop-access-validated
           path: |
-            outputs/chatGPTDesktopAccess-*.nvda-addon
+            outputs/claudeDesktopAccess-*.nvda-addon
             outputs/README-*.md
             outputs/CHANGELOG-*.md
             outputs/SHA256.txt

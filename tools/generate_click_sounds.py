@@ -1,4 +1,4 @@
-"""Generate original, license-free click earcons for ChatGPT Desktop Access."""
+"""Generate original, license-free click earcons for Claude Desktop Access."""
 
 from pathlib import Path
 import math
@@ -9,7 +9,7 @@ import wave
 
 SAMPLE_RATE = 44100
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = PROJECT_ROOT / "globalPlugins" / "codexStatusAnnouncer" / "sounds"
+OUTPUT_DIR = PROJECT_ROOT / "globalPlugins" / "claudeDesktopAccess" / "sounds"
 PATTERNS = {
 	# Entries are offset milliseconds, resonant frequency, and percussive character.
 	"thinking": ((0, 720, "hollow"), (125, 980, "hollow")),
@@ -58,7 +58,7 @@ def clickSample(relativeTime, frequency, character, amplitude, rng):
 
 
 def render(name, pattern, levelName, amplitude):
-	rng = random.Random(f"codex-status-announcer-{name}")
+	rng = random.Random(f"code-status-announcer-{name}")
 	duration = max(offset / 1000 + CHARACTERS[character][0] for offset, frequency, character in pattern) + 0.015
 	frames = []
 	for sampleIndex in range(math.ceil(duration * SAMPLE_RATE)):

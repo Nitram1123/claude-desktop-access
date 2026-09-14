@@ -8,7 +8,7 @@ from pathlib import Path
 
 HEADER = '''msgid ""
 msgstr ""
-"Project-Id-Version: ChatGPT Desktop Access {version}\\n"
+"Project-Id-Version: Claude Desktop Access {version}\\n"
 "Content-Type: text/plain; charset=UTF-8\\n"
 "Content-Transfer-Encoding: 8bit\\n"
 "MIME-Version: 1.0\\n"
@@ -27,8 +27,8 @@ def _version(projectRoot):
 
 def messages(projectRoot):
 	found = {}
-	sourceRoot = projectRoot / "globalPlugins" / "codexStatusAnnouncer"
-	for path in sorted(sourceRoot.glob("*.py"), key=lambda item: item.name.casefold()):
+	sourceRoot = projectRoot / "globalPlugins" / "claudeDesktopAccess"
+	for path in sorted([*sourceRoot.glob("*.py"), *(projectRoot / "appModules").glob("*.py")], key=lambda item: item.as_posix().casefold()):
 		tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
 		for node in ast.walk(tree):
 			if not isinstance(node, ast.Call) or not node.args:
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 	parser.add_argument("--check", action="store_true")
 	args = parser.parse_args()
 	root = Path(__file__).resolve().parents[1]
-	output = root / "locale" / "chatGPTDesktopAccess.pot"
+	output = root / "locale" / "claudeDesktopAccess.pot"
 	expected = render(root)
 	if args.check:
 		if not output.is_file() or output.read_text(encoding="utf-8") != expected:

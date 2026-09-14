@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security and privacy reports
-    url: https://github.com/jcoffin1/chatgpt-desktop-access/security
+    url: https://github.com/jcoffin1/claude-desktop-access/security
     about: Read the security policy before sharing potentially sensitive information.
   - name: Documentation and setup guide
-    url: https://github.com/jcoffin1/chatgpt-desktop-access#readme
+    url: https://github.com/jcoffin1/claude-desktop-access#readme
     about: Review installation, configuration, gestures, Braille, sound, and troubleshooting information.
   - name: Download a published release
-    url: https://github.com/jcoffin1/chatgpt-desktop-access/releases
-    about: Download tested packages from the official release page.
+    url: https://github.com/jcoffin1/claude-desktop-access/releases
+    about: Download beta packages from the official release page.

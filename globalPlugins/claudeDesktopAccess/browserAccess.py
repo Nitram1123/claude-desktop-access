@@ -1,4 +1,4 @@
-"""Pure classification and presentation helpers for ChatGPT's embedded browser."""
+"""Pure classification and presentation helpers for Claude's embedded browser."""
 
 import re
 from collections import Counter
@@ -48,7 +48,7 @@ def isEmbeddedBrowserContainerRole(roleName):
 
 
 def isEmbeddedBrowserDocumentStructure(*roleNames):
-	"""Recognize a web document nested inside ChatGPT's outer Chromium document."""
+	"""Recognize a web document nested inside Claude's outer Chromium document."""
 	roles = tuple(normalizedText(role).casefold() for role in roleNames)
 	return sum(role == "document" for role in roles) >= 2
 
@@ -300,7 +300,7 @@ def browserSnapshotText(title, address, lines, truncated=False, translate=lambda
 		translate("Domain: {domain}").format(domain=domain),
 		"",
 	]
-	parts.extend(uniqueLines or [translate("No readable page text was exposed by ChatGPT.")])
+	parts.extend(uniqueLines or [translate("No readable page text was exposed by Claude.")])
 	if truncated:
 		parts.extend(("", translate("The snapshot ended at the safe scan limit.")))
 	return "\n".join(parts)

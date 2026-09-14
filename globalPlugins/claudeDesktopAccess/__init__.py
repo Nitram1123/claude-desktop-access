@@ -1,4 +1,4 @@
-"""Provide accessible feedback and navigation for the ChatGPT desktop app."""
+"""Provide accessible feedback and navigation for the Claude desktop app."""
 
 import os
 import json
@@ -36,25 +36,25 @@ from .browserAccess import (
 )
 from .browserNavigatorDialog import BrowserNavigatorDialog
 from .chatHistoryDialog import ChatHistoryDialog
-from .core import AnnouncementHistory, CATEGORY_SETTING, announcementPriority, backgroundActivityName, brailleStatusMessage, brailleTypingGestureCommitsText, bufferInspectionDue, categoryOutputActions, changelogForDisplay, chatActionMatches, chatHistorySnapshotDecision, chatMessagesFromTokens, chatTitleMatches, codexHistorySourceSignature, codexThreadUrl, coalescedPollDelay, completedTextDelta, confirmedUserMessageSubmission, conversationModeFromDocumentNames, conversationModeFromSwitchLabel, conversationWindowShouldDetach, currentActivitySummary, duplicateChannelActions, elapsedSeconds, firstStatusLabel, focusStateTransition, formatCommandSpeech, formatCustomAnnouncement, formatElapsedDuration, intermediateCompletionCategory, isBrailleTypingGestureIdentifier, isChatHistoryConversationBoundary, isChatHistoryInterfaceText, isCodexPromptLabel, isKnownNonStatusButton, isPermissionDecisionLabel, isPermissionPromptText, isPromptSubmissionGestureIdentifier, isResponseCompletionMarkerText, isStopControlLabel, isTaskCompletionLabel, loadActiveCodexThreadTitles, loadArchivedThreads, looksLikeBlankCodexConversation, mergeSupportedAppNames, modeSpecificRecentChatTitles, nextBusyState, outputActions, pendingChatTitle, pluginInstallProgress, pluginProgressBusyTransition, pollDelay, previewSelection, promptControlKind, promptSubmissionGestureShouldStart, promptSubmissionTransition, redactSensitive, repairConfigurationValues, responseCompletionScanMarker, responseCompletionTransition, shouldFinalizeResponseCompletion, shouldLogDiagnosticSnapshot, shouldPlayContinuousWorkingClick, shouldPreserveBrailleComposition, shouldReplaceScheduledPoll, shouldSuppressNativeConversationUpdate, shouldSuppressRoutineBraille, shouldSuppressSemanticDuplicate, soundKey, statusDetails, statusMessage, stopControlTransition, supersedesResponseCompletionCandidate, uniqueThreadLabels, usageLimitNotice, userMessageNumber, userMessageSubmissionTransition, viewerTitleMatches
+from .core import AnnouncementHistory, CATEGORY_SETTING, announcementPriority, backgroundActivityName, brailleStatusMessage, brailleTypingGestureCommitsText, bufferInspectionDue, categoryOutputActions, changelogForDisplay, chatActionMatches, chatHistorySnapshotDecision, chatMessagesFromTokens, chatTitleMatches, coalescedPollDelay, completedTextDelta, confirmedUserMessageSubmission, conversationModeFromDocumentNames, conversationModeFromSwitchLabel, conversationWindowShouldDetach, currentActivitySummary, duplicateChannelActions, elapsedSeconds, firstStatusLabel, focusStateTransition, formatCommandSpeech, formatCustomAnnouncement, formatElapsedDuration, intermediateCompletionCategory, isBrailleTypingGestureIdentifier, isChatHistoryConversationBoundary, isChatHistoryInterfaceText, isCodePromptLabel, isKnownNonStatusButton, isPermissionDecisionLabel, isPermissionPromptText, isPromptSubmissionGestureIdentifier, isResponseCompletionMarkerText, isStopControlLabel, isTaskCompletionLabel, looksLikeBlankCodeConversation, mergeSupportedAppNames, modeSpecificRecentChatTitles, nextBusyState, outputActions, pendingChatTitle, pluginInstallProgress, pluginProgressBusyTransition, pollDelay, previewSelection, promptControlKind, promptSubmissionGestureShouldStart, promptSubmissionTransition, redactSensitive, repairConfigurationValues, responseCompletionScanMarker, responseCompletionTransition, shouldFinalizeResponseCompletion, shouldLogDiagnosticSnapshot, shouldPlayContinuousWorkingClick, shouldPreserveBrailleComposition, shouldReplaceScheduledPoll, shouldSuppressNativeConversationUpdate, shouldSuppressRoutineBraille, shouldSuppressSemanticDuplicate, soundKey, statusDetails, statusMessage, stopControlTransition, supersedesResponseCompletionCandidate, usageLimitNotice, userMessageNumber, userMessageSubmissionTransition, viewerTitleMatches
 from .core import voiceControlKind
+from .claudeAdapter import modeDisplayName, speakerFromLabel, modeFromTab, promptLabel, navigationKind, conversationDocumentMode, messageTokens
+from .claudeNavigator import ClaudeNavigator, NavigationScan
 from .soundOutput import playProgressSound as _playProgressSound, safeBeep as _safeBeep
 
 addonHandler.initTranslation()
 
-CONFIG_SECTION = "codexStatusAnnouncer"
-ADDON_VERSION = "2026.2.6"
-CODEX_USAGE_URL = "https://chatgpt.com/codex/settings/usage"
-DEFAULT_SUPPORTED_APP_NAMES = "chatgpt,codex"
+CONFIG_SECTION = "claudeDesktopAccess"
+ADDON_VERSION = "2026.2.1"
+CLAUDE_USAGE_URL = "https://claude.ai/settings/usage"
+DEFAULT_SUPPORTED_APP_NAMES = "claude"
 CURRENT_RELEASE_NOTES = _(
-	"Version 2026.2.6\n\n"
-	"What's new:\n"
-	"• Press NVDA+grave accent, the key normally labeled backtick, to open and focus ChatGPT's native mode selector.\n"
-	"• The shortcut works in focus mode and browse mode without navigating to the top of the page.\n"
-	"• NVDA announces the current mode, then you choose ChatGPT or Codex with the Arrow keys and Enter.\n"
-	"• Closing ChatGPT while the selector is open no longer restarts activity monitoring from stale popup events.\n"
-	"• Polling now keeps one scheduled timer, reducing repeated main-thread conversation scans.\n"
-	"• Change or remove the shortcut in NVDA's Input Gestures dialog."
+    "Claude Desktop Access 2026.2.1 — first beta\n\n"
+    "Targets stable NVDA 2026.2. This is an experimental Claude Desktop port, not a live-verified release.\n"
+    "Includes speech, Braille, sounds, recent-message review, prompt access, activity monitoring, settings and support tools.\n"
+    "NVDA+grave accent opens the Claude navigation list for modes, artifacts and attachments.\n"
+    "Claude controls vary by account and app version. Report unavailable controls with a sanitized support report.\n"
+    "ChatGPT Desktop Access can remain installed; settings and gestures are independent."
 )
 VERBOSITY_CHOICES = ("minimal", "full")
 FULL_SPEECH_PROFILE_CHOICES = ("standard", "developer", "raw")
@@ -169,7 +169,7 @@ config.conf.spec[CONFIG_SECTION] = {
 	"maximumBusyMinutes": "integer(default=60, min=1, max=240)",
 	"welcomeShown": "boolean(default=False)",
 	"lastShownVersion": "string(default='')",
-	"supportedAppNames": "string(default='chatgpt,codex')",
+	"supportedAppNames": "string(default='claude')",
 	"diagnosticLogging": "boolean(default=False)",
 	"announceEmbeddedBrowserProgress": "boolean(default=True)",
 	"announceThinking": "boolean(default=True)",
@@ -266,70 +266,14 @@ def _repairConfiguration():
 		conf["supportedAppNames"] = mergedAppNames
 		repaired = tuple(dict.fromkeys((*repaired, "supportedAppNames")))
 	if repaired:
-		log.warning("ChatGPT Desktop Access repaired configuration fields: %s", ", ".join(repaired))
+		log.warning("Claude Desktop Access repaired configuration fields: %s", ", ".join(repaired))
 	_lastConfigurationRepairs = repaired
 	return tuple(repaired)
 
 
 def _migrateApplicationGestureMappings():
-	"""Move custom mappings for newly app-scoped commands without touching unrelated gestures."""
-	userMap = getattr(getattr(inputCore, "manager", None), "userGestureMap", None)
-	if userMap is None:
-		return 0
-	oldModule, oldClass = "globalPlugins.codexStatusAnnouncer", "GlobalPlugin"
-	newModule, newClass = "appModules.chatgpt", "AppModule"
-	oldSectionName = f"{oldModule}.{oldClass}"
-	newSectionName = f"{newModule}.{newClass}"
-
-	def gesturesFrom(value):
-		if value in (None, ""):
-			return ()
-		if isinstance(value, str):
-			return (value,)
-		return tuple(value)
-
-	try:
-		exported = userMap.export()
-		oldSection = exported.get(oldSectionName, {})
-		if not oldSection:
-			return 0
-		newSection = exported.get(newSectionName, {})
-		existing = set()
-		for scriptName, gestureValues in newSection.items():
-			scriptName = None if scriptName in (None, "None") else scriptName
-			for gesture in gesturesFrom(gestureValues):
-				existing.add((inputCore.normalizeGestureIdentifier(gesture), scriptName))
-		defaultGestures = {
-			inputCore.normalizeGestureIdentifier(gesture)
-			for gesture in APP_SCOPED_DEFAULT_GESTURES
-		}
-		moves = []
-		for scriptName in APP_SCOPED_SCRIPT_NAMES:
-			for gesture in gesturesFrom(oldSection.get(scriptName)):
-				moves.append((gesture, scriptName))
-		for noneKey in (None, "None"):
-			for gesture in gesturesFrom(oldSection.get(noneKey)):
-				if inputCore.normalizeGestureIdentifier(gesture) in defaultGestures:
-					moves.append((gesture, None))
-		moved = 0
-		for gesture, scriptName in moves:
-			normalizedGesture = inputCore.normalizeGestureIdentifier(gesture)
-			userMap.remove(normalizedGesture, oldModule, oldClass, scriptName)
-			try:
-				if (normalizedGesture, scriptName) not in existing:
-					userMap.add(normalizedGesture, newModule, newClass, scriptName)
-					existing.add((normalizedGesture, scriptName))
-			except Exception:
-				# Keep the user's original mapping if the new location cannot accept it.
-				userMap.add(normalizedGesture, oldModule, oldClass, scriptName)
-				raise
-			moved += 1
-		if moved:
-			userMap.save()
-		return moved
-	except Exception:
-		log.debugWarning("ChatGPT Desktop Access could not migrate application gesture mappings", exc_info=True)
-		return 0
+	"""A new add-on must never migrate another product's gesture assignments."""
+	return False
 
 
 def _customizeAnnouncement(message, action, activity="", seconds=0, values=None):
@@ -342,7 +286,7 @@ def _speechIsOff():
 	try:
 		return speech.getState().speechMode == speech.SpeechMode.off
 	except Exception:
-		log.debugWarning("ChatGPT Desktop Access could not read NVDA's speech mode", exc_info=True)
+		log.debugWarning("Claude Desktop Access could not read NVDA's speech mode", exc_info=True)
 		return False
 
 
@@ -355,16 +299,16 @@ def _send(message, speak=True, showBraille=True, toneCategory=None, progressSoun
 			try:
 				speech.cancelSpeech()
 			except Exception:
-				log.debugWarning("ChatGPT Desktop Access could not cancel speech for an urgent message", exc_info=True)
+				log.debugWarning("Claude Desktop Access could not cancel speech for an urgent message", exc_info=True)
 		try:
 			speech.speakMessage(message)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access speech output failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access speech output failed", exc_info=True)
 	if actions["braille"]:
 		try:
 			braille.handler.message(message if brailleMessage is None else brailleMessage)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access Braille output failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access Braille output failed", exc_info=True)
 	if actions["tone"]:
 		try:
 			_playProgressSound(
@@ -373,7 +317,7 @@ def _send(message, speak=True, showBraille=True, toneCategory=None, progressSoun
 			)
 			return True
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access progress sound output failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access progress sound output failed", exc_info=True)
 	return False
 
 
@@ -382,11 +326,11 @@ def _moveBrowseableMessageToTop(expectedTitle):
 		foreground = api.getForegroundObject()
 		foregroundName = str(getattr(foreground, "name", "") or "")
 		if not viewerTitleMatches(expectedTitle, foregroundName):
-			log.debug("ChatGPT Desktop Access did not move document focus; expected viewer is not foreground")
+			log.debug("Claude Desktop Access did not move document focus; expected viewer is not foreground")
 			return
 		keyboardHandler.KeyboardInputGesture.fromName("control+home").send()
 	except Exception:
-		log.debugWarning("ChatGPT Desktop Access could not move the document viewer to the top", exc_info=True)
+		log.debugWarning("Claude Desktop Access could not move the document viewer to the top", exc_info=True)
 
 
 def _showBrowseableMessageAtTop(message, title):
@@ -401,12 +345,12 @@ def _completeChangelogMessage():
 
 def _saveSupportReport(parent, diagnosticReport):
 	"""Let the user choose where to save a sanitized support report."""
-	defaultName = "chatgpt-desktop-access-support-{timestamp}.txt".format(
+	defaultName = "claude-desktop-access-support-{timestamp}.txt".format(
 		timestamp=time.strftime("%Y%m%d-%H%M%S"),
 	)
 	with wx.FileDialog(
 		parent,
-		_("Save sanitized ChatGPT Desktop Access support report"),
+		_("Save sanitized Claude Desktop Access support report"),
 		defaultFile=defaultName,
 		wildcard=_("Text files (*.txt)|*.txt"),
 		style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
@@ -415,7 +359,7 @@ def _saveSupportReport(parent, diagnosticReport):
 			return False
 		path = Path(dialog.GetPath())
 	payload = _(
-		"ChatGPT Desktop Access sanitized support report\n"
+		"Claude Desktop Access sanitized support report\n"
 		"Generated: {generated}\nNVDA version: {nvdaVersion}\n\n{report}\n"
 	).format(
 		generated=time.strftime("%Y-%m-%d %H:%M:%S %z"),
@@ -425,24 +369,24 @@ def _saveSupportReport(parent, diagnosticReport):
 	try:
 		path.write_text(payload, encoding="utf-8")
 	except Exception:
-		log.error("Unable to save ChatGPT Desktop Access support report", exc_info=True)
+		log.error("Unable to save Claude Desktop Access support report", exc_info=True)
 		ui.message(_("The sanitized support report could not be saved"))
 		return False
-	ui.message(_("Sanitized ChatGPT Desktop Access support report saved"))
+	ui.message(_("Sanitized Claude Desktop Access support report saved"))
 	return True
 
 
 def _openUsageDashboard(message):
 	try:
-		opened = wx.LaunchDefaultBrowser(CODEX_USAGE_URL)
+		opened = wx.LaunchDefaultBrowser(CLAUDE_USAGE_URL)
 	except Exception:
-		log.error("Unable to open the Codex usage dashboard", exc_info=True)
+		log.error("Unable to open Claude usage settings", exc_info=True)
 		opened = False
-	ui.message(message if opened else _("The Codex usage dashboard could not be opened"))
+	ui.message(message if opened else _("Claude usage settings could not be opened"))
 
 
-class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
-	title = _("ChatGPT Desktop Access")
+class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
+	title = _("Claude Desktop Access")
 
 	def _addPage(self, title):
 		page = wx.Panel(self.notebook)
@@ -482,7 +426,7 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 			choices=[
 				_("Standard — action, target, counts, and useful timing"),
 				_("Developer — complete normalized commands and progress"),
-				_("Raw — exact exposed Codex progress text"),
+				_("Raw — exact exposed Claude progress text"),
 			],
 		)
 		self.fullSpeechProfile.SetSelection(FULL_SPEECH_PROFILE_CHOICES.index(conf["fullSpeechProfile"]))
@@ -536,7 +480,7 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 		)
 		self.clickVolume.SetSelection(CLICK_VOLUME_CHOICES.index(conf["clickVolume"]))
 		self.continuousWorkingClicks = helper.addItem(wx.CheckBox(
-			soundsPage, label=_("Play a continuous &Working sound while ChatGPT or Codex is busy"),
+			soundsPage, label=_("Play a continuous &Working sound while Claude is busy"),
 		))
 		self.continuousWorkingClicks.SetValue(conf["continuousWorkingClicks"])
 		self.workingClickIntervalMs = helper.addLabeledControl(
@@ -552,7 +496,7 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 		))
 		self.promptSubmissionClick.SetValue(conf["promptSubmissionClick"])
 		self.monitoringFocusClicks = helper.addItem(wx.CheckBox(
-			soundsPage, label=_("Play sounds when ChatGPT or Codex &monitoring becomes active or inactive"),
+			soundsPage, label=_("Play sounds when Claude &monitoring becomes active or inactive"),
 		))
 		self.monitoringFocusClicks.SetValue(conf["monitoringFocusClicks"])
 		self.completionSound.SetValue(conf["completionSound"])
@@ -637,7 +581,7 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 
 		browserPage, helper = self._addPage(_("Browser Access"))
 		helper.addItem(wx.StaticText(browserPage, label=_(
-			"Use ChatGPT's embedded browser like any other web page in NVDA. Enter or Space activates the current control. Tab and Shift+Tab move between controls. NVDA browse-mode commands work normally."
+			"Use Claude's embedded browser like any other web page in NVDA. Enter or Space activates the current control. Tab and Shift+Tab move between controls. NVDA browse-mode commands work normally."
 		)))
 		self.announceEmbeddedBrowserProgress = helper.addItem(wx.CheckBox(
 			browserPage, label=_("Announce when embedded browser pages start and finish &loading"),
@@ -665,9 +609,9 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 		helper.addItem(wx.StaticText(supportPage, label=_(
 			"Open help and account pages, save sanitized troubleshooting information, or transfer add-on settings."
 		)))
-		self.checkUsageButton = helper.addItem(wx.Button(supportPage, label=_("&Check Codex usage statistics")))
+		self.checkUsageButton = helper.addItem(wx.Button(supportPage, label=_("&Open Claude usage settings")))
 		self.checkUsageButton.Bind(wx.EVT_BUTTON, self._onCheckUsage)
-		self.buyCreditsButton = helper.addItem(wx.Button(supportPage, label=_("&Buy Codex usage credits")))
+		self.buyCreditsButton = helper.addItem(wx.Button(supportPage, label=_("&Claude help and account information")))
 		self.buyCreditsButton.Bind(wx.EVT_BUTTON, self._onBuyCredits)
 		self.viewCurrentRelease = helper.addItem(wx.Button(supportPage, label=_("View current release &notes…")))
 		self.viewCurrentRelease.Bind(wx.EVT_BUTTON, self._onViewCurrentRelease)
@@ -777,37 +721,37 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 		speech.speakMessage(formatCustomAnnouncement(self._announcementEdits[key], message, label, 0))
 
 	def _onCheckUsage(self, evt):
-		_openUsageDashboard(_("Opening Codex usage statistics"))
+		_openUsageDashboard(_("Opening Claude usage settings"))
 
 	def _onBuyCredits(self, evt):
-		_openUsageDashboard(_("Opening Codex usage credits. No purchase will be made automatically."))
+		wx.LaunchDefaultBrowser("https://support.claude.com/")
 
 	def _onViewCurrentRelease(self, evt):
 		_showBrowseableMessageAtTop(
-			CURRENT_RELEASE_NOTES, _("ChatGPT Desktop Access — current release notes"),
+			CURRENT_RELEASE_NOTES, _("Claude Desktop Access — current release notes"),
 		)
 
 	def _onViewCompleteHistory(self, evt):
 		try:
 			message = _completeChangelogMessage()
 		except Exception:
-			log.error("Unable to open the ChatGPT Desktop Access changelog", exc_info=True)
+			log.error("Unable to open the Claude Desktop Access changelog", exc_info=True)
 			ui.message(_("The complete release history could not be opened"))
 			return
 		_showBrowseableMessageAtTop(
-			message, _("ChatGPT Desktop Access — complete release history"),
+			message, _("Claude Desktop Access — complete release history"),
 		)
 
 	def _onSaveSupportReport(self, evt):
 		if _activePluginInstance is None:
-			ui.message(_("ChatGPT Desktop Access is not currently running"))
+			ui.message(_("Claude Desktop Access is not currently running"))
 			return
 		_saveSupportReport(self, _activePluginInstance._diagnosticReport())
 
 	def _onExportSettings(self, evt):
 		with wx.FileDialog(
-			self, _("Export ChatGPT Desktop Access settings"),
-			defaultFile="chatgpt-desktop-access-settings.json",
+			self, _("Export Claude Desktop Access settings"),
+			defaultFile="claude-desktop-access-settings.json",
 			wildcard=_("JSON files (*.json)|*.json"), style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
 		) as dialog:
 			if dialog.ShowModal() != wx.ID_OK:
@@ -817,14 +761,14 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 			values = {key: value for key, value in _settings().items() if isinstance(value, (str, int, float, bool))}
 			path.write_text(json.dumps(values, ensure_ascii=False, indent=2), encoding="utf-8")
 		except Exception:
-			log.error("Unable to export ChatGPT Desktop Access settings", exc_info=True)
+			log.error("Unable to export Claude Desktop Access settings", exc_info=True)
 			ui.message(_("Settings could not be exported"))
 			return
-		ui.message(_("ChatGPT Desktop Access settings exported"))
+		ui.message(_("Claude Desktop Access settings exported"))
 
 	def _onImportSettings(self, evt):
 		with wx.FileDialog(
-			self, _("Import ChatGPT Desktop Access settings"),
+			self, _("Import Claude Desktop Access settings"),
 			wildcard=_("JSON files (*.json)|*.json"), style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
 		) as dialog:
 			if dialog.ShowModal() != wx.ID_OK:
@@ -854,9 +798,9 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 			try:
 				config.conf.save()
 			except Exception:
-				log.debugWarning("Unable to save restored ChatGPT Desktop Access settings", exc_info=True)
+				log.debugWarning("Unable to save restored Claude Desktop Access settings", exc_info=True)
 			self._loadControlsFromConfiguration()
-			log.error("Unable to import ChatGPT Desktop Access settings", exc_info=True)
+			log.error("Unable to import Claude Desktop Access settings", exc_info=True)
 			ui.message(_("Settings could not be imported"))
 			return
 		ui.message(_("Settings imported and loaded into this panel."))
@@ -949,7 +893,7 @@ class CodexStatusAnnouncerSettingsPanel(SettingsPanel):
 		conf["supportedAppNames"] = mergeSupportedAppNames(self.supportedAppNames.GetValue())
 
 
-def _isChatGPTObject(obj):
+def _isClaudeObject(obj):
 	try:
 		appName = str(getattr(getattr(obj, "appModule", None), "appName", "") or "").lower()
 		supported = {name.strip().lower() for name in _settings()["supportedAppNames"].split(",") if name.strip()}
@@ -959,42 +903,26 @@ def _isChatGPTObject(obj):
 
 
 def _conversationModeForObject(obj):
-	"""Return the active conversation mode while excluding nested browser documents."""
-	if not _isChatGPTObject(obj):
+	if not _isClaudeObject(obj):
 		return ""
-	current = obj
-	documentNames = []
+	current, names = obj, []
 	for _ in range(20):
-		try:
-			if current is None:
-				break
-			roleName = _roleName(current)
-			if roleName == "document":
-				documentNames.append(getattr(current, "name", ""))
-			current = getattr(current, "parent", None)
-		except Exception:
-			return ""
-	return conversationModeFromDocumentNames(documentNames)
+		if current is None:
+			break
+		if _roleName(current) == "document":
+			names.append(getattr(current, "name", ""))
+		current = getattr(current, "parent", None)
+	return conversationDocumentMode(names)
 
 
 def _isConversationObject(obj):
 	return bool(_conversationModeForObject(obj))
 
 
-def _isCodexPromptObject(obj):
-	"""Recognize the prompt without relying solely on a sometimes-stale document ancestor."""
-	try:
-		if obj.role != Role.EDITABLETEXT or not _isChatGPTObject(obj):
-			return False
-	except Exception:
+def _isCodePromptObject(obj):
+	if not _isClaudeObject(obj) or getattr(obj, "role", None) != Role.EDITABLETEXT:
 		return False
-	for attribute in ("name", "placeholder", "description"):
-		try:
-			if isCodexPromptLabel(getattr(obj, attribute, "")):
-				return True
-		except Exception:
-			continue
-	return _isConversationObject(obj)
+	return any(promptLabel(getattr(obj, attr, "")) for attr in ("name", "placeholder", "description"))
 
 
 def _roleName(obj):
@@ -1014,19 +942,19 @@ def _isDefunctObject(obj):
 
 
 def _isEmbeddedBrowserObject(obj):
-	"""Recognize an explicit browser container or a web document nested in ChatGPT."""
-	if not _isChatGPTObject(obj):
+	"""Recognize an explicit browser container or a web document nested in Claude."""
+	if not _isClaudeObject(obj):
 		return False
-	cached = getattr(obj, "_codexEmbeddedBrowserDetected", None)
+	cached = getattr(obj, "_codeEmbeddedBrowserDetected", None)
 	if cached is not None:
 		return bool(cached)
 	# The primary prompt and its known toolbar controls are never embedded-browser
 	# content. Reject them before any Chromium ancestor access; these objects are
 	# recreated frequently while typing and a negative ancestry walk blocks NVDA's
 	# main thread and delays queued Braille input.
-	if _isCodexPromptObject(obj) or promptControlKind(getattr(obj, "name", "")):
+	if _isCodePromptObject(obj) or promptControlKind(getattr(obj, "name", "")):
 		try:
-			obj._codexEmbeddedBrowserDetected = False
+			obj._codeEmbeddedBrowserDetected = False
 		except Exception:
 			pass
 		return False
@@ -1042,13 +970,13 @@ def _isEmbeddedBrowserObject(obj):
 				getattr(current, "name", ""), getattr(current, "description", ""),
 			) and isEmbeddedBrowserContainerRole(roleName):
 				try:
-					obj._codexEmbeddedBrowserDetected = True
+					obj._codeEmbeddedBrowserDetected = True
 				except Exception:
 					pass
 				return True
 			if isEmbeddedBrowserDocumentStructure(*ancestorRoles):
 				try:
-					obj._codexEmbeddedBrowserDetected = True
+					obj._codeEmbeddedBrowserDetected = True
 				except Exception:
 					pass
 				return True
@@ -1056,14 +984,14 @@ def _isEmbeddedBrowserObject(obj):
 		except Exception:
 			return False
 	try:
-		obj._codexEmbeddedBrowserDetected = False
+		obj._codeEmbeddedBrowserDetected = False
 	except Exception:
 		pass
 	return False
 
 
-class CodexPromptControlOverlay:
-	"""Add concise help to recognized native controls beside the Codex prompt."""
+class CodePromptControlOverlay:
+	"""Add concise help to recognized native controls beside the Code prompt."""
 
 	def _get_description(self):
 		descriptions = {
@@ -1071,17 +999,17 @@ class CodexPromptControlOverlay:
 			"model": _("Opens the model list. Press Enter or Space to open, then use arrow keys and Enter."),
 			"permissions": _("Opens permission choices. Press Enter or Space to open, then use arrow keys and Enter."),
 		}
-		nativeDescription = str(getattr(self, "_codexNativeDescription", "") or "").strip()
-		helpDescription = descriptions.get(getattr(self, "_codexPromptControlKind", ""), "")
+		nativeDescription = str(getattr(self, "_codeNativeDescription", "") or "").strip()
+		helpDescription = descriptions.get(getattr(self, "_codePromptControlKind", ""), "")
 		if nativeDescription and helpDescription.casefold() not in nativeDescription.casefold():
 			return _("{native} {help}").format(native=nativeDescription, help=helpDescription)
 		return nativeDescription or helpDescription
 
 
-class CodexPromptEditableTextOverlay:
-	"""Let ChatGPT handle Enter without NVDA inspecting its replaced prompt object."""
+class CodePromptEditableTextOverlay:
+	"""Let Claude handle Enter without NVDA inspecting its replaced prompt object."""
 
-	# ChatGPT submits Enter instead of inserting a newline, then immediately replaces
+	# Claude submits Enter instead of inserting a newline, then immediately replaces
 	# its content-editable object. NVDA's generic multiline-edit Enter script tries to
 	# inspect that stale IA2 object and can play the log-error sound even though the
 	# message was sent. Disabling only the generic newline-announcement binding leaves
@@ -1090,27 +1018,27 @@ class CodexPromptEditableTextOverlay:
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
-	scriptCategory = _("ChatGPT Desktop Access")
+	scriptCategory = _("Claude Desktop Access")
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
 		"""Enhance known controls without adding or intercepting gestures."""
 		try:
-			if not _isChatGPTObject(obj):
+			if not _isClaudeObject(obj):
 				return
 			# Known prompt-toolbar controls are much more common than embedded
 			# browser controls. Handle them without an unnecessary ancestor walk.
 			if obj.role in (Role.BUTTON, Role.COMBOBOX):
 				kind = promptControlKind(getattr(obj, "name", ""))
 				if kind:
-					obj._codexPromptControlKind = kind
-					obj._codexNativeDescription = getattr(obj, "description", "")
-					clsList.insert(0, CodexPromptControlOverlay)
+					obj._codePromptControlKind = kind
+					obj._codeNativeDescription = getattr(obj, "description", "")
+					clsList.insert(0, CodePromptControlOverlay)
 					return
 			# The prompt submits Enter rather than inserting a newline. Apply the
 			# prompt-specific overlay before EditableTextBase initializes so NVDA does
 			# not bind its generic caret_newLine script to this transient Chromium node.
-			if obj.role == Role.EDITABLETEXT and _isCodexPromptObject(obj):
-				clsList.insert(0, CodexPromptEditableTextOverlay)
+			if obj.role == Role.EDITABLETEXT and _isCodePromptObject(obj):
+				clsList.insert(0, CodePromptEditableTextOverlay)
 				return
 		except Exception:
 			return
@@ -1122,7 +1050,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		_repairConfiguration()
 		migratedGestures = _migrateApplicationGestureMappings()
 		if migratedGestures:
-			log.info("ChatGPT Desktop Access migrated %d application gesture mappings", migratedGestures)
+			log.info("Claude Desktop Access migrated %d application gesture mappings", migratedGestures)
 		self._lastMessage = ""
 		self._lastMessageAt = 0.0
 		self._lastSpeechMessage = ""
@@ -1240,43 +1168,49 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._lastBrowserScanObjects = 0
 		self._pendingOpenedChatTitle = ""
 		self._pendingOpenedChatAt = 0.0
-		self._chatHistoryCaches = {"chatgpt": (), "codex": ()}
-		self._chatHistoryCacheCurrent = {"chatgpt": False, "codex": False}
-		self._pendingChatHistorySnapshots = {"chatgpt": None, "codex": None}
-		self._pendingChatHistorySnapshotAt = {"chatgpt": 0.0, "codex": 0.0}
-		self._chatHistoryMoreAvailable = {"chatgpt": False, "codex": False}
-		self._recentHistoryShowMoreOrdinals = {"chatgpt": 0, "codex": 0}
-		self._unifiedRecentCounts = {"chatgpt": 0, "codex": 0}
-		self._chatHistoryScanGenerations = {"chatgpt": 0, "codex": 0}
-		self._activeCodexTitlesCache = ()
-		self._activeCodexTitlesSourceSignature = None
-		self._recentClassificationSummaries = {"chatgpt": None, "codex": None}
-		self._archivedChatHistoryCaches = {"chatgpt": (), "codex": ()}
-		self._archivedChatHistoryLoaded = {"chatgpt": False, "codex": False}
-		self._archivedChatIds = {"chatgpt": {}, "codex": {}}
+		self._chatHistoryCaches = {"claude": (), "code": (), "cowork": ()}
+		self._chatHistoryCacheCurrent = {"claude": False, "code": False, "cowork": False}
+		self._pendingChatHistorySnapshots = {"claude": None, "code": None, "cowork": None}
+		self._pendingChatHistorySnapshotAt = {"claude": 0.0, "code": 0.0, "cowork": 0.0}
+		self._chatHistoryMoreAvailable = {"claude": False, "code": False, "cowork": False}
+		self._recentHistoryShowMoreOrdinals = {"claude": 0, "code": 0, "cowork": 0}
+		self._unifiedRecentCounts = {"claude": 0, "code": 0, "cowork": 0}
+		self._chatHistoryScanGenerations = {"claude": 0, "code": 0, "cowork": 0}
+		self._activeCodeTitlesCache = ()
+		self._activeCodeTitlesSourceSignature = None
+		self._recentClassificationSummaries = {"claude": None, "code": None, "cowork": None}
+		self._archivedChatHistoryCaches = {"claude": (), "code": (), "cowork": ()}
+		self._archivedChatHistoryLoaded = {"claude": False, "code": False, "cowork": False}
+		self._archivedChatIds = {"claude": {}, "code": {}, "cowork": {}}
 		self._chatHistoryDialogMode = ""
 		self._voiceControlConfirmationTimer = None
 		self._pendingVoiceControlConfirmation = None
 		self._whatsNewTimer = None
 		log.info(
-			"ChatGPT Desktop Access %s loaded (verbosity=%s, fullProfile=%s, minimalProfile=%s, brailleDetail=%s, soundStyle=%s)",
+			"Claude Desktop Access %s loaded (verbosity=%s, fullProfile=%s, minimalProfile=%s, brailleDetail=%s, soundStyle=%s)",
 			ADDON_VERSION,
 			_settings()["verbosity"], _settings()["fullSpeechProfile"],
 			_settings()["minimalSpeechProfile"], _settings()["brailleDetail"], _settings()["progressSoundStyle"],
 		)
-		if CodexStatusAnnouncerSettingsPanel not in NVDASettingsDialog.categoryClasses:
-			NVDASettingsDialog.categoryClasses.append(CodexStatusAnnouncerSettingsPanel)
+		if ClaudeDesktopAccessSettingsPanel not in NVDASettingsDialog.categoryClasses:
+			NVDASettingsDialog.categoryClasses.append(ClaudeDesktopAccessSettingsPanel)
 		try:
 			inputCore.decide_executeGesture.register(self._observeInputGesture)
 			self._inputGestureObserverRegistered = True
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not observe Braille input gestures", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not observe Braille input gestures", exc_info=True)
+		self._claudeNavigationScan = None
+		self._claudeNavigationDialog = None
 		self._timer = wx.CallLater(100, self._poll)
 		self._nextPollAt = time.monotonic() + 0.1
 		self._whatsNewTimer = wx.CallLater(1500, self._showWhatsNewIfNeeded)
 
 	def terminate(self):
 		global _activePluginInstance
+		if self._claudeNavigationScan:
+			self._claudeNavigationScan.cancel()
+		if self._claudeNavigationDialog:
+			self._claudeNavigationDialog.Close()
 		self._conversationModeProbeGeneration += 1
 		self._conversationModeProbePendingGeneration = 0
 		self._conversationModeProbeActivationGeneration = 0
@@ -1284,7 +1218,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			try:
 				inputCore.decide_executeGesture.unregister(self._observeInputGesture)
 			except Exception:
-				log.debugWarning("ChatGPT Desktop Access could not remove its Braille input observer", exc_info=True)
+				log.debugWarning("Claude Desktop Access could not remove its Braille input observer", exc_info=True)
 			self._inputGestureObserverRegistered = False
 		if self._timer:
 			self._timer.Stop()
@@ -1340,7 +1274,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._browserSavedLocations.clear()
 		self._pendingChatHistoryAction = None
 		try:
-			NVDASettingsDialog.categoryClasses.remove(CodexStatusAnnouncerSettingsPanel)
+			NVDASettingsDialog.categoryClasses.remove(ClaudeDesktopAccessSettingsPanel)
 		except ValueError:
 			pass
 		if _activePluginInstance is self:
@@ -1368,7 +1302,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if conf["lastShownVersion"] == ADDON_VERSION:
 			return
 		_showBrowseableMessageAtTop(
-			CURRENT_RELEASE_NOTES, _("ChatGPT Desktop Access — what's new"),
+			CURRENT_RELEASE_NOTES, _("Claude Desktop Access — what's new"),
 		)
 		conf["lastShownVersion"] = ADDON_VERSION
 		conf["welcomeShown"] = True
@@ -1436,57 +1370,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		)
 
 	def _currentChatMessages(self):
-		"""Return the newest ten real conversation turns from the current virtual buffer."""
 		focus = api.getFocusObject()
-		if not _isChatGPTObject(focus):
+		if not _isClaudeObject(focus):
 			return ()
 		self._rememberBuffer(focus)
 		if not self._buffer:
 			return ()
 		info = self._buffer.makeTextInfo(textInfos.POSITION_ALL)
-		def tokens():
-			ignoredDepth = 0
-			interactiveRoles = {
-				Role.BUTTON, Role.EDITABLETEXT, Role.COMBOBOX, Role.LIST, Role.TREEVIEW,
-				Role.CHECKBOX, Role.RADIOBUTTON,
-			}
-			for item in info.getTextWithFields():
-				if isinstance(item, str):
-					if ignoredDepth:
-						continue
-					text = " ".join(item.split())
-					marker = text.casefold()
-					if marker == "you said:":
-						yield "speaker", "user"
-					elif marker == "chatgpt said:":
-						yield "speaker", "assistant"
-					elif marker != "response complete":
-						yield "text", item
-					continue
-				command = getattr(item, "command", "")
-				field = getattr(item, "field", {}) or {}
-				if command == "controlStart":
-					name = " ".join(str(field.get("name", "") or "").split()).casefold()
-					if not ignoredDepth and name == "you said:":
-						yield "speaker", "user"
-					elif not ignoredDepth and name == "chatgpt said:":
-						yield "speaker", "assistant"
-					role = field.get("role")
-					if ignoredDepth:
-						ignoredDepth += 1
-					elif role in interactiveRoles:
-						ignoredDepth = 1
-						if role == Role.EDITABLETEXT:
-							yield "end", ""
-				elif command == "controlEnd" and ignoredDepth:
-					ignoredDepth -= 1
-		return chatMessagesFromTokens(tokens(), 10)
+		return chatMessagesFromTokens(messageTokens(info.getTextWithFields()), 10)
 
 	def _readRecentChatMessage(self, position):
 		try:
 			messages = self._currentChatMessages()
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not read recent chat messages", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not read recent chat messages", exc_info=True)
 			ui.message(_("Recent chat messages could not be read"))
 			return
 		if not messages:
@@ -1496,7 +1393,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			ui.message(_("Only {count} recent chat messages are available").format(count=len(messages)))
 			return
 		speaker, text = messages[-position]
-		speakerLabel = _("You") if speaker == "user" else _("ChatGPT")
+		speakerLabel = _("You") if speaker == "user" else _("Claude")
 		ui.message(_("Chat message {position}, {speaker}: {text}").format(
 			position=position, speaker=speakerLabel, text=text,
 		))
@@ -1504,17 +1401,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _diagnosticReport(self):
 		conf = _settings()
 		return _(
-			"Version: {version}\nVerbosity: {verbosity}\nFull speech profile: {profile}\nMinimal speech profile: {minimalProfile}\nBraille detail: {brailleDetail}\nSound style: {style}\nClick volume: {volume}\n"
+			"Beta: live Claude validation pending\nNVDA: {nvdaVersion}\nVersion: {version}\nVerbosity: {verbosity}\nFull speech profile: {profile}\nMinimal speech profile: {minimalProfile}\nBraille detail: {brailleDetail}\nSound style: {style}\nClick volume: {volume}\n"
 			"Monitoring attached: {attached}\nBackground state: {state}\nPaused: {paused}\n"
 			"Active category: {category}\nLast state reason: {reason}\nLast submission signal: {signal}\n"
-			"Codex document switches: {switches}\nFull buffer inspections: {inspections}\nLightweight ticks without inspection: {skipped}\nPrompt typing protection: {typingProtection}\nPreserved Braille compositions: {braillePreserved}\nSuppressed disruptive conversation updates: {conversationUpdates}\nLast inspection error: {error}\n"
+			"Claude document switches: {switches}\nFull buffer inspections: {inspections}\nLightweight ticks without inspection: {skipped}\nPrompt typing protection: {typingProtection}\nPreserved Braille compositions: {braillePreserved}\nSuppressed disruptive conversation updates: {conversationUpdates}\nLast inspection error: {error}\n"
 			"Embedded browser focus detected: {browserFocused}\nNative browser interaction: yes\n"
 			"Embedded browser loading announcements: {browserProgress}\n"
 			"Speech history entries: {speechHistory}\nBraille history entries: {brailleHistory}\nRecent chats cached: {recent}\nArchived chats cached: {archived}\n"
 			"Configuration repairs this session: {repairs}\nSupported applications: {apps}\n"
 			"Speech: {speech}\nBraille: {braille}\nStable conversation reading: {protectBraille}\nUrgent speech interruption: {interrupt}\nProgress sounds: {sounds}\nCategory output routing:\n{routing}"
 		).format(
-			version=ADDON_VERSION,
+			version=ADDON_VERSION, nvdaVersion=getattr(versionInfo, "version", "unknown"),
 			verbosity=conf["verbosity"], profile=conf["fullSpeechProfile"], minimalProfile=conf["minimalSpeechProfile"],
 			brailleDetail=conf["brailleDetail"],
 			style=conf["progressSoundStyle"], volume=conf["clickVolume"],
@@ -1554,87 +1451,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				yield current
 
 	def _queueConversationModeProbe(self, reason, openSelector=False):
-		"""Resolve or open the exact header selector off NVDA's main thread."""
-		if self._conversationModeProbePendingGeneration or not self._conversationWindowHandle:
-			return False
-		try:
-			import UIAHandler
-			handler = UIAHandler.handler
-			client = handler.clientObject
-		except Exception:
-			return False
-		self._conversationModeProbeGeneration += 1
-		generation = self._conversationModeProbeGeneration
-		self._conversationModeProbePendingGeneration = generation
-		if openSelector:
-			self._conversationModeProbeActivationGeneration = generation
-		windowHandle = self._conversationWindowHandle
-		self._lastConversationModeProbeAt = time.monotonic()
-
-		def probe():
-			mode = ""
-			selectorOpened = False
-			try:
-				root = client.ElementFromHandleBuildCache(windowHandle, handler.baseCacheRequest)
-				nameConditions = [
-					client.createPropertyCondition(UIAHandler.UIA_NamePropertyId, label)
-					for label in (
-						"Switch mode, current mode: ChatGPT",
-						"Switch mode, current mode: Codex",
-					)
-				]
-				nameCondition = client.createOrConditionFromArray(nameConditions)
-				buttonCondition = client.createPropertyCondition(
-					UIAHandler.UIA_ControlTypePropertyId, UIAHandler.UIA_ButtonControlTypeId,
-				)
-				condition = client.createAndConditionFromArray([buttonCondition, nameCondition])
-				control = root.FindFirst(UIAHandler.TreeScope_Descendants, condition) if root else None
-				if control:
-					mode = conversationModeFromSwitchLabel(control.CurrentName)
-				if openSelector and control and mode:
-					pattern = control.GetCurrentPattern(UIAHandler.UIA_ExpandCollapsePatternId)
-					expandPattern = (
-						pattern.QueryInterface(UIAHandler.IUIAutomationExpandCollapsePattern)
-						if pattern else None
-					)
-					if expandPattern:
-						try:
-							expandState = int(expandPattern.CurrentExpandCollapseState)
-						except Exception:
-							expandState = 0
-						if expandState in (1, 2):
-							# An already-open popup already owns keyboard focus. Do not move
-							# focus back to its header button.
-							selectorOpened = True
-						else:
-							control.SetFocus()
-							expandPattern.Expand()
-							selectorOpened = True
-						log.debug(
-							"ChatGPT Desktop Access opened the native mode selector (current=%s)",
-							mode,
-						)
-			except Exception:
-				log.debugWarning(
-					"ChatGPT Desktop Access could not query the mode-switch control",
-					exc_info=True,
-				)
-			finally:
-				queueHandler.queueFunction(
-					queueHandler.eventQueue,
-					self._completeConversationModeProbe,
-					generation, windowHandle, mode, reason, openSelector, selectorOpened,
-				)
-
-		try:
-			handler.MTAThreadQueue.put_nowait(probe)
-		except Exception:
-			self._conversationModeProbePendingGeneration = 0
-			if self._conversationModeProbeActivationGeneration == generation:
-				self._conversationModeProbeActivationGeneration = 0
-			log.debugWarning("ChatGPT Desktop Access could not schedule mode verification", exc_info=True)
-			return False
-		return True
+		"""Claude uses native tabs; do not poll a ChatGPT-specific UIA selector."""
+		return False
 
 	def _completeConversationModeProbe(
 		self, generation, windowHandle, mode, reason,
@@ -1652,18 +1470,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if selectorRequested:
 			if not mode:
 				self._announceConversationModeNotice(
-					_("The ChatGPT and Codex mode switch is not available in this view"),
+					_("The Claude Chat, Cowork and Code mode switch is not available in this view"),
 				)
-				log.debugWarning("ChatGPT Desktop Access could not find the mode-switch control")
+				log.debugWarning("Claude Desktop Access could not find the mode-switch control")
 				return
 			if not selectorOpened:
 				self._announceConversationModeNotice(
-					_("The ChatGPT and Codex mode menu could not be opened"),
+					_("The Claude Chat, Cowork and Code mode menu could not be opened"),
 				)
-				log.debugWarning("ChatGPT Desktop Access could not expand the mode-switch control")
+				log.debugWarning("Claude Desktop Access could not expand the mode-switch control")
 				return
 			self._setConversationMode(mode, reason, authoritative=True)
-			modeName = _("Codex") if mode == "codex" else _("ChatGPT")
+			modeName = _("Code") if mode == "code" else _("Claude")
 			self._announceConversationModeNotice(
 				_("{mode} mode. Mode selector open. Use Up or Down Arrow and Enter to choose a mode.").format(
 					mode=modeName,
@@ -1671,7 +1489,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			)
 			return
 		if not mode:
-			log.debug("ChatGPT Desktop Access mode-switch control was not available during verification")
+			log.debug("Claude Desktop Access mode-switch control was not available during verification")
 			return
 		if self._setConversationMode(mode, reason, authoritative=True):
 			self._schedulePoll(delay=50, requestInspection=True)
@@ -1683,40 +1501,64 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			message, "other", "other", brailleMessage=message, protectBrailleReading=False,
 		)
 
-	def _openConversationModeSelector(self):
-		"""Focus and expand ChatGPT's native mode control for manual selection."""
+	def _openClaudeNavigator(self):
 		focus = api.getFocusObject()
-		if not _isChatGPTObject(focus):
-			self._announceConversationModeNotice(_("Move to ChatGPT before switching modes"))
+		if not _isClaudeObject(focus):
+			ui.message(_("Move to Claude before opening navigation"))
 			return
 		self._rememberBuffer(focus)
-		if not self._conversationWindowHandle:
-			self._announceConversationModeNotice(
-				_("The ChatGPT and Codex mode switch is not available in this view"),
-			)
+		root = getattr(self._buffer, "rootNVDAObject", None)
+		if root is None:
+			ui.message(_("Claude has not exposed a conversation document. Try browse mode, then try again."))
 			return
-		# A routine verification may already be queued. Invalidate only its result so
-		# this user-requested action never waits behind stale state on NVDA's main thread.
-		if self._conversationModeProbePendingGeneration:
-			self._conversationModeProbeGeneration += 1
-			self._conversationModeProbePendingGeneration = 0
-			self._conversationModeProbeActivationGeneration = 0
-		if not self._queueConversationModeProbe("requested mode selector", openSelector=True):
-			self._announceConversationModeNotice(_("The ChatGPT and Codex mode menu could not be opened"))
+		if self._claudeNavigationScan:
+			self._claudeNavigationScan.cancel()
+		window = self._conversationWindowHandle
+		def valid():
+			return _activePluginInstance is self and _isClaudeObject(api.getFocusObject()) and window == self._conversationWindowHandle
+		def completed(items, truncated):
+			self._claudeNavigationScan = None
+			if not valid():
+				return
+			if not items:
+				ui.message(_("No recognized Claude navigation controls were exposed. Use native Tab navigation and include this result in beta feedback."))
+				return
+			def closed():
+				self._claudeNavigationDialog = None
+				gui.mainFrame.postPopup()
+			def action(obj, kind):
+				if not valid() or not _isClaudeObject(obj) or _isDefunctObject(obj):
+					ui.message(_("The Claude view changed. Reopen navigation."))
+					return
+				try:
+					obj.setFocus()
+					if kind == "activate":
+						obj.doAction()
+					else:
+						api.setNavigatorObject(obj)
+				except Exception:
+					ui.message(_("This Claude control could not be reached. Try native Tab navigation."))
+			gui.mainFrame.prePopup()
+			try:
+				self._claudeNavigationDialog = ClaudeNavigator(items, action, closed, truncated)
+				self._claudeNavigationDialog.Show()
+			except Exception:
+				gui.mainFrame.postPopup()
+				raise
+		ui.message(_("Scanning Claude navigation"))
+		self._claudeNavigationScan = NavigationScan(root, valid, completed)
+		self._claudeNavigationScan.step()
+
+	def _openConversationModeSelector(self):
+		self._openClaudeNavigator()
 
 	def _observeConversationModeControl(self, obj, reason):
-		"""Apply an exact mode-switch accessibility event without walking ancestors."""
-		if getattr(obj, "role", None) != Role.BUTTON:
+		if not _isClaudeObject(obj):
 			return False
-		mode = conversationModeFromSwitchLabel(getattr(obj, "name", ""))
-		if not mode:
-			return False
-		if not self._eventBelongsToRetainedConversationBuffer(obj):
-			# Chromium can emit delayed state/show events for the selector after its
-			# window has closed. Never let that orphaned button recreate a session.
-			log.debug("ChatGPT Desktop Access ignored a stale mode-control event")
-			return False
-		return self._setConversationMode(mode, reason, authoritative=True)
+		mode = modeFromTab(getattr(obj, "name", ""), getattr(obj, "role", None) == Role.TAB, State.SELECTED in getattr(obj, "states", set()))
+		if mode and self._eventBelongsToRetainedConversationBuffer(obj):
+			return self._setConversationMode(mode, reason, authoritative=True)
+		return False
 
 	def _eventBelongsToRetainedConversationBuffer(self, obj):
 		"""Require an event to use the exact retained buffer, not stale ancestry."""
@@ -1738,14 +1580,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		return False
 
 	def _eventUsesConversationBuffer(self, obj):
-		"""Exclude embedded-browser and unrelated ChatGPT events from conversation scans."""
-		if not _isChatGPTObject(obj):
+		"""Exclude embedded-browser and unrelated Claude events from conversation scans."""
+		if not _isClaudeObject(obj):
 			return False
 		# A live region can retain a newly rebuilt Chromium tree interceptor while
 		# ``self._buffer`` still points to the preceding instance. Document ancestry
 		# is authoritative in that interval. Nested browser documents have no
 		# conversation mode and therefore continue to be excluded below.
-		if _isConversationObject(obj) or _isCodexPromptObject(obj):
+		if _isConversationObject(obj) or _isCodePromptObject(obj):
 			return True
 		if self._buffer is None:
 			return False
@@ -1762,7 +1604,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				current = getattr(current, "parent", None)
 			except Exception:
 				return False
-		return _isConversationObject(obj) or _isCodexPromptObject(obj)
+		return _isConversationObject(obj) or _isCodePromptObject(obj)
 
 	def _conversationBrowseModeActive(self):
 		"""Return the mode of the conversation being read, not a transient event buffer."""
@@ -1772,11 +1614,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return False
 
 	def _conversationWindowHandleFrom(self, obj, buffer):
-		"""Return the outer ChatGPT window, not Chromium's replaceable renderer child."""
+		"""Return the outer Claude window, not Chromium's replaceable renderer child."""
 		root = getattr(buffer, "rootNVDAObject", None)
 		# The event object can belong to a temporary mode-menu popup. Prefer the
 		# conversation document root so closing the main window cannot leave the
-		# popup handle looking like a new ChatGPT session.
+		# popup handle looking like a new Claude session.
 		for candidate in (root, obj):
 			try:
 				handle = int(getattr(candidate, "windowHandle", 0) or 0)
@@ -1791,7 +1633,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		return 0
 
 	def _conversationWindowIsAvailable(self, handle):
-		"""Conservatively accept only a living, visible outer ChatGPT window."""
+		"""Conservatively accept only a living, visible outer Claude window."""
 		if not handle:
 			return False
 		try:
@@ -1802,7 +1644,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return False
 
 	def _detachConversationIfWindowClosed(self, now):
-		"""Stop retained activity after the real ChatGPT window closes or hides to the tray."""
+		"""Stop retained activity after the real Claude window closes or hides to the tray."""
 		handle = self._conversationWindowHandle
 		if not handle:
 			self._conversationWindowUnavailableAt = 0.0
@@ -1836,13 +1678,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._conversationModeProbeGeneration += 1
 		self._conversationModeProbePendingGeneration = 0
 		self._conversationModeProbeActivationGeneration = 0
-		self._chatHistoryCacheCurrent = {"chatgpt": False, "codex": False}
-		self._pendingChatHistorySnapshots = {"chatgpt": None, "codex": None}
-		self._pendingChatHistorySnapshotAt = {"chatgpt": 0.0, "codex": 0.0}
-		self._chatHistoryMoreAvailable = {"chatgpt": False, "codex": False}
-		self._recentHistoryShowMoreOrdinals = {"chatgpt": 0, "codex": 0}
-		self._unifiedRecentCounts = {"chatgpt": 0, "codex": 0}
-		self._chatHistoryScanGenerations = {"chatgpt": 0, "codex": 0}
+		self._chatHistoryCacheCurrent = {"claude": False, "code": False, "cowork": False}
+		self._pendingChatHistorySnapshots = {"claude": None, "code": None, "cowork": None}
+		self._pendingChatHistorySnapshotAt = {"claude": 0.0, "code": 0.0, "cowork": 0.0}
+		self._chatHistoryMoreAvailable = {"claude": False, "code": False, "cowork": False}
+		self._recentHistoryShowMoreOrdinals = {"claude": 0, "code": 0, "cowork": 0}
+		self._unifiedRecentCounts = {"claude": 0, "code": 0, "cowork": 0}
+		self._chatHistoryScanGenerations = {"claude": 0, "code": 0, "cowork": 0}
 		self._cancelChatHistoryExpansion()
 		self._monitoringAnnounced = False
 		self._cancelEmbeddedBrowserScan()
@@ -1859,14 +1701,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._embeddedBrowserAddress = ""
 		self._resetEmbeddedBrowserProgress()
 		self._browserSavedLocations.clear()
-		self._resetTaskState("ChatGPT window closed")
-		log.info("ChatGPT Desktop Access detached after the ChatGPT window closed")
+		self._resetTaskState("Claude window closed")
+		log.info("Claude Desktop Access detached after the Claude window closed")
 		return True
 
 	def _setConversationMode(self, mode, reason, authoritative=False):
-		"""Update the active mode without letting ChatGPT's host document override its switch."""
+		"""Update the active mode without letting Claude's host document override its switch."""
 		mode = str(mode or "").casefold()
-		if mode not in ("chatgpt", "codex"):
+		if mode not in ("claude", "code", "cowork"):
 			return False
 		if authoritative:
 			# An exact accessibility event is newer than any worker query already in
@@ -1900,7 +1742,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._unifiedRecentCounts[mode] = 0
 		self._chatHistoryScanGenerations[mode] = 0
 		log.info(
-			"ChatGPT Desktop Access conversation mode changed from %s to %s (%s)",
+			"Claude Desktop Access conversation mode changed from %s to %s (%s)",
 			previousMode or "unknown", mode, reason,
 		)
 		return True
@@ -1910,40 +1752,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		mode = mode or self._conversationMode
 		return self._chatHistoryCaches.get(mode, ())
 
-	def _activeCodexThreadTitles(self):
-		"""Read the local Codex index only after its source metadata changes."""
-		codexRoot = Path(os.environ.get("CODEX_HOME") or (Path.home() / ".codex"))
-		sourceSignature = codexHistorySourceSignature(codexRoot)
-		if sourceSignature == self._activeCodexTitlesSourceSignature:
-			return self._activeCodexTitlesCache
-		try:
-			activeCodexTitles = tuple(loadActiveCodexThreadTitles(codexRoot))
-		except Exception:
-			log.debugWarning(
-				"ChatGPT Desktop Access could not read active Codex chat metadata",
-				exc_info=True,
-			)
-			activeCodexTitles = ()
-		self._activeCodexTitlesCache = activeCodexTitles
-		self._activeCodexTitlesSourceSignature = sourceSignature
-		log.info(
-			"ChatGPT Desktop Access refreshed %d active Codex history titles after source metadata changed",
-			len(activeCodexTitles),
-		)
-		return activeCodexTitles
+	def _activeCodeThreadTitles(self):
+		"""Claude history comes from exposed controls, never unrelated local indexes."""
+		return ()
 
 	def _modeSpecificRecentChatTitles(self, mode, unifiedTitles):
-		"""Filter the app's unified Recents region using cached local Codex metadata."""
-		activeCodexTitles = self._activeCodexThreadTitles()
-		filtered = modeSpecificRecentChatTitles(mode, unifiedTitles, activeCodexTitles)
-		summary = (len(unifiedTitles), len(filtered), len(unifiedTitles) - len(filtered))
-		if self._recentClassificationSummaries.get(mode) != summary:
-			self._recentClassificationSummaries[mode] = summary
-			log.info(
-				"ChatGPT Desktop Access classified %d unified recent entries for %s: kept %d, excluded %d",
-				summary[0], mode, summary[1], summary[2],
-			)
-		return filtered
+		return tuple(dict.fromkeys(unifiedTitles))
 
 	def _cacheChatHistoryScan(self, mode, recentTitles=None, archivedTitles=None):
 		"""Store sidebar results without allowing one conversation mode to replace another."""
@@ -1956,10 +1770,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._chatHistoryCaches[mode] = recentTitles
 			self._chatHistoryCacheCurrent[mode] = True
 			if changed or not wasCurrent:
-				otherMode = "codex" if mode == "chatgpt" else "chatgpt"
+				otherMode = "code" if mode == "claude" else "claude"
 				overlap = len(set(recentTitles).intersection(self._chatHistoryCaches[otherMode]))
 				log.info(
-					"ChatGPT Desktop Access cached %d settled recent %s chats; overlap with %s: %d",
+					"Claude Desktop Access cached %d settled recent %s chats; overlap with %s: %d",
 					len(recentTitles), mode, otherMode, overlap,
 				)
 		if archivedTitles is not None:
@@ -1990,7 +1804,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return True
 		if not self._chatHistoryMoreAvailable.get(mode, False):
 			return False
-		agentName = _("ChatGPT") if mode == "chatgpt" else _("Codex")
+		agentName = modeDisplayName(mode)
 		self._pendingChatHistoryExpansion = {
 			"mode": mode,
 			"pages": 0,
@@ -2008,7 +1822,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		state = self._pendingChatHistoryExpansion or {}
 		pages = state.get("pages", 0)
 		self._cancelChatHistoryExpansion()
-		agentName = _("ChatGPT") if mode == "chatgpt" else _("Codex")
+		agentName = modeDisplayName(mode)
 		count = len(self._chatHistoryTitles(mode))
 		moreAvailable = self._chatHistoryMoreAvailable.get(mode, False)
 		if failed:
@@ -2024,11 +1838,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				count=count, agent=agentName,
 			))
 		log.info(
-			"ChatGPT Desktop Access finished %s recent-history expansion after %d pages; "
+			"Claude Desktop Access finished %s recent-history expansion after %d pages; "
 			"kept %d mode-specific chats; more available: %s; failed: %s",
 			mode, pages, count, moreAvailable, bool(failed),
 		)
-		if mode == self._conversationMode and _isChatGPTObject(api.getFocusObject()):
+		if mode == self._conversationMode and _isClaudeObject(api.getFocusObject()):
 			self._showChatHistoryDialog(mode)
 
 	def _continueChatHistoryExpansion(self):
@@ -2038,9 +1852,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if not state:
 			return
 		mode = state["mode"]
-		if mode != self._conversationMode or self._buffer is None or not _isChatGPTObject(api.getFocusObject()):
+		if mode != self._conversationMode or self._buffer is None or not _isClaudeObject(api.getFocusObject()):
 			self._cancelChatHistoryExpansion()
-			ui.message(_("Recent chat history loading stopped because ChatGPT is no longer focused"))
+			ui.message(_("Recent chat history loading stopped because Claude is no longer focused"))
 			return
 		currentCount = self._unifiedRecentCounts.get(mode, 0)
 		currentGeneration = self._chatHistoryScanGenerations.get(mode, 0)
@@ -2078,7 +1892,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				raise LookupError("Recents Show more button not found")
 			button.doAction()
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not activate Recents Show more", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not activate Recents Show more", exc_info=True)
 			self._finishChatHistoryExpansion(mode, failed=True)
 			return
 		state["pages"] += 1
@@ -2094,47 +1908,28 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._bufferDirty = True
 		self._schedulePoll(delay=150, requestInspection=True)
 		log.info(
-			"ChatGPT Desktop Access requested recent-history page %d for %s; "
+			"Claude Desktop Access requested recent-history page %d for %s; "
 			"%d unified entries were visible",
 			state["pages"], mode, currentCount,
 		)
 		self._scheduleChatHistoryExpansion(CHAT_HISTORY_EXPANSION_DELAY_MILLISECONDS)
 
 	def _loadArchivedChatHistory(self, mode=None):
-		"""Load archived titles from the source belonging to one conversation mode."""
 		mode = mode or self._conversationMode
-		if mode not in self._archivedChatHistoryCaches:
-			return (), False
-		if mode == "chatgpt":
-			return (
-				self._archivedChatHistoryCaches[mode],
-				self._archivedChatHistoryLoaded[mode],
-			)
-		codexRoot = Path(os.environ.get("CODEX_HOME") or (Path.home() / ".codex"))
-		try:
-			entries = uniqueThreadLabels(loadArchivedThreads(codexRoot))
-			self._archivedChatHistoryCaches[mode] = tuple(title for threadId, title in entries)
-			self._archivedChatIds[mode] = {title: threadId for threadId, title in entries}
-			self._archivedChatHistoryLoaded[mode] = True
-			log.info("ChatGPT Desktop Access loaded %d archived chats from the local index", len(entries))
-			return self._archivedChatHistoryCaches[mode], True
-		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not read archived chat metadata", exc_info=True)
-			return self._archivedChatHistoryCaches[mode], False
+		return (self._archivedChatHistoryCaches.get(mode, ()), self._archivedChatHistoryLoaded.get(mode, False))
 
 	def _chatButtonObject(self, title):
-		"""Resolve an exact accessible sidebar title to its button."""
 		position = self._buffer.makeTextInfo(textInfos.POSITION_FIRST)
 		if not position.find(title, reverse=False, caseSensitive=True):
 			return None
 		obj = getattr(position, "NVDAObjectAtStart", None)
 		for _ in range(8):
-			if obj is None or getattr(obj, "role", None) == Role.BUTTON:
+			if obj is None:
 				break
+			if getattr(obj, "role", None) in (Role.BUTTON, Role.LINK):
+				return obj if chatTitleMatches(title, getattr(obj, "name", ""), titleFoundInsideButton=True) else None
 			obj = getattr(obj, "parent", None)
-		if getattr(obj, "role", None) != Role.BUTTON:
-			return None
-		return obj if chatTitleMatches(title, getattr(obj, "name", ""), titleFoundInsideButton=True) else None
+		return None
 
 	def _exactNamedButtonObject(self, name, ordinal=1):
 		"""Resolve one exact button occurrence without walking Chromium's full object tree."""
@@ -2215,7 +2010,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			kind = voiceControlKind(getattr(obj, "name", ""))
 			roleName = _roleName(obj)
 			if kind and roleName in ("button", "togglebutton"):
-				# ChatGPT currently exposes Mute microphone as a toggle button.
+				# Claude currently exposes Mute microphone as a toggle button.
 				# Some builds retain that name when pressed instead of renaming it
 				# Unmute microphone, so the pressed state determines the next action.
 				if kind == "mute" and roleName == "togglebutton":
@@ -2293,10 +2088,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"unmute": _("Microphone unmuted"),
 			}
 			ui.message(messages[actionKind])
-			log.info("ChatGPT Desktop Access confirmed ChatGPT voice control: %s", actionKind)
+			log.info("Claude Desktop Access confirmed Claude voice control: %s", actionKind)
 			return
 		attempt += 1
-		if attempt < VOICE_CONTROL_CONFIRMATION_ATTEMPTS and _isChatGPTObject(api.getFocusObject()):
+		if attempt < VOICE_CONTROL_CONFIRMATION_ATTEMPTS and _isClaudeObject(api.getFocusObject()):
 			self._pendingVoiceControlConfirmation = (actionKind, attempt)
 			self._voiceControlConfirmationTimer = wx.CallLater(
 				VOICE_CONTROL_CONFIRMATION_DELAY_MS, self._confirmVoiceControlAction,
@@ -2309,7 +2104,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			else _("Voice mode state could not be confirmed")
 		)
 		ui.message(failure)
-		log.debugWarning("ChatGPT Desktop Access could not confirm ChatGPT voice control: %s", actionKind)
+		log.debugWarning("Claude Desktop Access could not confirm Claude voice control: %s", actionKind)
 
 	def _activateVoiceControl(self, wantedKinds):
 		"""Activate an exact native control and verify the resulting state."""
@@ -2320,7 +2115,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				if set(wantedKinds) == {"mute", "unmute"}:
 					ui.message(_("Microphone control is unavailable. Start voice mode first"))
 				else:
-					ui.message(_("Voice mode control is not available in this ChatGPT view"))
+					ui.message(_("Voice mode control is not available in this Claude view"))
 				return
 			control.doAction()
 			messages = {
@@ -2331,10 +2126,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			}
 			ui.message(messages[kind])
 			self._scheduleVoiceControlConfirmation(kind)
-			log.info("ChatGPT Desktop Access requested ChatGPT voice control: %s", kind)
+			log.info("Claude Desktop Access requested Claude voice control: %s", kind)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not activate a ChatGPT voice control", exc_info=True)
-			ui.message(_("The ChatGPT voice control could not be activated"))
+			log.debugWarning("Claude Desktop Access could not activate a Claude voice control", exc_info=True)
+			ui.message(_("The Claude voice control could not be activated"))
 
 	def _startDirectChatAction(self, title, action):
 		if self._chatActionRetryTimer:
@@ -2368,19 +2163,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._pendingDirectChatAction = None
 				if action == "focusActions":
 					focusedAction = " ".join(str(getattr(actionButton, "name", "") or "").split())
-					log.info("ChatGPT Desktop Access focused selected chat action: %s", focusedAction)
+					log.info("Claude Desktop Access focused selected chat action: %s", focusedAction)
 				else:
 					ui.message(_("Chat action opened"))
-					log.info("ChatGPT Desktop Access activated the selected chat action: %s", action)
+					log.info("Claude Desktop Access activated the selected chat action: %s", action)
 				return
 		except Exception:
 			if attempt >= 11:
 				self._pendingDirectChatAction = None
 				if action == "focusActions":
-					log.debugWarning("ChatGPT Desktop Access could not focus Pin, Unpin, or Archive", exc_info=True)
+					log.debugWarning("Claude Desktop Access could not focus Pin, Unpin, or Archive", exc_info=True)
 					ui.message(_("The selected chat's Pin or Archive button could not be focused"))
 				else:
-					log.debugWarning("ChatGPT Desktop Access could not activate the selected chat action", exc_info=True)
+					log.debugWarning("Claude Desktop Access could not activate the selected chat action", exc_info=True)
 					ui.message(_("The selected chat action could not be opened"))
 				return
 		# A missing action control is a normal transient state while Chromium updates
@@ -2389,10 +2184,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if attempt >= 11:
 			self._pendingDirectChatAction = None
 			if action == "focusActions":
-				log.debugWarning("ChatGPT Desktop Access could not find Pin, Unpin, or Archive after retrying")
+				log.debugWarning("Claude Desktop Access could not find Pin, Unpin, or Archive after retrying")
 				ui.message(_("The selected chat's Pin or Archive button could not be focused"))
 			else:
-				log.debugWarning("ChatGPT Desktop Access could not find the selected chat action after retrying")
+				log.debugWarning("Claude Desktop Access could not find the selected chat action after retrying")
 				ui.message(_("The selected chat action could not be opened"))
 			return
 		self._pendingDirectChatAction = (title, action, attempt + 1)
@@ -2405,7 +2200,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._unarchiveFocusTimer = wx.CallLater(100, self._focusUnarchiveButton)
 
 	def _focusUnarchiveButton(self):
-		"""Focus Codex's confirmation after its new document becomes accessible."""
+		"""Focus Code's confirmation after its new document becomes accessible."""
 		self._unarchiveFocusTimer = None
 		self._unarchiveFocusAttempts += 1
 		try:
@@ -2421,18 +2216,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						str(getattr(obj, "name", "") or "").casefold().split()
 					) == "unarchive and open":
 						obj.setFocus()
-						log.info("ChatGPT Desktop Access focused the Unarchive and open button")
+						log.info("Claude Desktop Access focused the Unarchive and open button")
 						return
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not yet focus the unarchive confirmation", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not yet focus the unarchive confirmation", exc_info=True)
 		if self._unarchiveFocusAttempts < 25:
 			self._unarchiveFocusTimer = wx.CallLater(150, self._focusUnarchiveButton)
 		else:
 			ui.message(_("Unarchive confirmation opened; move to the Unarchive and open button"))
 
 	def _usageLimitTextFromObject(self, obj):
-		"""Collect only a small ChatGPT alert subtree when its own text is incomplete."""
-		if not _isChatGPTObject(obj):
+		"""Collect only a small Claude alert subtree when its own text is incomplete."""
+		if not _isClaudeObject(obj):
 			return ""
 		parts = []
 		seenText = set()
@@ -2505,7 +2300,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def _announceUsageLimit(self, obj, eventText=""):
 		"""End local activity and announce an exhausted usage allowance once."""
-		if not _isChatGPTObject(obj):
+		if not _isClaudeObject(obj):
 			return False
 		objectRole = _roleName(obj)
 		if objectRole == "editabletext":
@@ -2522,7 +2317,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			marker in lower for marker in ("usage", "limit", "credit", "upgrade", "try again")
 		) or objectRole in ("alert", "dialog") else False
 		if not notice and not inPopup:
-			# Most events in the ChatGPT window are unrelated and can return after
+			# Most events in the Claude window are unrelated and can return after
 			# reading only the local accessible name.
 			if not any(
 				marker in lower for marker in ("usage", "limit", "credit", "upgrade", "try again")
@@ -2535,7 +2330,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if not notice:
 			return False
 		# Outside a semantically exposed pop-over, require the distinctive full
-		# ChatGPT error. This prevents a user's prompt or an assistant response
+		# Claude error. This prevents a user's prompt or an assistant response
 		# discussing usage limits from being mistaken for the account state.
 		lower = text.casefold()
 		detailCount = sum((
@@ -2544,7 +2339,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			bool("try again" in lower or "next reset" in lower),
 		))
 		if not inPopup and not (
-			"chatgpt.com/codex/settings/usage" in lower or detailCount >= 2
+			"claude.ai/settings/usage" in lower or detailCount >= 2
 		):
 			return False
 		return self._applyUsageLimitNotice(notice)
@@ -2572,7 +2367,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._speakOnce(
 			notice, "attention", "attention", priority="urgent", brailleMessage=notice,
 		)
-		log.info("ChatGPT Desktop Access detected a terminal usage-limit notice")
+		log.info("Claude Desktop Access detected a terminal usage-limit notice")
 		return True
 
 	def _popupDialogFromObject(self, obj):
@@ -2583,12 +2378,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		return None
 
 	def _schedulePopupDialogFocus(self, obj):
-		if not _isChatGPTObject(obj):
+		if not _isClaudeObject(obj):
 			return
 		try:
 			dialog = self._popupDialogFromObject(obj)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not inspect a possible ChatGPT pop-up", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not inspect a possible Claude pop-up", exc_info=True)
 			return
 		if dialog is None or dialog is self._pendingPopupDialog or dialog is self._lastFocusedPopupDialog:
 			return
@@ -2598,7 +2393,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._popupFocusTimer = wx.CallLater(50, self._focusPopupDialog)
 
 	def _focusPopupDialog(self):
-		"""Move focus into a newly displayed ChatGPT dialog without activating a control."""
+		"""Move focus into a newly displayed Claude dialog without activating a control."""
 		self._popupFocusTimer = None
 		dialog, self._pendingPopupDialog = self._pendingPopupDialog, None
 		if dialog is None:
@@ -2645,19 +2440,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				try:
 					obj.setFocus()
 					self._lastFocusedPopupDialog = dialog
-					log.info("ChatGPT Desktop Access focused a ChatGPT pop-up dialog control")
+					log.info("Claude Desktop Access focused a Claude pop-up dialog control")
 					return
 				except Exception:
 					continue
 			dialog.setFocus()
 			self._lastFocusedPopupDialog = dialog
-			log.info("ChatGPT Desktop Access focused a ChatGPT pop-up dialog")
+			log.info("Claude Desktop Access focused a Claude pop-up dialog")
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not focus the ChatGPT pop-up dialog", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not focus the Claude pop-up dialog", exc_info=True)
 
 	def _announcePluginInstallProgress(self, obj):
 		try:
-			if getattr(obj, "role", None) != Role.PROGRESSBAR or not _isChatGPTObject(obj):
+			if getattr(obj, "role", None) != Role.PROGRESSBAR or not _isClaudeObject(obj):
 				return False
 			parts = []
 			current = obj
@@ -2671,7 +2466,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				current = getattr(current, "parent", None)
 			parsed = pluginInstallProgress(" ".join(parts))
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not inspect a plug-in progress event", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not inspect a plug-in progress event", exc_info=True)
 			return False
 		if parsed is None:
 			return False
@@ -2701,7 +2496,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._activeCategory = "tool"
 		self._latestMessage = self._latestFullMessage = message
 		self._speakOnce(message, "tool", "tool", brailleMessage=message)
-		log.info("ChatGPT Desktop Access announced plug-in installation progress")
+		log.info("Claude Desktop Access announced plug-in installation progress")
 		return True
 
 	def _rememberEmbeddedBrowserObject(self, obj):
@@ -2781,7 +2576,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._embeddedBrowserCompletedIdentity = ""
 		self._embeddedBrowserNotice(_("Loading page"))
 		self._scheduleEmbeddedBrowserLoadComplete(busy=self._embeddedBrowserBusySeen)
-		log.info("ChatGPT Desktop Access announced embedded browser load start")
+		log.info("Claude Desktop Access announced embedded browser load start")
 		return True
 
 	def _completeEmbeddedBrowserLoading(self, generation=None):
@@ -2799,7 +2594,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._embeddedBrowserCompletedIdentity = self._embeddedBrowserLoadIdentity
 		if _settings()["announceEmbeddedBrowserProgress"]:
 			self._embeddedBrowserNotice(_("Loading complete"))
-			log.info("ChatGPT Desktop Access announced embedded browser load completion")
+			log.info("Claude Desktop Access announced embedded browser load completion")
 		return True
 
 	def _noteEmbeddedBrowserDocument(self, obj, force=False):
@@ -2835,7 +2630,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except Exception:
 			return None, False
 		candidates = []
-		if _isChatGPTObject(focus):
+		if _isClaudeObject(focus):
 			candidates.append(focus)
 		if self._lastEmbeddedBrowserObject is not None:
 			candidates.append(self._lastEmbeddedBrowserObject)
@@ -2853,7 +2648,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					continue
 				buffer = getattr(candidate, "treeInterceptor", None)
 				root = getattr(buffer, "rootNVDAObject", None)
-				if root is not None and _isChatGPTObject(root) and _isEmbeddedBrowserObject(root):
+				if root is not None and _isClaudeObject(root) and _isEmbeddedBrowserObject(root):
 					self._embeddedBrowserBuffer = buffer
 					return root, True
 				top = candidate
@@ -2865,7 +2660,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				return top, True
 			except Exception:
 				continue
-		if not _isChatGPTObject(focus):
+		if not _isClaudeObject(focus):
 			return None, False
 		root = focus
 		for _ in range(24):
@@ -2873,7 +2668,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				parent = getattr(root, "parent", None)
 			except Exception:
 				break
-			if parent is None or not _isChatGPTObject(parent):
+			if parent is None or not _isClaudeObject(parent):
 				break
 			root = parent
 		return root, False
@@ -2911,7 +2706,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if root is None:
 			if self._browserNavigatorDialog:
 				self._browserNavigatorDialog.refreshFinished()
-			ui.message(_("No embedded browser is available in the current ChatGPT window"))
+			ui.message(_("No embedded browser is available in the current Claude window"))
 			return
 		self._browserScanPurpose = purpose
 		self._browserScanState = {
@@ -3077,7 +2872,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		try:
 			self._dispatchEmbeddedBrowserScan(purpose, result)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not present embedded-browser scan results", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not present embedded-browser scan results", exc_info=True)
 			if self._browserNavigatorDialog:
 				self._browserNavigatorDialog.refreshFinished()
 			ui.message(_("Embedded-browser page information could not be presented"))
@@ -3086,7 +2881,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if not result["found"]:
 			if self._browserNavigatorDialog:
 				self._browserNavigatorDialog.refreshFinished()
-			ui.message(_("ChatGPT did not expose an accessible embedded-browser page"))
+			ui.message(_("Claude did not expose an accessible embedded-browser page"))
 			return
 		if purpose in ("navigator", "navigatorRefresh"):
 			self._showOrUpdateBrowserNavigator(result)
@@ -3130,7 +2925,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			gui.mainFrame.postPopup()
 			raise
 		log.info(
-			"ChatGPT Desktop Access opened Browser Navigator with %d items from %d objects",
+			"Claude Desktop Access opened Browser Navigator with %d items from %d objects",
 			len(result["items"]), result["objects"],
 		)
 
@@ -3172,7 +2967,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		elif action == "external":
 			self._openEmbeddedBrowserExternallyFromResult(result)
 		elif action == "returnPrompt":
-			self._returnToChatGPTPrompt()
+			self._returnToClaudePrompt()
 		elif action == "restore":
 			signature = self._browserSavedLocations.get(result["pageKey"], "")
 			restoredItem = next((entry for entry in result["items"] if entry["signature"] == signature), None)
@@ -3198,7 +2993,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _focusEmbeddedBrowserItem(self, item, activate=False):
 		obj = item.get("object")
 		try:
-			if obj is None or _isDefunctObject(obj) or not _isChatGPTObject(obj):
+			if obj is None or _isDefunctObject(obj) or not _isClaudeObject(obj):
 				raise LookupError("stale browser object")
 			self._rememberBrowserNavigatorLocation(item)
 			if activate:
@@ -3220,7 +3015,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				api.setNavigatorObject(obj)
 			ui.message(_("Moved to {item}").format(item=item["label"]))
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not move to a Browser Navigator item", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not move to a Browser Navigator item", exc_info=True)
 			ui.message(_("That browser item changed. Refresh Browser Navigator and try again"))
 
 	def _showEmbeddedBrowserSnapshot(self, result):
@@ -3230,7 +3025,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			lines = tuple(redactSensitive(line) for line in lines)
 			title = redactSensitive(title)
 		message = browserSnapshotText(title, result["address"], lines, result["truncated"], _)
-		_showBrowseableMessageAtTop(message, _("ChatGPT embedded browser — accessible snapshot"))
+		_showBrowseableMessageAtTop(message, _("Claude embedded browser — accessible snapshot"))
 
 	def _copyEmbeddedBrowserAddress(self, address):
 		if not address:
@@ -3258,10 +3053,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				ui.message(_("Requested the native Open in browser action"))
 				return
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not open the embedded page externally", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not open the embedded page externally", exc_info=True)
 		ui.message(_("The embedded browser did not expose a safe page address or external-browser control"))
 
-	def _findChatGPTPromptObject(self):
+	def _findClaudePromptObject(self):
 		candidates = [self._lastPromptObject, self._pendingPromptObject]
 		try:
 			candidates.append(api.getFocusObject())
@@ -3275,7 +3070,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				try:
 					if _isDefunctObject(current):
 						break
-					if _isCodexPromptObject(current):
+					if _isCodePromptObject(current):
 						return current
 					current = getattr(current, "parent", None)
 				except Exception:
@@ -3289,25 +3084,25 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						break
 					if _isDefunctObject(current):
 						break
-					if _isCodexPromptObject(current):
+					if _isCodePromptObject(current):
 						return current
 					current = getattr(current, "parent", None)
 			except Exception:
 				pass
 		return None
 
-	def _returnToChatGPTPrompt(self):
+	def _returnToClaudePrompt(self):
 		try:
-			prompt = self._findChatGPTPromptObject()
+			prompt = self._findClaudePromptObject()
 			if prompt is None:
 				raise LookupError("prompt not found")
 			prompt.setFocus()
 			api.setNavigatorObject(prompt)
 			self._lastPromptObject = prompt
-			ui.message(_("Returned to the ChatGPT prompt"))
+			ui.message(_("Returned to the Claude prompt"))
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not return to the ChatGPT prompt", exc_info=True)
-			ui.message(_("The ChatGPT prompt could not be focused in this view"))
+			log.debugWarning("Claude Desktop Access could not return to the Claude prompt", exc_info=True)
+			ui.message(_("The Claude prompt could not be focused in this view"))
 
 	def _openEmbeddedBrowserNavigator(self):
 		if self._browserNavigatorDialog:
@@ -3369,31 +3164,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def _performChatHistoryAction(self, title, action, source="recent", mode=None):
 		mode = mode or self._conversationMode
-		agentName = _("ChatGPT") if mode == "chatgpt" else _("Codex")
-		if mode not in ("chatgpt", "codex") or mode != self._conversationMode:
+		agentName = modeDisplayName(mode)
+		if mode not in ("claude", "code", "cowork") or mode != self._conversationMode:
 			ui.message(_("The chat-history mode changed. Open chat history again"))
 			return
-		if source == "archived" and mode == "codex":
-			threadUrl = codexThreadUrl(self._archivedChatIds[mode].get(title))
-			if not threadUrl:
-				log.debugWarning("ChatGPT Desktop Access has no valid thread ID for the selected archived chat")
-				ui.message(_("The selected archived {agent} chat could not be opened").format(agent=agentName))
-				return
-			try:
-				self._pendingOpenedChatTitle = title
-				self._pendingOpenedChatAt = time.monotonic()
-				opened = wx.LaunchDefaultBrowser(threadUrl)
-			except Exception:
-				opened = False
-				log.debugWarning("ChatGPT Desktop Access could not launch the archived task link", exc_info=True)
-			if opened:
-				log.info("ChatGPT Desktop Access opened an archived task with the native Codex thread link")
-				self._scheduleUnarchiveButtonFocus()
-			else:
-				self._pendingOpenedChatTitle = ""
-				self._pendingOpenedChatAt = 0.0
-				ui.message(_("The selected archived {agent} chat could not be opened").format(agent=agentName))
-			return
+
 		try:
 			if action in ("focusActions", "pin", "archive"):
 				self._startDirectChatAction(title, action)
@@ -3404,9 +3179,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._pendingOpenedChatTitle = title
 			self._pendingOpenedChatAt = time.monotonic()
 			button.doAction()
-			log.info("ChatGPT Desktop Access performed chat history action: %s", action)
+			log.info("Claude Desktop Access performed chat history action: %s", action)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not act on the selected chat", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not act on the selected chat", exc_info=True)
 			ui.message(_("The selected {agent} chat could not be opened").format(agent=agentName))
 
 	def _queueChatHistoryAction(self, title, action, source, mode):
@@ -3427,11 +3202,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._performChatHistoryAction(title, action, source, mode)
 
 	def _rememberBuffer(self, obj):
-		if not _isChatGPTObject(obj):
+		if not _isClaudeObject(obj):
 			return
 		explicitMode = conversationModeFromSwitchLabel(getattr(obj, "name", ""))
 		mode = _conversationModeForObject(obj)
-		isPrompt = _isCodexPromptObject(obj)
+		isPrompt = _isCodePromptObject(obj)
 		isEmbeddedBrowser = False if isPrompt else _isEmbeddedBrowserObject(obj)
 		for current in self._bufferCandidates(obj):
 			candidateMode = _conversationModeForObject(current)
@@ -3442,7 +3217,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				continue
 			# The embedded browser has its own Chromium tree interceptor. Only run the
 			# ancestry check once, skip its nested document, and continue until the
-			# outer ChatGPT/Codex conversation document is found.
+			# outer Claude/Code conversation document is found.
 			if isEmbeddedBrowser and not candidateMode:
 				continue
 			resolvedMode = mode or candidateMode
@@ -3451,7 +3226,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				now = time.monotonic()
 				if now - self._lastRejectedBufferLogAt >= 30.0:
 					self._lastRejectedBufferLogAt = now
-					log.debug("ChatGPT Desktop Access ignored a buffer from a closed or hidden window")
+					log.debug("Claude Desktop Access ignored a buffer from a closed or hidden window")
 				continue
 			self._lastRejectedBufferLogAt = 0.0
 			if explicitMode:
@@ -3462,12 +3237,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			)
 			if differentWindow and not explicitMode:
 				# A different top-level application window needs a fresh authoritative
-				# mode observation. Within one ChatGPT window, its document remains named
-				# ChatGPT in both modes and therefore cannot override the switch control.
+				# mode observation. Within one Claude window, its document remains named
+				# Claude in both modes and therefore cannot override the switch control.
 				self._conversationModeObserved = False
 				self._conversationModeObservedAt = 0.0
 			if resolvedMode and not self._conversationModeObserved:
-				self._setConversationMode(resolvedMode, "conversation document")
+				self._setConversationMode(resolvedMode, "conversation document", authoritative=True)
 			wasMissing = self._buffer is None
 			bufferChanged = self._buffer is not None and buffer is not self._buffer
 			if bufferChanged:
@@ -3495,7 +3270,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				except Exception:
 					bufferText = ""
 				conversationChanged = bool(
-					title or (bufferSampleComplete and looksLikeBlankCodexConversation(bufferText))
+					title or (bufferSampleComplete and looksLikeBlankCodeConversation(bufferText))
 				)
 				if conversationChanged:
 					self._documentSwitchCount += 1
@@ -3503,9 +3278,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					message = _("Chat opened: {title}").format(title=title) if title else _("New chat opened")
 					self._latestMessage = self._latestFullMessage = message
 					self._speakOnce(message, "other", "other", brailleMessage=message)
-					log.info("ChatGPT Desktop Access detected a newly opened chat document")
+					log.info("Claude Desktop Access detected a newly opened chat document")
 				else:
-					log.debug("ChatGPT Desktop Access refreshed the Chromium virtual buffer without resetting task state")
+					log.debug("Claude Desktop Access refreshed the Chromium virtual buffer without resetting task state")
 			self._buffer = buffer
 			if wasMissing or bufferChanged:
 				self._conversationWindowHandle = candidateWindowHandle
@@ -3515,7 +3290,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._lastScannedLabel = ""
 				self._queueConversationModeProbe("mode switch UI Automation probe")
 			if wasMissing:
-				log.info("ChatGPT Desktop Access attached to %s", type(buffer).__name__)
+				log.info("Claude Desktop Access attached to %s", type(buffer).__name__)
 			if not self._monitoringAnnounced:
 				self._monitoringAnnounced = True
 				conf = _settings()
@@ -3523,7 +3298,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return
 
 	def _updateAppFocusState(self, obj):
-		appFocused = _isChatGPTObject(obj)
+		appFocused = _isClaudeObject(obj)
 		self._appFocusState, cue = focusStateTransition(self._appFocusState, appFocused)
 		if cue == "inactive":
 			self._promptFocused = False
@@ -3575,7 +3350,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					self._brailleCompositionActive = False
 					self._promptTypingUntil = 0.0
 					return True
-				# ChatGPT replaces its content-editable prompt as Enter is processed.
+				# Claude replaces its content-editable prompt as Enter is processed.
 				# That can leave NVDA's normal text/caret script holding a stale IA2
 				# object, so observe Enter before the replacement and queue only our
 				# state transition. The gesture itself continues through NVDA unchanged.
@@ -3610,7 +3385,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._brailleCompositionActive = not commitsText
 				if commitsText:
 					# Contracted Braille sends the completed word just after this
-					# observer runs. ChatGPT can report its resulting caret move only
+					# observer runs. Claude can report its resulting caret move only
 					# after the first cell of the next word has already been entered.
 					self._lastBrailleTextInjectionAt = time.monotonic()
 				self._promptTypingUntil = max(
@@ -3633,9 +3408,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._schedulePoll(50, requestInspection=True)
 
 	def event_caret(self, obj, nextHandler):
-		"""Preserve a new contracted word across ChatGPT's delayed prior-word caret event."""
+		"""Preserve a new contracted word across Claude's delayed prior-word caret event."""
 		try:
-			if self._appFocusState and _isCodexPromptObject(obj):
+			if self._appFocusState and _isCodePromptObject(obj):
 				try:
 					from braille import input as brailleInputModule
 				except ImportError:
@@ -3661,7 +3436,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except Exception:
 			# Caret handling must always continue even if NVDA changes its
 			# internal Braille input implementation in a future release.
-			log.debugWarning("ChatGPT Desktop Access Braille caret protection failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access Braille caret protection failed", exc_info=True)
 		finally:
 			nextHandler()
 
@@ -3670,7 +3445,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			isEditable = obj.role == Role.EDITABLETEXT
 		except Exception:
 			return False
-		if not isEditable or not _isCodexPromptObject(obj):
+		if not isEditable or not _isCodePromptObject(obj):
 			return False
 		valueRead = False
 		text = ""
@@ -3715,16 +3490,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		obj = self._pendingPromptObject
 		self._pendingPromptObject = None
 		try:
-			if obj is None or not _isCodexPromptObject(obj):
+			if obj is None or not _isCodePromptObject(obj):
 				return
 			if self._trackPromptSubmission(obj, allowTextInfo=True):
 				self._promptTypingUntil = 0.0
 				self._schedulePoll(50, requestInspection=True)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access deferred prompt inspection failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access deferred prompt inspection failed", exc_info=True)
 
 	def _notePromptTyping(self, obj):
-		if not _isCodexPromptObject(obj):
+		if not _isCodePromptObject(obj):
 			return False
 		self._lastPromptObject = obj
 		self._promptTypingUntil = time.monotonic() + PROMPT_TYPING_QUIET_SECONDS
@@ -3773,12 +3548,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._lastProgressSoundAt = time.monotonic()
 		else:
 			self._announceContinuousWorkingClick(force=True)
-		log.info("ChatGPT Desktop Access submission detected: %s", reason)
+		log.info("Claude Desktop Access submission detected: %s", reason)
 
 	def _queueResponseCompletion(self):
 		if self._busy and not self._pendingResponseCompletionAt:
 			self._pendingResponseCompletionAt = time.monotonic()
-			log.debug("ChatGPT Desktop Access queued response completion candidate")
+			log.debug("Claude Desktop Access queued response completion candidate")
 
 	def _latestButtonStatus(self, info):
 		latest = ""
@@ -3818,7 +3593,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					"next reset", "resets every", "add credits", "buy credits", "purchase credits", "upgrade",
 				)):
 					usageEvidence.append(usagePlainText[:256])
-				if not recentsSeen and plainText.casefold() == "recents":
+				if not recentsSeen and plainText.casefold() in ("recents", "recent chats", "chats"):
 					inRecents = recentsSeen = True
 				if not archivedSeen and plainText.casefold() == "archived chats":
 					inArchived = archivedSeen = True
@@ -3839,7 +3614,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if command == "controlStart":
 				role = field.get("role")
 				fieldName = " ".join(str(field.get("name", "") or "").split())
-				fieldMode = conversationModeFromSwitchLabel(fieldName)
+				fieldMode = modeFromTab(fieldName, role == Role.TAB, State.SELECTED in field.get("states", set()))
 				if fieldMode:
 					observedMode = fieldMode
 				landmarkName = " ".join(str(field.get("landmark", "") or "").casefold().split())
@@ -3847,7 +3622,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					fieldName.casefold() in ("main", "main content") or landmarkName == "main"
 				)
 				isFollowingSectionHeading = inRecents and role == getattr(Role, "HEADING", None) and (
-					fieldName.casefold() not in ("", "recents")
+					fieldName.casefold() not in ("", "recents", "recent chats", "chats")
 				)
 				if inRecents and isMainLandmark:
 					inRecents = False
@@ -3857,7 +3632,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					inArchived = False
 				if buttonDepth:
 					buttonDepth += 1
-				elif role == Role.BUTTON:
+				elif role in (Role.BUTTON, Role.LINK):
 					buttonDepth, buttonText, buttonName = 1, [], field.get("name", "")
 			elif command == "controlEnd" and buttonDepth:
 				buttonDepth -= 1
@@ -3911,12 +3686,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		scanMode = observedMode or self._conversationMode
 		recentSnapshot = tuple(recentTitles) if recentsSeen else None
 		archivedSnapshot = tuple(archivedTitles) if archivedSeen else None
-		if scanMode in ("chatgpt", "codex") and recentSnapshot is not None:
+		if scanMode in ("claude", "code", "cowork") and recentSnapshot is not None:
 			self._chatHistoryMoreAvailable[scanMode] = bool(recentShowMoreButtonOrdinal)
 			self._recentHistoryShowMoreOrdinals[scanMode] = recentShowMoreButtonOrdinal
 			self._unifiedRecentCounts[scanMode] = recentItemCount
 			self._chatHistoryScanGenerations[scanMode] += 1
-		if scanMode not in ("chatgpt", "codex") or recentSnapshot is None:
+		if scanMode not in ("claude", "code", "cowork") or recentSnapshot is None:
 			self._cacheChatHistoryScan(
 				scanMode, recentSnapshot, archivedSnapshot,
 			)
@@ -3927,11 +3702,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			pendingSnapshot = self._pendingChatHistorySnapshots[scanMode]
 			pendingAt = self._pendingChatHistorySnapshotAt[scanMode]
 			pendingAge = now - pendingAt if pendingSnapshot is not None and pendingAt else 0.0
-			otherMode = "codex" if scanMode == "chatgpt" else "chatgpt"
+			otherMode = "code" if scanMode == "claude" else "claude"
 			decision = chatHistorySnapshotDecision(
 				modeAge, CHAT_HISTORY_MODE_SETTLE_SECONDS,
 				recentSnapshot, self._chatHistoryCaches[otherMode],
-				self._chatHistoryCacheCurrent[otherMode],
+				False,  # Claude may expose the same recent chats in more than one mode.
 				pendingSnapshot, pendingAge, CHAT_HISTORY_SNAPSHOT_CONFIRM_SECONDS,
 			)
 			if decision == "publish":
@@ -3963,7 +3738,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					now - self._lastDeferredHistoryLogAt,
 				):
 					log.debug(
-						"ChatGPT Desktop Access deferred %s history caching: %s",
+						"Claude Desktop Access deferred %s history caching: %s",
 						scanMode, decision,
 					)
 					self._lastDeferredHistoryLog = logSnapshot
@@ -3975,7 +3750,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			snapshot = tuple((len(x), hash(x)) for x in unknown[-5:])
 			if shouldLogDiagnosticSnapshot(snapshot, self._lastUnknownButtons, now - self._lastUnknownButtonsAt):
 				log.debug(
-					"ChatGPT Desktop Access unrecognized buttons: count=%d, lengths=%s",
+					"Claude Desktop Access unrecognized buttons: count=%d, lengths=%s",
 					len(unknown), [len(x) for x in unknown[-5:]],
 				)
 				self._lastUnknownButtons = snapshot
@@ -3995,12 +3770,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		)
 		if confirmedSubmission:
 			self._beginPromptSubmission("new user message detected")
-		if stopControlVisible and self._promptHadText and not self._busy:
+		if stopControlVisible and not self._busy:
 			self._promptHadText = False
 			self._beginPromptSubmission("Send button activated")
 		self._stopControlVisible, stopped = stopControlTransition(self._stopControlVisible, stopControlVisible)
 		if stopped and self._busy and not latest:
-			self._setBusy(False, "stop control disappeared")
+			self._queueResponseCompletion()
 		latestResponseMarker = responseCompletionScanMarker(
 			responseCompleteMarkerCount, latestDetailedResponseMarker,
 		)
@@ -4029,7 +3804,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# Stale progress and completion labels can remain beneath the pop-over.
 			# Do not resume output until the user explicitly submits again.
 			return
-		# Explicit Codex activity owns the busy state from this point onward.
+		# Explicit Claude activity owns the busy state from this point onward.
 		self._pluginProgressOwnedBusy.clear()
 		# New work supersedes a tentative virtual-buffer completion. Intermediate
 		# completion labels must preserve it so trailing Chromium events cannot
@@ -4056,11 +3831,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				message, conf["commandPunctuation"], conf["maximumSpokenCommandCharacters"],
 			)
 			if shortened:
-				message += _(" Complete command available with Copy latest full Codex progress.")
+				message += _(" Complete command available with Copy latest full Claude progress.")
 		priority = announcementPriority(category, message)
 		action = soundKey(category, message) if category == "completion" else category
 		message = _customizeAnnouncement(message, action)
-		log.info("ChatGPT Desktop Access detected activity: %s", safeMessage)
+		log.info("Claude Desktop Access detected activity: %s", safeMessage)
 		self._latestMessage = message
 		fallbackPlayed = self._speakOnce(message, category, action, priority, brailleMessage)
 		if fallbackPlayed:
@@ -4080,13 +3855,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._lastHeartbeatAt = 0.0
 			if not self._haveBaseline:
 				self._haveBaseline, self._lastLabel = True, ""
-				log.info("ChatGPT Desktop Access baseline established: no activity")
+				log.info("Claude Desktop Access baseline established: no activity")
 			elif self._lastLabel:
 				self._lastLabel = ""
-				log.debug("ChatGPT Desktop Access activity cleared")
+				log.debug("Claude Desktop Access activity cleared")
 			if now - self._lastNoStatusLogAt >= 30.0:
 				self._lastNoStatusLogAt = now
-				log.debug("ChatGPT Desktop Access scanned buffer; no activity button found")
+				log.debug("Claude Desktop Access scanned buffer; no activity button found")
 			return
 		if not self._haveBaseline:
 			self._lastLabel, self._haveBaseline = label, True
@@ -4140,7 +3915,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					except Exception:
 						self._lastInspectionError = "virtual buffer inspection failed"
 						log.debugWarning(
-							"ChatGPT Desktop Access could not inspect the virtual buffer; preserving task state",
+							"Claude Desktop Access could not inspect the virtual buffer; preserving task state",
 							exc_info=True,
 						)
 					else:
@@ -4166,7 +3941,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				# virtual-buffer traversal merely to maintain background feedback.
 				self._announceBackgroundPulse()
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access polling housekeeping failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access polling housekeeping failed", exc_info=True)
 			self._lastInspectionError = "polling housekeeping failed"
 		finally:
 			if self._timer is not None:
@@ -4209,7 +3984,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if actions["braille"] and brailleOutput and not brailleDuplicate:
 			self._lastBrailleMessage, self._lastBrailleMessageAt = brailleOutput, now
 		if conf["diagnosticLogging"] and speechDuplicate and brailleDuplicate and soundDuplicate:
-			log.debug("ChatGPT Desktop Access suppressed duplicate %s event on all enabled channels", category)
+			log.debug("Claude Desktop Access suppressed duplicate %s event on all enabled channels", category)
 		return _send(
 			message, actions["speech"] and bool(message) and not speechDuplicate,
 			actions["braille"] and bool(brailleOutput) and not brailleDuplicate,
@@ -4229,7 +4004,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._lastProgressSoundAt = self._busyStartedAt
 			self._continuousClicksStartAt = self._busyStartedAt + _settings()["workingClickStartDelayMs"] / 1000.0
 		log.info(
-			"ChatGPT Desktop Access background state: %s (%s)",
+			"Claude Desktop Access background state: %s (%s)",
 			"active" if busy else "idle", reason,
 		)
 		if not busy:
@@ -4356,7 +4131,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._setBusy(nextBusyState(self._busy, commentary=True), "commentary")
 			if self._busy:
 				self._lastHeartbeatAt = time.monotonic()
-			log.info("ChatGPT Desktop Access detected activity: Commentary update")
+			log.info("Claude Desktop Access detected activity: Commentary update")
 			conf = _settings()
 			fullMessage = redactSensitive(message) if conf["redactSensitive"] else message
 			message = fullMessage
@@ -4375,10 +4150,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._speakOnce(message, "commentary", brailleMessage=fullMessage)
 		return True
 
-	@script(description=_("Report current Codex activity or repeat the latest message"))
+	@script(description=_("Report current Claude activity or repeat the latest message"))
 	def script_repeatLatestStatus(self, gesture):
 		elapsed = time.monotonic() - self._busyStartedAt if self._busyStartedAt else 0
-		agentName = _("ChatGPT") if self._conversationMode == "chatgpt" else _("Codex")
+		agentName = modeDisplayName(self._conversationMode)
 		message = currentActivitySummary(
 			self._busy, self._activeCategory, self._latestMessage, elapsed, _, agentName,
 		)
@@ -4388,27 +4163,27 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			brailleMessage=self._latestFullMessage or message,
 		)
 
-	@script(description=_("Toggle Minimal and Full Codex announcements"))
+	@script(description=_("Toggle Minimal and Full Claude announcements"))
 	def script_toggleVerbosity(self, gesture):
 		conf = _settings()
 		conf["verbosity"] = "minimal" if conf["verbosity"] == "full" else "full"
-		message = _("Codex announcements: {mode}").format(mode=conf["verbosity"])
+		message = _("Claude announcements: {mode}").format(mode=conf["verbosity"])
 		_send(message, conf["speech"], conf["braille"], "other", conf["soundWhenSpeechUnavailable"])
 
-	@script(description=_("Pause or resume Codex announcements"))
+	@script(description=_("Pause or resume Claude announcements"))
 	def script_togglePause(self, gesture):
 		self._paused = not self._paused
-		ui.message(_("Codex announcements paused") if self._paused else _("Codex announcements resumed"))
+		ui.message(_("Claude announcements paused") if self._paused else _("Claude announcements resumed"))
 
-	@script(description=_("Read the previous Codex announcement"))
+	@script(description=_("Read the previous Claude announcement"))
 	def script_previousHistory(self, gesture):
 		self._historyMessage(-1)
 
-	@script(description=_("Read the next Codex announcement"))
+	@script(description=_("Read the next Claude announcement"))
 	def script_nextHistory(self, gesture):
 		self._historyMessage(1)
 
-	@script(description=_("Show Codex announcement history"))
+	@script(description=_("Show Claude announcement history"))
 	def script_showHistory(self, gesture):
 		if not self._speechHistory and not self._brailleHistory:
 			ui.message(_("No activity announcement history is available"))
@@ -4418,25 +4193,25 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			sections.append(_("Speech history") + "\n" + "\n".join(self._speechHistory.items()))
 		if self._brailleHistory and self._brailleHistory.items() != self._speechHistory.items():
 			sections.append(_("Braille history") + "\n" + "\n".join(self._brailleHistory.items()))
-		ui.browseableMessage("\n\n".join(sections), title=_("ChatGPT Desktop Access announcement history"))
+		ui.browseableMessage("\n\n".join(sections), title=_("Claude Desktop Access announcement history"))
 
-	@script(description=_("Clear Codex announcement history"))
+	@script(description=_("Clear Claude announcement history"))
 	def script_clearHistory(self, gesture):
 		self._speechHistory.clear()
 		self._brailleHistory.clear()
-		ui.message(_("Codex announcement history cleared"))
+		ui.message(_("Claude announcement history cleared"))
 
-	@script(description=_("Toggle Codex privacy redaction"))
+	@script(description=_("Toggle Claude privacy redaction"))
 	def script_togglePrivacy(self, gesture):
 		conf = _settings()
 		conf["redactSensitive"] = not conf["redactSensitive"]
-		ui.message(_("Codex privacy redaction on") if conf["redactSensitive"] else _("Codex privacy redaction off"))
+		ui.message(_("Claude privacy redaction on") if conf["redactSensitive"] else _("Claude privacy redaction off"))
 
-	@script(description=_("Show sanitized ChatGPT Desktop Access diagnostics"))
+	@script(description=_("Show sanitized Claude Desktop Access diagnostics"))
 	def script_showDiagnostics(self, gesture):
-		ui.browseableMessage(self._diagnosticReport(), title=_("ChatGPT Desktop Access diagnostics"))
+		ui.browseableMessage(self._diagnosticReport(), title=_("Claude Desktop Access diagnostics"))
 
-	@script(description=_("Copy sanitized ChatGPT Desktop Access diagnostics"))
+	@script(description=_("Copy sanitized Claude Desktop Access diagnostics"))
 	def script_copyDiagnostics(self, gesture):
 		if not wx.TheClipboard.Open():
 			ui.message(_("Could not open the clipboard"))
@@ -4446,16 +4221,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			wx.TheClipboard.Flush()
 		finally:
 			wx.TheClipboard.Close()
-		ui.message(_("Sanitized Codex diagnostics copied"))
+		ui.message(_("Sanitized Claude diagnostics copied"))
 
-	@script(description=_("Save a sanitized ChatGPT Desktop Access support report"))
+	@script(description=_("Save a sanitized Claude Desktop Access support report"))
 	def script_saveSupportReport(self, gesture):
 		_saveSupportReport(gui.mainFrame, self._diagnosticReport())
 
-	@script(description=_("Copy latest full Codex progress"))
+	@script(description=_("Copy latest full Claude progress"))
 	def script_copyLatestFullProgress(self, gesture):
 		if not self._latestFullMessage:
-			ui.message(_("No complete Codex progress message is available"))
+			ui.message(_("No complete Claude progress message is available"))
 			return
 		if not wx.TheClipboard.Open():
 			ui.message(_("Could not open the clipboard"))
@@ -4465,13 +4240,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			wx.TheClipboard.Flush()
 		finally:
 			wx.TheClipboard.Close()
-		ui.message(_("Latest full Codex progress copied"))
+		ui.message(_("Latest full Claude progress copied"))
 
-	@script(description=_("Run ChatGPT Desktop Access compatibility self-test"))
+	@script(description=_("Run Claude Desktop Access compatibility self-test"))
 	def script_runCompatibilitySelfTest(self, gesture):
 		checks = [
 			_("Global plugin loaded: yes"),
-			_("Codex monitoring attached: {value}").format(value=_("yes") if self._buffer else _("no")),
+			_("Claude monitoring attached: {value}").format(value=_("yes") if self._buffer else _("no")),
 			_("Speech enabled: {value}").format(value=_("yes") if _settings()["speech"] else _("no")),
 			_("Braille enabled: {value}").format(value=_("yes") if _settings()["braille"] else _("no")),
 			_("Sound inventory: {count} files").format(count=len(list((Path(__file__).parent / "sounds").rglob("*.wav")))),
@@ -4486,26 +4261,26 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			),
 			_("Last inspection error: {value}").format(value=self._lastInspectionError),
 		]
-		_showBrowseableMessageAtTop("\n".join(checks), _("ChatGPT Desktop Access — compatibility self-test"))
+		_showBrowseableMessageAtTop("\n".join(checks), _("Claude Desktop Access — compatibility self-test"))
 
-	@script(description=_("Open Codex usage statistics"))
+	@script(description=_("Open Claude usage settings"))
 	def script_openUsageStatistics(self, gesture):
-		_openUsageDashboard(_("Opening Codex usage statistics"))
+		_openUsageDashboard(_("Opening Claude usage settings"))
 
-	@script(description=_("Open Codex usage credits"))
+	@script(description=_("Open Claude help"))
 	def script_openUsageCredits(self, gesture):
-		_openUsageDashboard(_("Opening Codex usage credits. No purchase will be made automatically."))
+		wx.LaunchDefaultBrowser("https://support.claude.com/")
 
 	def _showChatHistoryDialog(self, mode):
 		"""Present the settled mode-specific history without starting another expansion."""
-		agentName = _("ChatGPT") if mode == "chatgpt" else _("Codex")
-		if mode != self._conversationMode or mode not in ("chatgpt", "codex"):
+		agentName = modeDisplayName(mode)
+		if mode != self._conversationMode or mode not in ("claude", "code", "cowork"):
 			ui.message(_("The chat-history mode changed. Open chat history again"))
 			return False
 		if not self._chatHistoryCacheCurrent.get(mode, False):
 			self._schedulePoll(delay=150, requestInspection=True)
 			ui.message(_("{agent} chat history is refreshing. Try again in a moment").format(agent=agentName))
-			log.info("ChatGPT Desktop Access deferred opening unsettled %s chat history", mode)
+			log.info("Claude Desktop Access deferred opening unsettled %s chat history", mode)
 			return False
 		recentTitles = self._chatHistoryTitles(mode)
 		archivedTitles, archivedLoaded = self._loadArchivedChatHistory(mode)
@@ -4532,27 +4307,27 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			gui.mainFrame.postPopup()
 			raise
 		log.info(
-			"ChatGPT Desktop Access displayed %d recent and %d archived %s chats",
+			"Claude Desktop Access displayed %d recent and %d archived %s chats",
 			len(recentTitles), len(archivedTitles), mode,
 		)
 		return True
 
-	@script(description=_("Open searchable and arrow-navigable ChatGPT or Codex chat history"))
+	@script(description=_("Open searchable and arrow-navigable Claude chat history"))
 	def script_openChatHistory(self, gesture):
 		"""Expand native Recents, then show searchable Recent and Archived lists."""
 		focus = api.getFocusObject()
-		if not _isChatGPTObject(focus):
-			ui.message(_("Move to ChatGPT or Codex before opening chat history"))
+		if not _isClaudeObject(focus):
+			ui.message(_("Move to Claude before opening chat history"))
 			return
 		try:
 			self._rememberBuffer(focus)
 			if not self._conversationModeObserved:
 				self._queueConversationModeProbe("history mode verification")
-				ui.message(_("ChatGPT or Codex mode is being detected. Try history again in a moment"))
+				ui.message(_("Claude mode is being detected. Try history again in a moment"))
 				return
 			mode = self._conversationMode
-			agentName = _("ChatGPT") if mode == "chatgpt" else _("Codex")
-			if not self._buffer or mode not in ("chatgpt", "codex"):
+			agentName = modeDisplayName(mode)
+			if not self._buffer or mode not in ("claude", "code", "cowork"):
 				ui.message(_("Chat history is not available in the current view"))
 				return
 			if self._pendingChatHistoryExpansion:
@@ -4561,13 +4336,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if not self._chatHistoryCacheCurrent.get(mode, False):
 				self._schedulePoll(delay=150, requestInspection=True)
 				ui.message(_("{agent} chat history is refreshing. Try again in a moment").format(agent=agentName))
-				log.info("ChatGPT Desktop Access deferred opening unsettled %s chat history", mode)
+				log.info("Claude Desktop Access deferred opening unsettled %s chat history", mode)
 				return
 			if self._startChatHistoryExpansion(mode):
 				return
 			self._showChatHistoryDialog(mode)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not display chat history", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not display chat history", exc_info=True)
 			ui.message(_("Chat history could not be opened"))
 
 	def event_gainFocus(self, obj, nextHandler):
@@ -4579,7 +4354,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._schedulePopupDialogFocus(obj)
 			if self._announceUsageLimit(obj):
 				return
-			isPrompt = _isCodexPromptObject(obj)
+			isPrompt = _isCodePromptObject(obj)
 			self._promptFocused = isPrompt
 			if isPrompt:
 				self._lastPromptObject = obj
@@ -4587,15 +4362,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._brailleCompositionActive = False
 			if isPrompt:
 				self._trackPromptSubmission(obj)
-			# ChatGPT briefly focuses an intermediate section after Enter and before
+			# Claude briefly focuses an intermediate section after Enter and before
 			# returning to the now-empty prompt. Preserve draft/submission state across
 			# those in-app focus events; _resetTaskState handles real task switches.
-			if _isChatGPTObject(obj):
+			if _isClaudeObject(obj):
 				# Moving among controls does not change task status. Inspect once when
-				# returning to ChatGPT; a newly attached buffer is already marked dirty.
+				# returning to Claude; a newly attached buffer is already marked dirty.
 				self._schedulePoll(requestInspection=focusCue == "active")
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access focus-event handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access focus-event handling failed", exc_info=True)
 
 	def event_foreground(self, obj, nextHandler):
 		nextHandler()
@@ -4605,10 +4380,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._rememberBuffer(obj)
 			if self._announceUsageLimit(obj):
 				return
-			if _isChatGPTObject(obj):
+			if _isClaudeObject(obj):
 				self._schedulePoll(requestInspection=focusCue == "active")
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access foreground-event handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access foreground-event handling failed", exc_info=True)
 
 	def event_nameChange(self, obj, nextHandler):
 		nextHandler()
@@ -4623,7 +4398,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if getattr(obj, "role", None) == Role.BUTTON and self._eventUsesConversationBuffer(obj):
 				self._schedulePoll(requestInspection=not statusHandled)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access name-change handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access name-change handling failed", exc_info=True)
 
 	def event_valueChange(self, obj, nextHandler):
 		nextHandler()
@@ -4644,7 +4419,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			):
 				self._schedulePoll(requestInspection=submitted or not (pluginHandled or statusHandled))
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access value-change handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access value-change handling failed", exc_info=True)
 
 	def event_stateChange(self, obj, nextHandler):
 		nextHandler()
@@ -4655,7 +4430,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				return
 			self._updateEmbeddedBrowserDocumentBusyState(obj)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access state-change handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access state-change handling failed", exc_info=True)
 
 	def event_liveRegionChange(self, obj, nextHandler):
 		suppressNative = False
@@ -4677,10 +4452,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				text,
 			)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access could not classify a conversation live update", exc_info=True)
+			log.debugWarning("Claude Desktop Access could not classify a conversation live update", exc_info=True)
 		if suppressNative:
 			self._suppressedConversationUpdates += 1
-			log.debug("ChatGPT Desktop Access preserved browse-mode reading across a streamed response update")
+			log.debug("Claude Desktop Access preserved browse-mode reading across a streamed response update")
 		else:
 			nextHandler()
 		try:
@@ -4698,7 +4473,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if getattr(obj, "role", None) == Role.BUTTON and self._eventUsesConversationBuffer(obj):
 				self._schedulePoll(requestInspection=not (statusHandled or commentaryHandled))
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access live-region handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access live-region handling failed", exc_info=True)
 
 	def event_show(self, obj, nextHandler):
 		nextHandler()
@@ -4715,7 +4490,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if getattr(obj, "role", None) == Role.BUTTON and self._eventUsesConversationBuffer(obj):
 				self._schedulePoll(requestInspection=not (pluginHandled or statusHandled))
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access show-event handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access show-event handling failed", exc_info=True)
 
 	def event_alert(self, obj, nextHandler):
 		nextHandler()
@@ -4723,7 +4498,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._schedulePopupDialogFocus(obj)
 			self._announceUsageLimit(obj)
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access alert-event handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access alert-event handling failed", exc_info=True)
 
 	def event_textChange(self, obj, nextHandler):
 		nextHandler()
@@ -4737,4 +4512,4 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if submitted:
 				self._schedulePoll()
 		except Exception:
-			log.debugWarning("ChatGPT Desktop Access text-change handling failed", exc_info=True)
+			log.debugWarning("Claude Desktop Access text-change handling failed", exc_info=True)

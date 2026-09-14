@@ -1,21 +1,5 @@
-# Security policy
+# Security and privacy
 
-## Supported version
+Do not include secrets or private conversations in public issues. The add-on reads exposed accessibility information locally. It has no telemetry, remote diagnostic upload or account API integration. User-requested external links open in the normal browser.
 
-Security fixes are provided for the newest published ChatGPT Desktop Access
-release.
-
-## Reporting a vulnerability
-
-Please do not include secrets, private chat text, commands, personal paths, or
-account data in a public issue. Use the repository owner's private GitHub
-contact options when available, or open a minimal issue asking for a private
-reporting channel.
-
-The add-on runs inside NVDA and can observe accessibility text exposed by
-ChatGPT. Full speech and NVDA debug logging may contain commands, paths, URLs,
-and chat content. Enable privacy redaction before collecting logs and review
-every file before sharing it.
-
-The add-on does not purchase credits, send diagnostics, or install updates
-automatically.
+Support reports omit conversation bodies. NVDA's own logs may contain speech; review them before sharing. Report privacy problems privately to the maintainer at jcoffin@samobile.net.

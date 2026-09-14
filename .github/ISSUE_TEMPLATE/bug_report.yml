@@ -11,7 +11,7 @@ body:
     id: addonVersion
     attributes:
       label: Add-on version
-      placeholder: 2026.2.4
+      placeholder: 2026.2.1
     validations:
       required: true
   - type: input
@@ -22,11 +22,26 @@ body:
     validations:
       required: true
   - type: input
-    id: chatgptVersion
+    id: claudeVersion
     attributes:
-      label: ChatGPT desktop app version
-      description: Include the version if it is available in the ChatGPT app settings.
+      label: Claude desktop app version
+      description: Include the version if it is available in the Claude app settings.
       placeholder: 1.2026.x
+  - type: input
+    id: interfaceLanguage
+    attributes:
+      label: Claude interface language
+      placeholder: English
+  - type: dropdown
+    id: accountTier
+    attributes:
+      label: Account tier (no account identifiers)
+      options:
+        - Free
+        - Pro
+        - Max
+        - Team or Enterprise
+        - Prefer not to say
   - type: input
     id: windowsVersion
     attributes:
@@ -35,10 +50,11 @@ body:
   - type: dropdown
     id: experience
     attributes:
-      label: ChatGPT experience
+      label: Claude experience
       options:
-        - ChatGPT mode
-        - Codex mode
+        - Claude Chat
+        - Claude Cowork
+        - Claude Code
         - Embedded browser
         - More than one
         - Not sure

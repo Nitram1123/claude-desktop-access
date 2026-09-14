@@ -1,4 +1,4 @@
-"""NVDA-independent parsing and privacy helpers for Codex activity."""
+"""NVDA-independent parsing and privacy helpers for Code activity."""
 
 import json
 import math
@@ -7,20 +7,17 @@ from collections import deque
 from pathlib import Path
 
 
-def mergeSupportedAppNames(value, requiredNames=("chatgpt", "codex")):
-	"""Return a stable comma-separated app-module list containing required hosts."""
+def mergeSupportedAppNames(value, requiredNames=("claude",)):
 	result = []
-	seen = set()
-	for name in (*requiredNames, *str(value or "").split(",")):
-		name = str(name or "").strip().casefold()
-		if name and name not in seen:
-			seen.add(name)
+	for raw in (*requiredNames, *str(value or "").split(",")):
+		name = str(raw).strip().casefold()
+		if name and name not in ("chatgpt", "codex", "code") and name not in result:
 			result.append(name)
 	return ",".join(result)
 
 
 def conversationModeFromDocumentNames(documentNames):
-	"""Identify one top-level ChatGPT or Codex conversation document.
+	"""Identify one top-level Claude or Code conversation document.
 
 	Nested web content contains two document ancestors and is deliberately rejected,
 	so activity on an embedded browser page is not mistaken for conversation status.
@@ -28,13 +25,13 @@ def conversationModeFromDocumentNames(documentNames):
 	names = tuple(" ".join(str(name or "").casefold().split()) for name in documentNames)
 	if len(names) != 1:
 		return ""
-	return names[0] if names[0] in ("chatgpt", "codex") else ""
+	return names[0] if names[0] in ("claude", "code") else ""
 
 
 def conversationModeFromSwitchLabel(label):
-	"""Read the active product mode from ChatGPT's authoritative switch control."""
+	"""Read the active product mode from Claude's authoritative switch control."""
 	text = " ".join(str(label or "").casefold().split())
-	match = re.fullmatch(r"switch mode,\s*current mode:\s*(chatgpt|codex)", text)
+	match = re.fullmatch(r"switch mode,\s*current mode:\s*(claude|code)", text)
 	return match.group(1) if match else ""
 
 
@@ -64,78 +61,18 @@ def chatHistorySnapshotDecision(
 	return "publish"
 
 
-def loadActiveCodexThreadTitles(codexRoot, limit=2000):
-	"""Read active Codex task titles from the append-only local session index."""
-	if limit < 1:
-		return ()
-	codexRoot = Path(codexRoot)
-	archivedIds = set()
-	archiveDirectory = codexRoot / "archived_sessions"
-	if archiveDirectory.is_dir():
-		for path in archiveDirectory.glob("*.jsonl"):
-			threadId = path.stem[-36:].lower()
-			if re.fullmatch(
-				r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-				threadId,
-			):
-				archivedIds.add(threadId)
-	indexPath = codexRoot / "session_index.jsonl"
-	if not indexPath.is_file():
-		return ()
-	# The index can contain multiple records for one task. The last valid record is
-	# authoritative, while updated_at preserves newest-first display order.
-	records = {}
-	with indexPath.open("r", encoding="utf-8") as indexFile:
-		for line in indexFile:
-			try:
-				record = json.loads(line)
-			except (TypeError, ValueError):
-				continue
-			if not isinstance(record, dict):
-				continue
-			threadId = str(record.get("id") or "").strip().lower()
-			if not re.fullmatch(
-				r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-				threadId,
-			):
-				continue
-			title = " ".join(str(record.get("thread_name") or "").split())
-			updatedAt = str(record.get("updated_at") or "")
-			if title:
-				records[threadId] = (updatedAt, title)
-	result = [
-		title for threadId, (updatedAt, title) in sorted(
-			records.items(), key=lambda item: item[1][0], reverse=True,
-		)
-		if threadId not in archivedIds
-	]
-	return tuple(result[:int(limit)])
 
 
-def codexHistorySourceSignature(codexRoot):
-	"""Return cheap metadata that changes when the local Codex history sources change."""
-	codexRoot = Path(codexRoot)
-	def sourceSignature(path):
-		try:
-			stat = path.stat()
-			return True, int(getattr(stat, "st_mtime_ns", int(stat.st_mtime * 1_000_000_000))), int(stat.st_size)
-		except OSError:
-			return False, 0, 0
-	return (
-		str(codexRoot),
-		sourceSignature(codexRoot / "session_index.jsonl"),
-		sourceSignature(codexRoot / "archived_sessions"),
-	)
 
 
-def modeSpecificRecentChatTitles(mode, unifiedTitles, activeCodexTitles):
-	"""Partition ChatGPT's unified Recents list into ChatGPT chats or Codex tasks."""
+def modeSpecificRecentChatTitles(mode, unifiedTitles, activeCodeTitles):
+	"""Partition Claude's unified Recents list into Claude chats or Code tasks."""
 	mode = str(mode or "").casefold()
-	if mode not in ("chatgpt", "codex"):
+	if mode not in ("claude", "code"):
 		return ()
-	codexKeys = {
+	codeKeys = {
 		" ".join(str(title or "").split()).casefold()
-		for title in activeCodexTitles
+		for title in activeCodeTitles
 		if str(title or "").strip()
 	}
 	result = []
@@ -145,56 +82,13 @@ def modeSpecificRecentChatTitles(mode, unifiedTitles, activeCodexTitles):
 		key = title.casefold()
 		if not title or key in seen:
 			continue
-		isCodex = key in codexKeys
-		if (mode == "codex") == isCodex:
+		isCode = key in codeKeys
+		if (mode == "code") == isCode:
 			seen.add(key)
 			result.append(title)
 	return tuple(result)
 
 
-def loadArchivedThreads(codexRoot, limit=200):
-	"""Read archived thread IDs and titles from Codex's JSONL metadata."""
-	if limit < 1:
-		return ()
-	codexRoot = Path(codexRoot)
-	archiveDirectory = codexRoot / "archived_sessions"
-	if not archiveDirectory.is_dir():
-		return ()
-	def modifiedTime(path):
-		try:
-			return path.stat().st_mtime
-		except OSError:
-			return 0
-	paths = sorted(archiveDirectory.glob("*.jsonl"), key=modifiedTime, reverse=True)
-	threadIds = []
-	for path in paths:
-		threadId = path.stem[-36:]
-		if re.fullmatch(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", threadId):
-			threadIds.append(threadId.lower())
-	threadIds = tuple(threadIds[:int(limit)])
-	targetIds = set(threadIds)
-	titles = {}
-	indexPath = codexRoot / "session_index.jsonl"
-	if indexPath.is_file() and targetIds:
-		with indexPath.open("r", encoding="utf-8") as indexFile:
-			for line in indexFile:
-				try:
-					record = json.loads(line)
-				except (TypeError, ValueError):
-					continue
-				if not isinstance(record, dict):
-					continue
-				threadId = str(record.get("id") or "").strip()
-				if threadId not in targetIds:
-					continue
-				title = " ".join(str(record.get("thread_name") or "").split())
-				if title:
-					titles[threadId] = title
-	result = []
-	for threadId in threadIds:
-		title = titles.get(threadId, f"Archived task {threadId}")
-		result.append((threadId, title))
-	return tuple(result)
 
 
 def uniqueThreadLabels(entries):
@@ -215,12 +109,6 @@ def uniqueThreadLabels(entries):
 	return tuple(result)
 
 
-def codexThreadUrl(threadId):
-	"""Return the native Codex deep link for a validated thread UUID."""
-	threadId = str(threadId or "").strip().lower()
-	if not re.fullmatch(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", threadId):
-		return ""
-	return f"codex://threads/{threadId}"
 
 
 def repairConfigurationValues(values, choiceDefaults, numericDefaults, booleanDefaults=(), stringDefaults=()):
@@ -293,7 +181,7 @@ def chatActionMatches(action, label):
 
 
 def voiceControlKind(label):
-	"""Classify only native ChatGPT voice and microphone control labels."""
+	"""Classify only native Claude voice and microphone control labels."""
 	label = " ".join(str(label or "").casefold().split())
 	if label in ("start voice chat", "start voice mode"):
 		return "start"
@@ -312,7 +200,7 @@ def isPermissionPromptText(text):
 	return bool(
 		any(phrase in text for phrase in (
 			"permission required", "approval required", "requires your approval",
-			"needs your approval", "allow this command", "allow codex", "approve this",
+			"needs your approval", "allow this command", "allow code", "approve this",
 		))
 		or ("permission" in text and any(word in text for word in ("allow", "deny", "approve", "reject")))
 	)
@@ -325,7 +213,7 @@ def isPermissionDecisionLabel(label):
 
 
 def usageLimitNotice(text, translate=lambda text: text):
-	"""Return a concise actionable notice for an exhausted ChatGPT usage allowance.
+	"""Return a concise actionable notice for an exhausted Claude usage allowance.
 
 	The match deliberately requires exhaustion wording as well as ``usage limit``
 	or ``credits``. This keeps help text and the normal usage-settings page from
@@ -348,7 +236,7 @@ def usageLimitNotice(text, translate=lambda text: text):
 		percentageExhausted
 		or "usage limit exceeded" in lower
 		or re.search(r"\byou(?:'ve| have)\s+(?:hit|reached)\s+(?:your|the)\s+(?:\w+\s+){0,3}usage limit\b", lower)
-		or re.search(r"\b(?:you are|you're)\s+out of\s+(?:chatgpt |codex )?usage\b", lower)
+		or re.search(r"\b(?:you are|you're)\s+out of\s+(?:claude |code )?usage\b", lower)
 	)
 	creditsExhausted = bool(
 		("credit" in lower and re.search(
@@ -365,7 +253,7 @@ def usageLimitNotice(text, translate=lambda text: text):
 	elif re.search(r"\bupgrade(?:\s+(?:your\s+)?plan)?\b", lower):
 		options.append(translate("upgrade your plan"))
 	if re.search(r"\b(?:add|buy|purchase)(?:\s+some)?(?:\s+more)?\s+credits?\b", lower):
-		options.append(translate("purchase more credits in ChatGPT usage settings"))
+		options.append(translate("purchase more credits in Claude usage settings"))
 	retry = re.search(
 		r"\btry again\s+(?P<when>(?:at|in|after)\s+[^.!?]+)",
 		text,
@@ -400,11 +288,11 @@ def usageLimitNotice(text, translate=lambda text: text):
 				first=options[0], middle=", ".join(options[1:-1]), last=options[-1],
 			)
 		return translate("{message}. You can {actions}.").format(message=message, actions=actionText)
-	return translate("{message}. Check ChatGPT usage settings for reset details.").format(message=message)
+	return translate("{message}. Check Claude usage settings for reset details.").format(message=message)
 
 
 def pluginInstallProgress(text, step=10):
-	"""Parse and bucket a ChatGPT plug-in installation progress description."""
+	"""Parse and bucket a Claude plug-in installation progress description."""
 	text = " ".join(str(text or "").split())
 	lower = text.casefold()
 	if "install" not in lower or not any(word in lower for word in ("plugin", "plug-in", "connector", "extension")):
@@ -428,7 +316,7 @@ def pluginInstallProgress(text, step=10):
 
 
 def pluginProgressBusyTransition(currentBusy, ownsBusyState, complete):
-	"""Keep installation completion from clearing an unrelated active Codex task."""
+	"""Keep installation completion from clearing an unrelated active Code task."""
 	currentBusy = bool(currentBusy)
 	ownsBusyState = bool(ownsBusyState)
 	if complete:
@@ -458,10 +346,10 @@ def formatElapsedDuration(totalSeconds, translate=lambda text: text):
 
 
 def currentActivitySummary(
-	busy, category, latestMessage, elapsed=0, translate=lambda text: text, agentName="Codex",
+	busy, category, latestMessage, elapsed=0, translate=lambda text: text, agentName="Code",
 ):
 	"""Return useful current activity even during a gap in exposed commentary."""
-	agentName = " ".join(str(agentName or "Codex").split()) or "Codex"
+	agentName = " ".join(str(agentName or "Code").split()) or "Code"
 	latestMessage = " ".join(str(latestMessage or "").split())
 	if latestMessage:
 		return latestMessage
@@ -498,23 +386,23 @@ def backgroundActivityName(category, latestMessage=""):
 	}.get(category, "Work")
 
 
-def looksLikeCodexConversation(text):
+def looksLikeCodeConversation(text):
 	"""Distinguish a conversation document from settings and transient viewers."""
 	text = " ".join(str(text or "").casefold().split())
 	return any(marker in text for marker in (
-		"do anything", "ask anything", "message codex", "message chatgpt", "send a message",
+		"reply to claude", "ask claude", "message claude", "send a message",
 	))
 
 
-def looksLikeBlankCodexConversation(text):
+def looksLikeBlankCodeConversation(text):
 	"""Recognize a new blank conversation without mistaking a buffer refresh for one."""
 	text = " ".join(str(text or "").casefold().split())
-	if not looksLikeCodexConversation(text):
+	if not looksLikeCodeConversation(text):
 		return False
 	return not (
 		re.search(r"\buser message\s+\d+\b", text)
 		or "response complete:" in text
-		or "chatgpt said:" in text
+		or "claude said:" in text
 		or "you said:" in text
 	)
 
@@ -530,7 +418,7 @@ def chatMessageShortcutIndex(keyName):
 
 
 def isChatMessageTrailingUiText(text):
-	"""Identify ChatGPT chrome that follows, but is not part of, a conversation turn."""
+	"""Identify Claude chrome that follows, but is not part of, a conversation turn."""
 	text = " ".join(str(text or "").strip().casefold().split())
 	if not text:
 		return False
@@ -588,12 +476,12 @@ def chatMessagesFromTokens(tokens, limit=10):
 		elif kind == "text" and currentSpeaker and value:
 			if value.casefold().startswith("response complete:"):
 				# Chromium also exposes a hidden flattened copy of the response; the
-				# normal ChatGPT text nodes immediately following it are authoritative.
+				# normal Claude text nodes immediately following it are authoritative.
 				continue
 			if isChatMessageTrailingUiText(value):
 				finish()
 				currentSpeaker = ""
-			elif value.casefold() not in ("you said:", "chatgpt said:", "response complete"):
+			elif value.casefold() not in ("you said:", "claude said:", "response complete"):
 				parts.append(rawValue)
 		elif kind == "end":
 			finish()
@@ -673,7 +561,7 @@ def soundKey(category, message=""):
 
 
 def userMessageNumber(label):
-	"""Return the number from a Codex 'Jump to user message' control."""
+	"""Return the number from a Code 'Jump to user message' control."""
 	match = re.search(r"(?i)\bjump to user message\s+(\d+)\b", str(label or ""))
 	return int(match.group(1)) if match else None
 
@@ -688,9 +576,9 @@ def userMessageSubmissionTransition(previousNumber, currentNumber):
 def confirmedUserMessageSubmission(pendingIncrease, messageNumberIncreased, stopControlVisible):
 	"""Retain and confirm a message-count increase once active work is visible.
 
-	Loading a different Codex task can expose a larger historical user-message
+	Loading a different Code task can expose a larger historical user-message
 	count.  The active Stop/Cancel control distinguishes that navigation change
-	from a request that ChatGPT is currently processing. Retaining an increase
+	from a request that Claude is currently processing. Retaining an increase
 	also covers Chromium exposing the new message one scan before the Stop control.
 	"""
 	pending = bool(pendingIncrease or messageNumberIncreased)
@@ -699,9 +587,9 @@ def confirmedUserMessageSubmission(pendingIncrease, messageNumberIncreased, stop
 
 
 def isStopControlLabel(label):
-	"""Return whether a button is the active-task stop or cancel control."""
-	lower = " ".join(str(label or "").lower().split())
-	return lower in ("stop", "stop generating", "cancel", "cancel task", "cancel request")
+	return " ".join(str(label or "").casefold().split()) in (
+		"stop", "stop generating", "stop response", "stop responding", "stop generation", "stop task", "cancel task", "cancel request",
+	)
 
 
 def stopControlTransition(previousVisible, currentVisible):
@@ -773,7 +661,7 @@ def shouldLogDiagnosticSnapshot(snapshot, previousSnapshot, elapsedSeconds, repe
 
 
 def isResponseCompletionMarkerText(text):
-	"""Return whether virtual-buffer text is ChatGPT's completed-response marker."""
+	"""Return whether virtual-buffer text is Claude's completed-response marker."""
 	normalized = " ".join(str(text or "").casefold().split())
 	return normalized == "response complete" or normalized.startswith("response complete:")
 
@@ -842,10 +730,11 @@ def intermediateCompletionCategory(label):
 
 
 def isKnownNonStatusButton(label):
-	"""Filter stable Codex controls that are not progress statuses."""
+	"""Filter stable Code controls that are not progress statuses."""
 	text = " ".join(str(label or "").lower().split())
 	return bool(
-		userMessageNumber(text) is not None
+		isCodePromptLabel(text)
+		or userMessageNumber(text) is not None
 		or promptControlKind(text)
 		or voiceControlKind(text)
 		or text in (
@@ -854,7 +743,7 @@ def isKnownNonStatusButton(label):
 			"review", "review changed files", "undo", "open chat", "edit message",
 		)
 		or re.fullmatch(r"worked for (?:\d+h )?(?:\d+m )?\d+s", text) is not None
-		or text.startswith("download codex status announcer ")
+		or text.startswith("download code status announcer ")
 		or re.fullmatch(r"show \d+ more files?", text) is not None
 		or re.search(r"\+\d+-\d+$", text) is not None
 	)
@@ -891,7 +780,7 @@ def isChatHistoryConversationBoundary(label):
 	text = " ".join(str(label or "").casefold().split())
 	return bool(
 		userMessageNumber(text) is not None
-		or text in ("you said:", "chatgpt said:", "dismiss usage alert", "usage consumed")
+		or text in ("you said:", "claude said:", "dismiss usage alert", "usage consumed")
 		or re.fullmatch(r"\d{1,3}% usage remaining", text)
 		or text.startswith(("resets every ", "next reset "))
 	)
@@ -906,7 +795,7 @@ def promptControlKind(name):
 		return "permissions"
 	if text in ("model", "select model", "choose model", "change model"):
 		return "model"
-	if re.search(r"\b(?:gpt[- ]?\d|o[1345](?:[- ]|$)|codex model|reasoning model)\b", text):
+	if re.search(r"\b(?:gpt[- ]?\d|o[1345](?:[- ]|$)|code model|reasoning model)\b", text):
 		return "model"
 	return ""
 
@@ -924,7 +813,7 @@ def categoryOutputActions(mode, speechEnabled=True, brailleEnabled=True, soundEn
 def shouldSuppressRoutineBraille(
 	protectReading, appFocused, category, priority="normal", browseMode=False,
 ):
-	"""Keep routine background output from replacing a Braille line being read in ChatGPT."""
+	"""Keep routine background output from replacing a Braille line being read in Claude."""
 	routineCategories = {
 		"thinking", "working", "command", "search", "file", "build", "tool", "commentary",
 		"backgroundPulse1", "backgroundPulse2",
@@ -954,7 +843,7 @@ def shouldSuppressNativeConversationUpdate(
 	if not text or isPermissionPromptText(text) or statusDetails(text)[0] == "attention":
 		return False
 	return text == "response complete" or text.startswith((
-		"response:", "response complete:", "chatgpt said:",
+		"response:", "response complete:", "claude said:",
 	))
 
 
@@ -1000,11 +889,11 @@ def bufferInspectionDue(
 	dirty, elapsedSinceInspection, active, appFocused, promptTyping,
 	activeFallbackSeconds=5.0, focusedIdleFallbackSeconds=15.0,
 ):
-	"""Decide whether the comparatively expensive ChatGPT buffer must be inspected.
+	"""Decide whether the comparatively expensive Claude buffer must be inspected.
 
 	Relevant accessibility events mark the buffer dirty for the next safe moment.
 	All whole-buffer inspection is deliberately suspended while the user is typing,
-	and idle ChatGPT is event-only whether focused or in the background. Direct event
+	and idle Claude is event-only whether focused or in the background. Direct event
 	handlers still announce time-sensitive activity.
 	"""
 	if promptTyping:
@@ -1029,7 +918,7 @@ def bufferInspectionDue(
 def conversationWindowShouldDetach(
 	windowKnown, windowExists, windowVisible, unavailableSeconds, graceSeconds=2.0,
 ):
-	"""Confirm that the tracked ChatGPT window is unavailable before discarding task state."""
+	"""Confirm that the tracked Claude window is unavailable before discarding task state."""
 	if not windowKnown or windowExists is None or windowVisible is None:
 		return False
 	if bool(windowExists) and bool(windowVisible):
@@ -1080,7 +969,7 @@ def promptSubmissionGestureShouldStart(promptInFocusMode, promptHadText, promptT
 	"""Require evidence of an actual prompt before Enter starts task feedback.
 
 	Braille dot-8 activates an edit field while NVDA is in browse mode, so the
-	gesture alone is not proof that ChatGPT received a prompt. Recent typing is
+	gesture alone is not proof that Claude received a prompt. Recent typing is
 	accepted because Chromium can replace the editor before its final text event.
 	"""
 	return bool(promptInFocusMode and (promptHadText is True or promptTypingActive))
@@ -1164,12 +1053,9 @@ def promptSubmissionTransition(previousHadText, currentHasText):
 	return currentHasText, bool(previousHadText and not currentHasText)
 
 
-def isCodexPromptLabel(label):
-	"""Recognize stable accessible labels used by ChatGPT's primary prompt editor."""
-	label = " ".join(str(label or "").casefold().split())
-	return label in (
-		"do anything", "ask anything", "message codex", "message chatgpt", "send a message",
-	)
+def isCodePromptLabel(label):
+	text = " ".join(str(label or "").casefold().split()).rstrip(".…:")
+	return text in ("reply to claude", "message claude", "ask claude", "how can i help you today", "how can i help you", "what can i help you with", "send a message", "write a reply")
 
 
 def statusDetails(label):
@@ -1192,7 +1078,7 @@ def statusDetails(label):
 		hasSearch = "search" in lower and "web" in lower
 		if hasSearch:
 			return "completion", "Command and web search finished"
-		# Codex normally formats completed shell activity as "Ran <command>"
+		# Code normally formats completed shell activity as "Ran <command>"
 		# without including the literal word "command".
 		return "completion", "Command finished"
 	if lower.startswith(("command failed", "failed command", "process failed")):

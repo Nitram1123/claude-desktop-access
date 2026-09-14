@@ -1,0 +1,1579 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Claude Desktop Access 2026.2.1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"MIME-Version: 1.0\n"
+"Generated-By: tools/extract_messages.py\n"
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3834
+msgid " Complete command available with Copy latest full Claude progress."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:66 globalPlugins/claudeDesktopAccess/claudeNavigator.py:33
+msgid "&Activate item"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:614
+msgid "&Claude help and account information"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:79
+msgid "&Copy address"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:491
+msgid "&Delay before repeating Working sounds (milliseconds):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:549
+msgid "&Enable this activity category"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:622
+msgid "&Export add-on settings…"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:425
+msgid "&Full speech profile:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:624
+msgid "&Import add-on settings…"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:434
+msgid "&Minimal speech profile:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:65 globalPlugins/claudeDesktopAccess/claudeNavigator.py:33
+msgid "&Move to item"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:612
+msgid "&Open Claude usage settings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:416
+msgid "&Redact likely secrets and personal path names in Full mode"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:40
+msgid "&Refresh chat lists"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:77
+msgid "&Refresh page items"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:464
+msgid "&Reset speech profile settings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:572
+msgid "&Restore built-in announcement"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/claudeNavigator.py:23
+msgid "&Search modes, artifacts and attachments:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:172
+msgid "; safe scan limit reached"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:76
+msgid "Accessible &snapshot"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:210
+msgid "Activate item"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3001
+msgid "Activated {item}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:545
+msgid "Activity &category:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3297 globalPlugins/claudeDesktopAccess/__init__.py:88
+msgid "Activity monitoring active"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:89
+msgid "Activity monitoring inactive"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:507
+msgid "Activity Output"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:252 globalPlugins/claudeDesktopAccess/browserAccess.py:289
+msgid "address unavailable"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:591
+msgid "Advanced"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:542
+msgid "all enabled channels"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:552
+msgid "All enabled channels"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:17
+msgid "All items"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:461
+msgid "Allow &urgent permission and failure announcements to interrupt current speech"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:520
+msgid "Announce a recurring background progress &pulse"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:587
+msgid "Announce when embedded browser pages start and finish &loading"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:408
+msgid "Announcement &detail:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:569
+msgid "Announcement &text (blank uses built-in):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4254
+msgid "Archived chats cached: {count}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:32
+msgid "Archived chats:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:574
+msgid "Available placeholders: {message}, {activity}, {seconds}, and {duration}."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:512
+msgid "Background progress &interval (seconds):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:82
+msgid "Background progress one"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:83
+msgid "Background progress two"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:437
+msgid "Balanced — concise activity changes and results"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1403
+msgid "Beta: live Claude validation pending\nNVDA: {nvdaVersion}\nVersion: {version}\nVerbosity: {verbosity}\nFull speech profile: {profile}\nMinimal speech profile: {minimalProfile}\nBraille detail: {brailleDetail}\nSound style: {style}\nClick volume: {volume}\nMonitoring attached: {attached}\nBackground state: {state}\nPaused: {paused}\nActive category: {category}\nLast state reason: {reason}\nLast submission signal: {signal}\nClaude document switches: {switches}\nFull buffer inspections: {inspections}\nLightweight ticks without inspection: {skipped}\nPrompt typing protection: {typingProtection}\nPreserved Braille compositions: {braillePreserved}\nSuppressed disruptive conversation updates: {conversationUpdates}\nLast inspection error: {error}\nEmbedded browser focus detected: {browserFocused}\nNative browser interaction: yes\nEmbedded browser loading announcements: {browserProgress}\nSpeech history entries: {speechHistory}\nBraille history entries: {brailleHistory}\nRecent chats cached: {recent}\nArchived chats cached: {archived}\nConfiguration repairs this session: {repairs}\nSupported applications: {apps}\nSpeech: {speech}\nBraille: {braille}\nStable conversation reading: {protectBraille}\nUrgent speech interruption: {interrupt}\nProgress sounds: {sounds}\nCategory output routing:\n{routing}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:452
+msgid "Braille &detail:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4251
+msgid "Braille enabled: {value}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4195
+msgid "Braille history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:542
+msgid "braille only"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:552
+msgid "Braille only"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:582
+msgid "Browser Access"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:180
+msgid "browser control"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:18
+msgid "Browser controls"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2946
+msgid "Browser Navigator page information is no longer available"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2913
+msgid "Browser Navigator refreshed"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3042
+msgid "Browser page address copied"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:254
+msgid "Browser page: {title}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:79
+msgid "Build and test"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:529
+msgid "Builds, compilation, and tests"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:184
+msgid "button"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:22
+msgid "Buttons"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2168
+msgid "Chat action opened"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4346
+msgid "Chat history could not be opened"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4331
+msgid "Chat history is not available in the current view"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1397
+msgid "Chat message {position}, {speaker}: {text}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3278
+msgid "Chat opened: {title}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:192
+msgid "checked"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1396 globalPlugins/claudeDesktopAccess/__init__.py:1484
+msgid "Claude"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4202
+msgid "Claude announcement history cleared"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4176
+msgid "Claude announcements paused"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4176
+msgid "Claude announcements resumed"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4170
+msgid "Claude announcements: {mode}"
+msgstr ""
+
+#: appModules/claude.py:24 globalPlugins/claudeDesktopAccess/__init__.py:1021 globalPlugins/claudeDesktopAccess/__init__.py:389
+msgid "Claude Desktop Access"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:51
+msgid "Claude Desktop Access 2026.2.1 — first beta\n\nTargets stable NVDA 2026.2. This is an experimental Claude Desktop port, not a live-verified release.\nIncludes speech, Braille, sounds, recent-message review, prompt access, activity monitoring, settings and support tools.\nNVDA+grave accent opens the Claude navigation list for modes, artifacts and attachments.\nClaude controls vary by account and app version. Report unavailable controls with a sanitized support report.\nChatGPT Desktop Access can remain installed; settings and gestures are independent."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4196
+msgid "Claude Desktop Access announcement history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4212
+msgid "Claude Desktop Access diagnostics"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:747
+msgid "Claude Desktop Access is not currently running"
+msgstr ""
+
+#: appModules/claude.py:45
+msgid "Claude Desktop Access is not ready"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:361
+msgid "Claude Desktop Access sanitized support report\nGenerated: {generated}\nNVDA version: {nvdaVersion}\n\n{report}\n"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:767
+msgid "Claude Desktop Access settings exported"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4264
+msgid "Claude Desktop Access — compatibility self-test"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:742
+msgid "Claude Desktop Access — complete release history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:731
+msgid "Claude Desktop Access — current release notes"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1305
+msgid "Claude Desktop Access — what's new"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2884
+msgid "Claude did not expose an accessible embedded-browser page"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3028
+msgid "Claude embedded browser — accessible snapshot"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1512
+msgid "Claude has not exposed a conversation document. Try browse mode, then try again."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:68
+msgid "Claude has not exposed archived chats in this view. This beta reads only accessible native controls."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4326
+msgid "Claude mode is being detected. Try history again in a moment"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4249
+msgid "Claude monitoring attached: {value}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/claudeNavigator.py:17
+msgid "Claude navigation"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4208
+msgid "Claude privacy redaction off"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4208
+msgid "Claude privacy redaction on"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:385
+msgid "Claude usage settings could not be opened"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4198
+msgid "Clear Claude announcement history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:478
+msgid "Click volume (&Z):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:474
+msgid "Clicks — soft percussive earcons"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:90 globalPlugins/claudeDesktopAccess/claudeNavigator.py:37
+msgid "Close"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1484
+msgid "Code"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:192
+msgid "collapsed"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:76
+msgid "Command"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:443
+msgid "Command &punctuation for speech:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:85
+msgid "Command failed"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:84
+msgid "Command finished"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:83
+msgid "Command still running, 10 seconds"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:82
+msgid "Command still running, 5 seconds"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:526
+msgid "Commands"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:81
+msgid "Commentary"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:84
+msgid "Completion"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:531
+msgid "Completions and failures"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:453
+msgid "Concise"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:508
+msgid "Configure background timing, then choose each activity category to review its enabled state and output route."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4230
+msgid "Copy latest full Claude progress"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:214
+msgid "Copy page address"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4214
+msgid "Copy sanitized Claude Desktop Access diagnostics"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3035 globalPlugins/claudeDesktopAccess/__init__.py:4217 globalPlugins/claudeDesktopAccess/__init__.py:4236
+msgid "Could not open the clipboard"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:428
+msgid "Developer — complete normalized commands and progress"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:629
+msgid "disabled"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:255 globalPlugins/claudeDesktopAccess/browserAccess.py:300
+msgid "Domain: {domain}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:78
+msgid "Editing file"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4259
+msgid "Embedded browser focus detected: {value}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4256
+msgid "Embedded browser loading announcements: {value}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:32
+msgid "Embedded Browser Navigator"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2878
+msgid "Embedded-browser page information could not be presented"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:414
+msgid "Enable &braille flash messages"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:413
+msgid "Enable &speech announcements"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:601
+msgid "Enable sanitized dia&gnostic logging"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:629
+msgid "enabled"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2123
+msgid "Ending voice mode"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:444
+msgid "Enhanced — speak pipes and redirects naturally"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:436
+msgid "Essential — thinking, attention, failures, and task completion"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:193
+msgid "expanded"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:753
+msgid "Export Claude Desktop Access settings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:85
+msgid "Failure"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:78
+msgid "File"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:528
+msgid "File activity"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:47
+msgid "Find page items"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:185
+msgid "form field"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:23
+msgid "Form fields"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:453
+msgid "Full — complete commands and progress"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:410
+msgid "Full — complete progress labels and commands"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:403
+msgid "General"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4248
+msgid "Global plugin loaded: yes"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:181
+msgid "heading"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:190
+msgid "heading level {level}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:19
+msgid "Headings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:81
+msgid "I am inspecting the current task."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:593
+msgid "Idle compatibility &polling interval (milliseconds):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:771
+msgid "Import Claude Desktop Access settings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:453
+msgid "Informative"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:438
+msgid "Informative — Balanced plus filenames, counts, and timing"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:188
+msgid "item"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:51
+msgid "Item category:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:755 globalPlugins/claudeDesktopAccess/__init__.py:772
+msgid "JSON files (*.json)|*.json"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:457
+msgid "Keep &conversation reading stable for speech and Braille during live updates"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:182
+msgid "landmark"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:20
+msgid "Landmarks"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4262
+msgid "Last inspection error: {value}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4243
+msgid "Latest full Claude progress copied"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:183
+msgid "link"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:21
+msgid "Links"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:444
+msgid "Literal — name command symbols"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:266
+msgid "loaded"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1837
+msgid "Loaded {count} currently available {agent} recent chats"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1833
+msgid "Loaded {count} {agent} recent chats. More are available; open history again to continue loading"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1817
+msgid "Loading additional {agent} recent chats"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2596
+msgid "Loading complete"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2577
+msgid "Loading page"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:267
+msgid "loading, {percent} percent"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:479
+msgid "Loud"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:516
+msgid "Maximum background activity (&minutes):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:448
+msgid "Maximum spoken command &length:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2116
+msgid "Microphone control is unavailable. Start voice mode first"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2087
+msgid "Microphone muted"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2102
+msgid "Microphone state could not be confirmed"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2088
+msgid "Microphone unmuted"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:409
+msgid "Minimal — brief activity summaries"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:88
+msgid "Monitoring active"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:89
+msgid "Monitoring inactive"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1829
+msgid "More recent chats could not be loaded. Showing the {count} currently available {agent} chats"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4320
+msgid "Move to Claude before opening chat history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1507
+msgid "Move to Claude before opening navigation"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:208
+msgid "Move to item"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3016
+msgid "Moved to {item}"
+msgstr ""
+
+#: appModules/claude.py:93
+msgid "Mute or unmute the Claude microphone"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2124
+msgid "Muting microphone"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4255
+msgid "Native embedded browser navigation: yes"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3278
+msgid "New chat opened"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4249 globalPlugins/claudeDesktopAccess/__init__.py:4250 globalPlugins/claudeDesktopAccess/__init__.py:4251 globalPlugins/claudeDesktopAccess/__init__.py:4257 globalPlugins/claudeDesktopAccess/__init__.py:4260
+msgid "no"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1362 globalPlugins/claudeDesktopAccess/__init__.py:4189
+msgid "No activity announcement history is available"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:67
+msgid "No archived {agent} chats"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/claudeNavigator.py:69
+msgid "No Claude control is selected"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4233
+msgid "No complete Claude progress message is available"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2709
+msgid "No embedded browser is available in the current Claude window"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:234
+msgid "No matching browser item is selected"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:125 globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:144
+msgid "No matching {agent} chats"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:303
+msgid "No readable page text was exposed by Claude."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1390
+msgid "No recent chat messages are available"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1524
+msgid "No recognized Claude navigation controls were exposed. Use native Tab navigation and include this result in beta feedback."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2975
+msgid "No remembered location is available for this browser page"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4288
+msgid "No {agent} chats are cached yet. Wait a moment and try again"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:444 globalPlugins/claudeDesktopAccess/__init__.py:479
+msgid "Normal"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:542
+msgid "off"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:552
+msgid "Off"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1393
+msgid "Only {count} recent chat messages are available"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:155
+msgid "Open archived chat"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4270
+msgid "Open Claude help"
+msgstr ""
+
+#: appModules/claude.py:97
+msgid "Open Claude navigation for modes, artifacts and attachments"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4266
+msgid "Open Claude usage settings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:609
+msgid "Open help and account pages, save sanitized troubleshooting information, or transfer add-on settings."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:80
+msgid "Open in default &browser"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:217
+msgid "Open page in default browser"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4315
+msgid "Open searchable and arrow-navigable Claude chat history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3048
+msgid "Opened the page in the default browser"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4268 globalPlugins/claudeDesktopAccess/__init__.py:724
+msgid "Opening Claude usage settings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:998
+msgid "Opens file and attachment options. Press Enter or Space to open."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1000
+msgid "Opens permission choices. Press Enter or Space to open, then use arrow keys and Enter."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:999
+msgid "Opens the model list. Press Enter or Space to open, then use arrow keys and Enter."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:87
+msgid "Other progress"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:533
+msgid "Other recognized progress"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:551
+msgid "Output &route for this category:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:71
+msgid "Page actions"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:57
+msgid "Page items"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:75
+msgid "Page su&mmary"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:299
+msgid "Page: {title}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:124
+msgid "Page: {title}. Address: {address}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4173
+msgid "Pause or resume Claude announcements"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:532
+msgid "Permission and input requests"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:86 globalPlugins/claudeDesktopAccess/__init__.py:86
+msgid "Permission required"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:534
+msgid "Plain-language commentary"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:470
+msgid "Play &progress sounds for enabled announcements"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:483
+msgid "Play a continuous &Working sound while Claude is busy"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:495
+msgid "Play a distinct sound when a prompt is &submitted"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:468
+msgid "Play a sound for task &completion or failure"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:499
+msgid "Play sounds when Claude &monitoring becomes active or inactive"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2484
+msgid "Plugin installation complete"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2482
+msgid "Plugin installation in progress"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2486
+msgid "Plugin installation {percent} percent"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:193
+msgid "pressed"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:562
+msgid "Preview action (&V):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:577
+msgid "Preview selected &sound"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:579
+msgid "Preview selected s&peech"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:473
+msgid "Progress sound style (&J):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3546 globalPlugins/claudeDesktopAccess/__init__.py:90 globalPlugins/claudeDesktopAccess/__init__.py:90
+msgid "Prompt submitted"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:256
+msgid "purchase more credits in Claude usage settings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:429
+msgid "Raw — exact exposed Claude progress text"
+msgstr ""
+
+#: appModules/claude.py:77
+msgid "Read the eighth-most-recent Claude message"
+msgstr ""
+
+#: appModules/claude.py:65
+msgid "Read the fifth-most-recent Claude message"
+msgstr ""
+
+#: appModules/claude.py:61
+msgid "Read the fourth-most-recent Claude message"
+msgstr ""
+
+#: appModules/claude.py:49
+msgid "Read the most recent Claude message"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4182
+msgid "Read the next Claude announcement"
+msgstr ""
+
+#: appModules/claude.py:81
+msgid "Read the ninth-most-recent Claude message"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4178
+msgid "Read the previous Claude announcement"
+msgstr ""
+
+#: appModules/claude.py:53
+msgid "Read the second-most-recent Claude message"
+msgstr ""
+
+#: appModules/claude.py:73
+msgid "Read the seventh-most-recent Claude message"
+msgstr ""
+
+#: appModules/claude.py:69
+msgid "Read the sixth-most-recent Claude message"
+msgstr ""
+
+#: appModules/claude.py:85
+msgid "Read the tenth-most-recent Claude message"
+msgstr ""
+
+#: appModules/claude.py:57
+msgid "Read the third-most-recent Claude message"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1803 globalPlugins/claudeDesktopAccess/__init__.py:4334
+msgid "Recent chat history is already loading"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1857
+msgid "Recent chat history loading stopped because Claude is no longer focused"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1387
+msgid "Recent chat messages could not be read"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4253
+msgid "Recent chats cached: {count}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:29
+msgid "Recent chats:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:137
+msgid "Refreshing accessible browser items…"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4153
+msgid "Report current Claude activity or repeat the latest message"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3053
+msgid "Requested the native Open in browser action"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:194
+msgid "required"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:78
+msgid "Restore &last location"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:81
+msgid "Return to Claude &prompt"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:220
+msgid "Return to Claude prompt"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3102
+msgid "Returned to the Claude prompt"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4245
+msgid "Run Claude Desktop Access compatibility self-test"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:686 globalPlugins/claudeDesktopAccess/__init__.py:76
+msgid "Running command"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:79
+msgid "Running tests"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:375
+msgid "Sanitized Claude Desktop Access support report saved"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4224
+msgid "Sanitized Claude diagnostics copied"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4226
+msgid "Save a sanitized Claude Desktop Access support report"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:353
+msgid "Save sanitized Claude Desktop Access support report"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:620
+msgid "Save sanitized support &report…"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:270
+msgid "scan limit reached"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/claudeNavigator.py:31
+msgid "Scan limit reached. Some controls may be missing."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1548
+msgid "Scanning Claude navigation"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2727
+msgid "Scanning the embedded browser"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:77
+msgid "Search"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:26
+msgid "Search chats:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:48
+msgid "Search current page:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:77
+msgid "Searching the web"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:194
+msgid "selected"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:64
+msgid "Selected item"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:404
+msgid "Settings are organized into pages. Press Control+Tab or Shift+Control+Tab to change pages. Select Apply or OK to save changes."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:765
+msgid "Settings could not be exported"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:804
+msgid "Settings could not be imported"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:806
+msgid "Settings imported and loaded into this panel."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4186
+msgid "Show Claude announcement history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4210
+msgid "Show sanitized Claude Desktop Access diagnostics"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:479
+msgid "Soft"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4252
+msgid "Sound inventory: {count} files"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:542
+msgid "sound only"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:552
+msgid "Sound only"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:467
+msgid "Sounds"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:423
+msgid "Speech and Braille"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4250
+msgid "Speech enabled: {value}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4193
+msgid "Speech history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:542
+msgid "speech only"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:552
+msgid "Speech only"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:858
+msgid "Speech profile settings reset. Select OK to save."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:427
+msgid "Standard — action, target, counts, and useful timing"
+msgstr ""
+
+#: appModules/claude.py:89
+msgid "Start or end Claude voice mode"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2122
+msgid "Starting voice mode"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:608
+msgid "Support"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:597
+msgid "Supported application &names, comma separated:"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:186
+msgid "table"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:24
+msgid "Tables"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:504
+msgid "Test command progress sound (&K)"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:420
+msgid "Test current announcement outputs (&T)"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:355
+msgid "Text files (*.txt)|*.txt"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3019
+msgid "That browser item changed. Refresh Browser Navigator and try again"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3169 globalPlugins/claudeDesktopAccess/__init__.py:4278
+msgid "The chat-history mode changed. Open chat history again"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1479
+msgid "The Claude Chat, Cowork and Code mode menu could not be opened"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1473
+msgid "The Claude Chat, Cowork and Code mode switch is not available in this view"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3105
+msgid "The Claude prompt could not be focused in this view"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1531
+msgid "The Claude view changed. Reopen navigation."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2132
+msgid "The Claude voice control could not be activated"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:739
+msgid "The complete release history could not be opened"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3057
+msgid "The embedded browser did not expose a safe page address or external-browser control"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3032
+msgid "The embedded browser did not expose its current address"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:373
+msgid "The sanitized support report could not be saved"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:237
+msgid "The selected browser item does not expose an activate action"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2179 globalPlugins/claudeDesktopAccess/__init__.py:2191
+msgid "The selected chat action could not be opened"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2176 globalPlugins/claudeDesktopAccess/__init__.py:2188
+msgid "The selected chat's Pin or Archive button could not be focused"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:3185
+msgid "The selected {agent} chat could not be opened"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:305
+msgid "The snapshot ended at the safe scan limit."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:524 globalPlugins/claudeDesktopAccess/__init__.py:74 globalPlugins/claudeDesktopAccess/__init__.py:74
+msgid "Thinking"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1540
+msgid "This Claude control could not be reached. Try native Tab navigation."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4204
+msgid "Toggle Claude privacy redaction"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4166
+msgid "Toggle Minimal and Full Claude announcements"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:474
+msgid "Tones — musical earcons"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:80
+msgid "Tool"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:530
+msgid "Tool use"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:263 globalPlugins/claudeDesktopAccess/core.py:278
+msgid "try again {when}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2226
+msgid "Unarchive confirmation opened; move to the Unarchive and open button"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:195 globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:125
+msgid "unavailable"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2125
+msgid "Unmuting microphone"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:170
+msgid "Unnamed browser control"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:174
+msgid "Unnamed button"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:175
+msgid "Unnamed form field"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:171
+msgid "Unnamed heading"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:178
+msgid "Unnamed item"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:172
+msgid "Unnamed landmark"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:173
+msgid "Unnamed link"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:176
+msgid "Unnamed table"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2900 globalPlugins/claudeDesktopAccess/browserAccess.py:251 globalPlugins/claudeDesktopAccess/browserAccess.py:288 globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:125
+msgid "Untitled page"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:252
+msgid "upgrade to Pro"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:254
+msgid "upgrade your plan"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:280
+msgid "Usage limit reached"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:583
+msgid "Use Claude's embedded browser like any other web page in NVDA. Enter or Space activates the current control. Tab and Shift+Tab move between controls. NVDA browse-mode commands work normally."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:80
+msgid "Using tool"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:618
+msgid "View complete release &history…"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:616
+msgid "View current release &notes…"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:195
+msgid "visited"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2118
+msgid "Voice mode control is not available in this Claude view"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2086
+msgid "Voice mode ended"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2085
+msgid "Voice mode started"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:2104
+msgid "Voice mode state could not be confirmed"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:87
+msgid "Waiting"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:604
+msgid "Warning: NVDA debug logging records spoken Full-mode text, including commands, even when add-on diagnostics are sanitized."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:527
+msgid "Web searches"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:560
+msgid "Wording and Preview"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4031 globalPlugins/claudeDesktopAccess/__init__.py:75 globalPlugins/claudeDesktopAccess/__init__.py:75
+msgid "Working"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:525
+msgid "Working and analysis"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:487
+msgid "Working sound &interval (milliseconds):"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4249 globalPlugins/claudeDesktopAccess/__init__.py:4250 globalPlugins/claudeDesktopAccess/__init__.py:4251 globalPlugins/claudeDesktopAccess/__init__.py:4257 globalPlugins/claudeDesktopAccess/__init__.py:4260
+msgid "yes"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1396
+msgid "You"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4060
+msgid "{activity} still running"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4055
+msgid "{activity} still running, {duration}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:15
+msgid "{agent} chat history"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:4282 globalPlugins/claudeDesktopAccess/__init__.py:4338
+msgid "{agent} chat history is refreshing. Try again in a moment"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:256
+msgid "{count} browser controls"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:260
+msgid "{count} buttons"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:261
+msgid "{count} form fields"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:257
+msgid "{count} headings"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/claudeNavigator.py:56
+msgid "{count} items. Enter moves to the selected item."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:258
+msgid "{count} landmarks"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:259
+msgid "{count} links"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserAccess.py:262
+msgid "{count} tables"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:285
+msgid "{first} or {last}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:287
+msgid "{first}, {middle}, or {last}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:631
+msgid "{label}: {state}; {output}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:291
+msgid "{message}. Check Claude usage settings for reset details."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/core.py:290
+msgid "{message}. You can {actions}."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1486
+msgid "{mode} mode. Mode selector open. Use Up or Down Arrow and Enter to choose a mode."
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/__init__.py:1005
+msgid "{native} {help}"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/chatHistoryDialog.py:92
+msgid "{recent} recent results; {archived} archived results"
+msgstr ""
+
+#: globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py:168
+msgid "{visible} matching items; {total} total items"
+msgstr ""

@@ -9,7 +9,7 @@ addonHandler.initTranslation()
 
 
 class ChatHistoryDialog(wx.Dialog):
-	"""Search and operate recent and archived titles exposed by ChatGPT."""
+	"""Search and operate recent and archived titles exposed by Claude."""
 
 	def __init__(self, parent, mode, agentName, recentTitles, archivedTitles, archivedLoaded, onRefresh, onAction, onClose):
 		super().__init__(parent, title=_("{agent} chat history").format(agent=agentName))
@@ -65,11 +65,7 @@ class ChatHistoryDialog(wx.Dialog):
 	def _emptyArchivedMessage(self, archivedLoaded):
 		if archivedLoaded:
 			return _("No archived {agent} chats").format(agent=self._agentName)
-		if self._mode == "codex":
-			return _("Codex archived chats could not be loaded from local session history.")
-		return _(
-			"Archived chats have not been loaded. Open {agent} Settings, then Archived chats."
-		).format(agent=self._agentName)
+		return _("Claude has not exposed archived chats in this view. This beta reads only accessible native controls.")
 
 	def _rememberListFocus(self, evt, control):
 		self._lastList = control

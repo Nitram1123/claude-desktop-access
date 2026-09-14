@@ -1,5 +1,5 @@
 param(
-	[string]$Version = "2026.2.6",
+	[string]$Version = "2026.2.1",
 	[string]$PythonPath = "python"
 )
 
@@ -9,7 +9,7 @@ $outputRoot = Join-Path $projectRoot "outputs"
 if (-not (Test-Path -LiteralPath $outputRoot)) {
 	New-Item -ItemType Directory -Path $outputRoot | Out-Null
 }
-$package = Join-Path $outputRoot "chatGPTDesktopAccess-$Version.nvda-addon"
+$package = Join-Path $outputRoot "claudeDesktopAccess-$Version.nvda-addon"
 $env:PYTHONDONTWRITEBYTECODE = "1"
 
 Push-Location $projectRoot

@@ -1,5 +1,5 @@
 name: Compatibility report
-description: Report results with a new NVDA, Windows, or ChatGPT desktop version.
+description: Report results with a new NVDA, Windows, or Claude desktop version.
 title: "[Compatibility]: "
 labels: ["accessibility"]
 body:
@@ -7,7 +7,7 @@ body:
     id: addonVersion
     attributes:
       label: Add-on version
-      placeholder: 2026.2.4
+      placeholder: 2026.2.1
     validations:
       required: true
   - type: input
@@ -18,9 +18,9 @@ body:
     validations:
       required: true
   - type: input
-    id: chatgptVersion
+    id: claudeVersion
     attributes:
-      label: ChatGPT desktop app version
+      label: Claude desktop app version
       placeholder: 1.2026.x
   - type: input
     id: windowsVersion
