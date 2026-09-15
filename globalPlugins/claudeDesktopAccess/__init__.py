@@ -45,16 +45,16 @@ from .soundOutput import playProgressSound as _playProgressSound, safeBeep as _s
 addonHandler.initTranslation()
 
 CONFIG_SECTION = "claudeDesktopAccess"
-ADDON_VERSION = "2026.2.1"
+ADDON_VERSION = "2026.2.2"
 CLAUDE_USAGE_URL = "https://claude.ai/settings/usage"
 DEFAULT_SUPPORTED_APP_NAMES = "claude"
 CURRENT_RELEASE_NOTES = _(
-    "Claude Desktop Access 2026.2.1 — first beta\n\n"
-    "Targets stable NVDA 2026.2. This is an experimental Claude Desktop port, not a live-verified release.\n"
-    "Includes speech, Braille, sounds, recent-message review, prompt access, activity monitoring, settings and support tools.\n"
-    "NVDA+grave accent opens the Claude navigation list for modes, artifacts and attachments.\n"
-    "Claude controls vary by account and app version. Report unavailable controls with a sanitized support report.\n"
-    "ChatGPT Desktop Access can remain installed; settings and gestures are independent."
+    "Claude Desktop Access 2026.2.2 — beta bug fixes\n\n"
+    "• Read aloud and ordinary links or sidebar titles no longer count as activity.\n"
+    "• Completed tool output no longer prevents the response-completion settling timer from starting.\n"
+    "• When generation resumes, completion waits for a fresh quiet interval.\n"
+    "• Unchanged chat history no longer schedules repeated confirmation scans.\n"
+    "This update targets stable NVDA 2026.2. Live beta testing remains ongoing."
 )
 VERBOSITY_CHOICES = ("minimal", "full")
 FULL_SPEECH_PROFILE_CHOICES = ("standard", "developer", "raw")
@@ -1401,7 +1401,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _diagnosticReport(self):
 		conf = _settings()
 		return _(
-			"Beta: live Claude validation pending\nNVDA: {nvdaVersion}\nVersion: {version}\nVerbosity: {verbosity}\nFull speech profile: {profile}\nMinimal speech profile: {minimalProfile}\nBraille detail: {brailleDetail}\nSound style: {style}\nClick volume: {volume}\n"
+			"Beta: live validation ongoing\nNVDA: {nvdaVersion}\nVersion: {version}\nVerbosity: {verbosity}\nFull speech profile: {profile}\nMinimal speech profile: {minimalProfile}\nBraille detail: {brailleDetail}\nSound style: {style}\nClick volume: {volume}\n"
 			"Monitoring attached: {attached}\nBackground state: {state}\nPaused: {paused}\n"
 			"Active category: {category}\nLast state reason: {reason}\nLast submission signal: {signal}\n"
 			"Claude document switches: {switches}\nFull buffer inspections: {inspections}\nLightweight ticks without inspection: {skipped}\nPrompt typing protection: {typingProtection}\nPreserved Braille compositions: {braillePreserved}\nSuppressed disruptive conversation updates: {conversationUpdates}\nLast inspection error: {error}\n"
@@ -3564,6 +3564,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		buttonDepth = 0
 		buttonText = []
 		buttonName = ""
+		buttonRole = None
+		buttonInHistory = False
 		unknown = []
 		usageEvidence = []
 		usageActionControls = set()
@@ -3618,8 +3620,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				if fieldMode:
 					observedMode = fieldMode
 				landmarkName = " ".join(str(field.get("landmark", "") or "").casefold().split())
-				isMainLandmark = role == Role.LANDMARK and (
-					fieldName.casefold() in ("main", "main content") or landmarkName == "main"
+				isMainLandmark = landmarkName == "main" or (
+					role == Role.LANDMARK and fieldName.casefold() in ("main", "main content")
 				)
 				isFollowingSectionHeading = inRecents and role == getattr(Role, "HEADING", None) and (
 					fieldName.casefold() not in ("", "recents", "recent chats", "chats")
@@ -3634,6 +3636,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					buttonDepth += 1
 				elif role in (Role.BUTTON, Role.LINK):
 					buttonDepth, buttonText, buttonName = 1, [], field.get("name", "")
+					buttonRole = role
+					buttonInHistory = inRecents or inArchived
 			elif command == "controlEnd" and buttonDepth:
 				buttonDepth -= 1
 				if buttonDepth == 0:
@@ -3668,6 +3672,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						historyLabel
 					) and historyLabel not in archivedTitles:
 						archivedTitles.append(historyLabel)
+					# Links are collected for history only. A sidebar title or response
+					# citation that starts with "Reading" or "Running" is not activity.
+					if buttonRole != Role.BUTTON or buttonInHistory:
+						continue
 					for candidate in (textLabel, buttonName):
 						if isStopControlLabel(candidate):
 							stopControlVisible = True
@@ -3708,6 +3716,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				recentSnapshot, self._chatHistoryCaches[otherMode],
 				False,  # Claude may expose the same recent chats in more than one mode.
 				pendingSnapshot, pendingAge, CHAT_HISTORY_SNAPSHOT_CONFIRM_SECONDS,
+				currentTitles=self._chatHistoryCaches[scanMode],
+				current=self._chatHistoryCacheCurrent[scanMode],
 			)
 			if decision == "publish":
 				self._pendingChatHistorySnapshots[scanMode] = None
@@ -3774,7 +3784,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._promptHadText = False
 			self._beginPromptSubmission("Send button activated")
 		self._stopControlVisible, stopped = stopControlTransition(self._stopControlVisible, stopControlVisible)
-		if stopped and self._busy and not latest:
+		if stopControlVisible:
+			# A new generating phase invalidates any earlier quiet-window timer.
+			self._pendingResponseCompletionAt = 0.0
+		if stopped and self._busy:
+			# Completed tool controls can remain visible after generation stops.
+			# The finalization guard checks whether the remaining label is quiet.
 			self._queueResponseCompletion()
 		latestResponseMarker = responseCompletionScanMarker(
 			responseCompleteMarkerCount, latestDetailedResponseMarker,

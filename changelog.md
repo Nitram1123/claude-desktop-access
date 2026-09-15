@@ -1,5 +1,17 @@
 # Release history
 
+## 2026.2.2
+
+Bug fixes based on the 2026.2.1 NVDA log and synthetic reproductions. Compatibility remains stable NVDA 2026.2.
+
+- Excludes Read aloud controls, ordinary links and sidebar titles from activity detection.
+- Starts the completion settling timer when Stop disappears even if a completed tool label remains visible, preventing a stuck working state.
+- Resets pending completion when generation resumes, so it cannot finish using an earlier quiet interval.
+- Reuses confirmed, unchanged recent history without scheduling another confirmation scan. Changed or invalidated history still requires confirmation.
+- Recognizes the main landmark on a generic section when leaving the sidebar history region.
+
+119 automated tests pass, including regressions reproduced before applying the fixes. No unrelated NVDA add-on is changed. Live post-update verification remains pending.
+
 ## 2026.2.1
 
 First Claude Desktop Access beta, targeting stable NVDA 2026.2.

@@ -161,7 +161,7 @@ class ClaudeContracts(unittest.TestCase):
 
 	def test_independent_identity_and_version(self):
 		manifest = (ROOT / "manifest.ini").read_text(encoding="utf-8")
-		for line in ("name = claudeDesktopAccess", "version = 2026.2.1", "minimumNVDAVersion = 2026.2.0", "lastTestedNVDAVersion = 2026.2.0"):
+		for line in ("name = claudeDesktopAccess", "version = 2026.2.2", "minimumNVDAVersion = 2026.2.0", "lastTestedNVDAVersion = 2026.2.0"):
 			self.assertIn(line, manifest.splitlines())
 		self.assertEqual(["claude.py"], [p.name for p in (ROOT / "appModules").glob("*.py")])
 		text = (PLUGIN / "__init__.py").read_text(encoding="utf-8")

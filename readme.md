@@ -1,15 +1,15 @@
 # Claude Desktop Access for NVDA
 
-**Version 2026.2.1 — experimental beta for stable NVDA 2026.2 on Windows.**
+**Version 2026.2.2 — experimental beta for stable NVDA 2026.2 on Windows.**
 
 This is a separate GPL-licensed adaptation of [ChatGPT Desktop Access](https://github.com/jcoffin1/chatgpt-desktop-access), with independent settings and an app module scoped to Claude Desktop. Both add-ons can remain installed.
 
-This first beta has automated tests, but has **not been tested in a running Claude Desktop session with NVDA**. Claude-specific detection uses candidate English accessibility labels. Some app versions may expose different labels or no usable message boundaries. This release is for gathering that feedback, and does not claim feature parity has been verified. The manifest's last-tested version declares the NVDA compatibility target; it is not evidence of a completed manual test.
+The first beta has now been used with Claude and stable NVDA 2026.2. Version 2026.2.2 addresses activity and history bugs found in that NVDA log, with automated regression tests. Live post-update verification and broader feature testing remain ongoing. Claude-specific detection still relies on English accessibility labels; some versions may expose different labels or unusable message boundaries. This release does not claim verified feature parity.
 
 ## Install and start
 
 1. Use the stable NVDA 2026.2 release and install the official Claude Desktop Windows app.
-2. Download `claudeDesktopAccess-2026.2.1.nvda-addon` from this repository's Releases page. Open it, accept NVDA's installation dialog, and restart NVDA when prompted.
+2. Download `claudeDesktopAccess-2026.2.2.nvda-addon` from this repository's Releases page. Open it, accept NVDA's installation dialog, and restart NVDA when prompted.
 3. Open NVDA Settings, then **Claude Desktop Access**. Test the selected speech, Braille and sound outputs.
 4. Open Claude and a disposable test conversation. Test in both focus mode and browse mode.
 

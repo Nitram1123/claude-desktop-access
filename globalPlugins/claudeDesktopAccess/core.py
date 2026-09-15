@@ -38,6 +38,7 @@ def conversationModeFromSwitchLabel(label):
 def chatHistorySnapshotDecision(
 	modeAge, settleSeconds, titles, otherTitles, otherCurrent,
 	pendingTitles, pendingAge, confirmSeconds,
+	currentTitles=None, current=False,
 ):
 	"""Decide when a mode-specific sidebar snapshot is safe to publish."""
 	try:
@@ -54,6 +55,10 @@ def chatHistorySnapshotDecision(
 	otherTitles = tuple(otherTitles)
 	if titles and otherCurrent and titles == otherTitles:
 		return "otherMode"
+	# A published snapshot is already confirmed. Reconfirm only changed titles
+	# or a cache invalidated by a mode/document transition.
+	if current and currentTitles is not None and tuple(currentTitles) == titles:
+		return "publish"
 	if pendingTitles is None or tuple(pendingTitles) != titles:
 		return "confirm"
 	if pendingAge < max(0.0, float(confirmSeconds)):
@@ -1063,6 +1068,8 @@ def statusDetails(label):
 	text = " ".join(str(label or "").split())
 	lower = text.lower()
 	if not lower:
+		return "", ""
+	if lower.rstrip(" .…") in ("read aloud", "read more", "read less", "pause reading", "resume reading", "stop reading"):
 		return "", ""
 	if lower.startswith(("permission required", "approval required", "waiting for approval", "needs your approval", "requires permission")):
 		return "attention", "Permission required"
