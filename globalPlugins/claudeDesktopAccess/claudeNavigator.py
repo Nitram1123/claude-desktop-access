@@ -7,6 +7,7 @@ import gui
 import ui
 import wx
 
+from . import strings
 from .claudeAdapter import navigationKind, roleName
 
 addonHandler.initTranslation()
@@ -14,13 +15,13 @@ addonHandler.initTranslation()
 
 class ClaudeNavigator(wx.Dialog):
 	def __init__(self, items, onAction, onClose, truncated=False):
-		super().__init__(gui.mainFrame, title=_("Claude navigation"), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+		super().__init__(gui.mainFrame, title=_(strings.CLAUDE_NAVIGATION), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 		self.items = items
 		self.visible = []
 		self.onAction, self.onClose = onAction, onClose
 		self.closed = False
 		sizer = wx.BoxSizer(wx.VERTICAL)
-		sizer.Add(wx.StaticText(self, label=_("&Search modes, artifacts and attachments:")), flag=wx.ALL, border=8)
+		sizer.Add(wx.StaticText(self, label=_(strings.SEARCH_MODES_ARTIFACTS_AND_ATTACHMENTS)), flag=wx.ALL, border=8)
 		self.search = wx.TextCtrl(self)
 		sizer.Add(self.search, flag=wx.EXPAND | wx.ALL, border=8)
 		self.results = wx.ListBox(self)
@@ -28,13 +29,13 @@ class ClaudeNavigator(wx.Dialog):
 		self.status = wx.StaticText(self, label="")
 		sizer.Add(self.status, flag=wx.ALL, border=8)
 		if truncated:
-			sizer.Add(wx.StaticText(self, label=_("Scan limit reached. Some controls may be missing.")), flag=wx.ALL, border=8)
+			sizer.Add(wx.StaticText(self, label=_(strings.SCAN_LIMIT_REACHED_SOME_CONTROLS_MAY_BE_MISSING)), flag=wx.ALL, border=8)
 		buttons = wx.BoxSizer(wx.HORIZONTAL)
-		for label, action in ((_("&Move to item"), "move"), (_("&Activate item"), "activate")):
+		for label, action in ((_(strings.MOVE_TO_ITEM), "move"), (_(strings.ACTIVATE_ITEM), "activate")):
 			button = wx.Button(self, label=label)
 			button.Bind(wx.EVT_BUTTON, lambda event, action=action: self.perform(action))
 			buttons.Add(button, flag=wx.ALL, border=8)
-		close = wx.Button(self, wx.ID_CANCEL, label=_("Close"))
+		close = wx.Button(self, wx.ID_CANCEL, label=_(strings.CLOSE))
 		close.Bind(wx.EVT_BUTTON, lambda event: self.Close())
 		buttons.Add(close, flag=wx.ALL, border=8)
 		sizer.Add(buttons)
@@ -53,7 +54,7 @@ class ClaudeNavigator(wx.Dialog):
 		self.results.Set([item[0] for item in self.visible])
 		if self.visible:
 			self.results.SetSelection(0)
-		self.status.SetLabel(_("{count} items. Enter moves to the selected item.").format(count=len(self.visible)))
+		self.status.SetLabel(_(strings.COUNT_ITEMS_ENTER_MOVES_TO_THE_SELECTED_ITEM).format(count=len(self.visible)))
 
 	def key(self, event):
 		if event.GetKeyCode() == wx.WXK_RETURN:
@@ -66,7 +67,7 @@ class ClaudeNavigator(wx.Dialog):
 	def perform(self, action):
 		index = self.results.GetSelection()
 		if index == wx.NOT_FOUND or index >= len(self.visible):
-			ui.message(_("No Claude control is selected"))
+			ui.message(_(strings.NO_CLAUDE_CONTROL_IS_SELECTED))
 			return
 		obj = self.visible[index][1]
 		self.Close()
@@ -118,7 +119,8 @@ class NavigationScan:
 			try:
 				kind = navigationKind(getattr(obj, "name", ""), getattr(obj, "role", None))
 				if kind:
-					self.items.append((f"{kind}: {obj.name}", obj))
+					label = _(strings.NAVIGATION_ITEM).format(kind=_(kind), name=obj.name)
+					self.items.append((label, obj))
 				# One sibling at a time avoids unbounded child enumeration.
 				sibling = getattr(obj, "next", None)
 				child = getattr(obj, "firstChild", None) if obj is self.root or roleName(getattr(obj, "role", None)) != "document" else None

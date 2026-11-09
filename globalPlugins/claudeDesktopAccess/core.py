@@ -6,6 +6,8 @@ import re
 from collections import deque
 from pathlib import Path
 
+from . import strings
+
 
 def mergeSupportedAppNames(value, requiredNames=("claude",)):
 	result = []
@@ -96,13 +98,13 @@ def modeSpecificRecentChatTitles(mode, unifiedTitles, activeCodeTitles):
 
 
 
-def uniqueThreadLabels(entries):
+def uniqueThreadLabels(entries, translate=lambda text: text):
 	"""Give duplicate archived task titles distinct labels without losing their IDs."""
 	result = []
 	counts = {}
 	used = set()
 	for threadId, title in entries:
-		base = " ".join(str(title or "").split()) or f"Archived task {threadId}"
+		base = " ".join(str(title or "").split()) or translate(strings.ARCHIVED_TASK_ID).format(threadId=threadId)
 		count = counts.get(base, 0) + 1
 		label = base if count == 1 else f"{base} ({count})"
 		while label in used:
@@ -254,18 +256,18 @@ def usageLimitNotice(text, translate=lambda text: text):
 
 	options = []
 	if re.search(r"\bupgrade\s+(?:your\s+plan\s+)?to\s+pro\b", lower):
-		options.append(translate("upgrade to Pro"))
+		options.append(translate(strings.UPGRADE_TO_PRO))
 	elif re.search(r"\bupgrade(?:\s+(?:your\s+)?plan)?\b", lower):
-		options.append(translate("upgrade your plan"))
+		options.append(translate(strings.UPGRADE_YOUR_PLAN))
 	if re.search(r"\b(?:add|buy|purchase)(?:\s+some)?(?:\s+more)?\s+credits?\b", lower):
-		options.append(translate("purchase more credits in Claude usage settings"))
+		options.append(translate(strings.PURCHASE_MORE_CREDITS_IN_CLAUDE_USAGE_SETTINGS))
 	retry = re.search(
 		r"\btry again\s+(?P<when>(?:at|in|after)\s+[^.!?]+)",
 		text,
 		flags=re.IGNORECASE,
 	)
 	if retry:
-		options.append(translate("try again {when}").format(when=retry.group("when").strip()))
+		options.append(translate(strings.TRY_AGAIN_WHEN).format(when=retry.group("when").strip()))
 	else:
 		reset = re.search(
 			r"\b(?:usage|limit)\s+resets?\s+(?P<when>(?:at|in|after)\s+[^.!?]+)",
@@ -280,20 +282,20 @@ def usageLimitNotice(text, translate=lambda text: text):
 				flags=re.IGNORECASE,
 			)
 		if reset:
-			options.append(translate("try again {when}").format(when=reset.group("when").strip()))
+			options.append(translate(strings.TRY_AGAIN_WHEN).format(when=reset.group("when").strip()))
 
-	message = translate("Usage limit reached")
+	message = translate(strings.USAGE_LIMIT_REACHED)
 	if options:
 		if len(options) == 1:
 			actionText = options[0]
 		elif len(options) == 2:
-			actionText = translate("{first} or {last}").format(first=options[0], last=options[1])
+			actionText = translate(strings.TWO_ALTERNATIVES).format(first=options[0], last=options[1])
 		else:
-			actionText = translate("{first}, {middle}, or {last}").format(
+			actionText = translate(strings.MULTIPLE_ALTERNATIVES).format(
 				first=options[0], middle=", ".join(options[1:-1]), last=options[-1],
 			)
-		return translate("{message}. You can {actions}.").format(message=message, actions=actionText)
-	return translate("{message}. Check Claude usage settings for reset details.").format(message=message)
+		return translate(strings.MESSAGE_YOU_CAN_ACTIONS).format(message=message, actions=actionText)
+	return translate(strings.MESSAGE_CHECK_CLAUDE_USAGE_SETTINGS_FOR_RESET_DETAILS).format(message=message)
 
 
 def pluginInstallProgress(text, step=10):
@@ -342,11 +344,11 @@ def formatElapsedDuration(totalSeconds, translate=lambda text: text):
 	minutes, seconds = divmod(remainder, 60)
 	parts = []
 	if hours:
-		parts.append(translate("{count} hour" if hours == 1 else "{count} hours").format(count=hours))
+		parts.append(translate(strings.COUNT_HOUR if hours == 1 else strings.COUNT_HOURS).format(count=hours))
 	if minutes:
-		parts.append(translate("{count} minute" if minutes == 1 else "{count} minutes").format(count=minutes))
+		parts.append(translate(strings.COUNT_MINUTE if minutes == 1 else strings.COUNT_MINUTES).format(count=minutes))
 	if seconds or not parts:
-		parts.append(translate("{count} second" if seconds == 1 else "{count} seconds").format(count=seconds))
+		parts.append(translate(strings.COUNT_SECOND if seconds == 1 else strings.COUNT_SECONDS).format(count=seconds))
 	return " ".join(parts)
 
 
@@ -359,15 +361,19 @@ def currentActivitySummary(
 	if latestMessage:
 		return latestMessage
 	if not busy:
-		return f"{agentName} is idle"
+		return translate(strings.CURRENT_ACTIVITY_IDLE).format(agentName=agentName)
 	names = {
-		"command": "running commands", "build": "running tests", "tool": "using tools",
-		"search": "searching", "file": "working with files", "thinking": "thinking",
-		"working": "working", "commentary": "working",
+		"command": strings.RUNNING_COMMANDS, "build": strings.RUNNING_TESTS_LOWER, "tool": strings.USING_TOOLS,
+		"search": strings.SEARCHING, "file": strings.WORKING_WITH_FILES, "thinking": strings.THINKING_LOWER,
+		"working": strings.WORKING_LOWER, "commentary": strings.WORKING_LOWER,
 	}
-	activity = names.get(str(category or "").casefold(), "working")
+	activity = names.get(str(category or "").casefold(), strings.WORKING_LOWER)
 	elapsed = max(0, int(elapsed or 0))
-	return f"{agentName} is still {activity}" + (f", {formatElapsedDuration(elapsed, translate)}" if elapsed else "")
+	if elapsed:
+		return translate(strings.CURRENT_ACTIVITY_WITH_DURATION).format(
+			agentName=agentName, activity=translate(activity), duration=formatElapsedDuration(elapsed, translate),
+		)
+	return translate(strings.CURRENT_ACTIVITY).format(agentName=agentName, activity=translate(activity))
 
 
 def backgroundActivityName(category, latestMessage=""):
@@ -375,20 +381,20 @@ def backgroundActivityName(category, latestMessage=""):
 	category = str(category or "").casefold()
 	text = " ".join(str(latestMessage or "").casefold().split())
 	if any(word in text for word in ("finished", "complete", "updated", "done")):
-		return "Processing"
+		return strings.PROCESSING
 	detectedCategory = statusDetails(latestMessage)[0]
 	if detectedCategory and detectedCategory != "completion":
 		category = detectedCategory
 	if category == "file":
 		if any(word in text for word in ("editing", "writing", "creating", "updating", "modifying", "patching")):
-			return "Editing code"
+			return strings.EDITING_CODE
 		if any(word in text for word in ("checking", "reading", "inspecting", "reviewing")):
-			return "Checking files"
-		return "File operations"
+			return strings.CHECKING_FILES
+		return strings.FILE_OPERATIONS
 	return {
-		"command": "Command", "build": "Tests", "tool": "Tool operation",
-		"search": "Web search", "thinking": "Thinking", "working": "Processing",
-	}.get(category, "Work")
+		"command": strings.COMMAND, "build": strings.TESTS, "tool": strings.TOOL_OPERATION,
+		"search": strings.WEB_SEARCH, "thinking": strings.THINKING, "working": strings.PROCESSING,
+	}.get(category, strings.WORK)
 
 
 def looksLikeCodeConversation(text):
@@ -643,15 +649,22 @@ def duplicateChannelActions(speechMessage, brailleMessage, previousSpeech, previ
 	}
 
 
-def formatCommandSpeech(message, punctuation="normal", maximumCharacters=240):
+def formatCommandSpeech(message, punctuation="normal", maximumCharacters=240, translate=lambda text: text):
 	"""Prepare long command text for speech without changing stored or braille text."""
 	text = str(message or "")
+	replacements = ()
 	if punctuation == "enhanced":
-		text = text.replace("&&", " and then ").replace("||", " or else ").replace("|", " pipe ")
-		text = text.replace(">>", " append to ").replace(">", " redirect to ")
+		replacements = (
+			("&&", strings.AND_THEN), ("||", strings.OR_ELSE), ("|", strings.PIPE),
+			(">>", strings.APPEND_TO), (">", strings.REDIRECT_TO),
+		)
 	elif punctuation == "literal":
-		for symbol, word in (("&&", " ampersand ampersand "), ("||", " pipe pipe "), ("|", " pipe "), (">", " greater than "), ("<", " less than ")):
-			text = text.replace(symbol, word)
+		replacements = (
+			("&&", strings.DOUBLE_AMPERSAND), ("||", strings.DOUBLE_PIPE), ("|", strings.PIPE),
+			(">", strings.GREATER_THAN), ("<", strings.LESS_THAN),
+		)
+	for symbol, words in replacements:
+		text = text.replace(symbol, f" {translate(words)} ")
 	text = " ".join(text.split())
 	maximumCharacters = max(40, int(maximumCharacters or 240))
 	if len(text) <= maximumCharacters:
@@ -1072,78 +1085,78 @@ def statusDetails(label):
 	if lower.rstrip(" .…") in ("read aloud", "read more", "read less", "pause reading", "resume reading", "stop reading"):
 		return "", ""
 	if lower.startswith(("permission required", "approval required", "waiting for approval", "needs your approval", "requires permission")):
-		return "attention", "Permission required"
+		return "attention", strings.PERMISSION_REQUIRED
 	if lower.startswith(("input required", "waiting for user input", "waiting for your input", "needs your input", "question for you")):
-		return "attention", "User input required"
+		return "attention", strings.USER_INPUT_REQUIRED
 	if lower.startswith(("file edit complete", "file editing complete", "file edited")):
-		return "completion", "File edit finished"
+		return "completion", strings.FILE_EDIT_FINISHED
 	if lower.startswith(("compiled", "transpiled")):
-		return "completion", "Compilation finished"
+		return "completion", strings.COMPILATION_FINISHED
 	if lower.startswith(("searched the web", "search complete", "search finished")):
-		return "completion", "Web search finished"
+		return "completion", strings.WEB_SEARCH_FINISHED
 	if lower.startswith("ran"):
 		hasSearch = "search" in lower and "web" in lower
 		if hasSearch:
-			return "completion", "Command and web search finished"
+			return "completion", strings.COMMAND_AND_WEB_SEARCH_FINISHED
 		# Code normally formats completed shell activity as "Ran <command>"
 		# without including the literal word "command".
-		return "completion", "Command finished"
+		return "completion", strings.COMMAND_FINISHED
 	if lower.startswith(("command failed", "failed command", "process failed")):
-		return "completion", "Command failed"
+		return "completion", strings.COMMAND_FAILED
 	if lower.startswith(("command succeeded", "process succeeded")):
-		return "completion", "Command finished"
+		return "completion", strings.COMMAND_FINISHED
 	if lower.startswith(("tests failed", "testing failed", "test failed")):
-		return "completion", "Tests failed"
+		return "completion", strings.TESTS_FAILED
 	if lower.startswith(("tests passed", "testing passed", "test passed")):
-		return "completion", "Tests passed"
+		return "completion", strings.TESTS_PASSED
 	if lower.startswith(("build failed", "compilation failed")):
-		return "completion", "Build failed"
+		return "completion", strings.BUILD_FAILED
 	if lower.startswith(("finished", "completed", "done", "cancelled", "canceled", "response complete")):
-		return "completion", "Finished"
+		return "completion", strings.FINISHED
 	if lower.startswith(("reading finished", "reading complete", "inspection finished", "review finished")):
-		return "completion", "Reading finished"
+		return "completion", strings.READING_FINISHED
 	if lower == "read" or lower.startswith(("read ", "read:", "inspected", "reviewed")):
-		return "completion", "Reading finished"
+		return "completion", strings.READING_FINISHED
 	if lower.startswith(("wrote", "created")):
-		return "completion", "Writing finished"
+		return "completion", strings.WRITING_FINISHED
 	if lower.startswith(("edited", "updated", "modified", "applied", "patched")):
-		return "completion", "Changes finished"
+		return "completion", strings.CHANGES_FINISHED
 	if lower.startswith(("generated", "built")):
-		return "completion", "Generation finished"
+		return "completion", strings.GENERATION_FINISHED
 	if lower.startswith(("planning", "thinking")):
-		return "thinking", "Thinking"
+		return "thinking", strings.THINKING
 	if lower.startswith(("working", "processing")):
-		return "working", "Working"
+		return "working", strings.WORKING
 	if lower.startswith(("analyzing", "analysing")):
-		return "working", "Analyzing"
+		return "working", strings.ANALYZING
 	if lower.startswith(("running", "executing")):
 		if "search" in lower and ("web" in lower or "internet" in lower):
-			return "search", "Searching the web"
+			return "search", strings.SEARCHING_THE_WEB
 		if lower.startswith(("running tests", "running test", "executing tests", "executing test", "running build", "executing build")):
-			return "build", "Running tests" if "test" in lower else "Generating"
+			return "build", strings.RUNNING_TESTS if "test" in lower else strings.GENERATING
 		if lower.startswith(("running tool", "executing tool")):
-			return "tool", "Using tool"
-		return "command", "Running command"
+			return "tool", strings.USING_TOOL
+		return "command", strings.RUNNING_COMMAND
 	if lower.startswith("searching"):
-		return "search", "Searching the web"
+		return "search", strings.SEARCHING_THE_WEB
 	if lower.startswith(("reading", "inspecting", "reviewing")):
-		return "file", "Reading"
+		return "file", strings.READING
 	if lower.startswith(("writing", "creating")):
-		return "file", "Writing"
+		return "file", strings.WRITING
 	if lower.startswith(("file edit", "editing", "updating", "modifying")):
-		return "file", "Editing file" if lower.startswith("file edit") else "Editing"
+		return "file", strings.EDITING_FILE if lower.startswith("file edit") else strings.EDITING
 	if lower.startswith(("applying", "patching")):
-		return "file", "Applying changes"
+		return "file", strings.APPLYING_CHANGES
 	if lower.startswith(("compiling", "transpiling", "generating", "building", "testing")):
 		if lower.startswith(("compiling", "transpiling")):
-			return "build", "Compiling"
+			return "build", strings.COMPILING
 		if lower.startswith("testing"):
-			return "build", "Running tests"
-		return "build", "Generating"
+			return "build", strings.RUNNING_TESTS
+		return "build", strings.GENERATING
 	if lower.startswith(("using", "calling")):
-		return "tool", "Using tool"
+		return "tool", strings.USING_TOOL
 	if lower.startswith("waiting"):
-		return "other", "Waiting"
+		return "other", strings.WAITING
 	return "", ""
 
 
@@ -1191,9 +1204,9 @@ def standardFullMessage(label, translate=lambda text: text):
 		details.append(countMatch.group(0))
 	seconds = elapsedSeconds(text)
 	if seconds is not None and seconds >= 5:
-		details.append(f"{seconds} seconds")
+		details.append(translate(strings.COUNT_SECONDS).format(count=seconds))
 	message = translate(minimal)
-	return f"{message}: {', '.join(details)}" if details else message
+	return translate(strings.STATUS_WITH_DETAILS).format(message=message, details=", ".join(details)) if details else message
 
 
 def minimalProfileMessage(label, translate=lambda text: text, profile="balanced"):
@@ -1212,19 +1225,19 @@ def minimalProfileMessage(label, translate=lambda text: text, profile="balanced"
 	balanced = minimal
 	if category == "file":
 		if lower.startswith(("reading", "inspecting", "reviewing")):
-			balanced = "Checking files"
+			balanced = strings.CHECKING_FILES
 		elif lower.startswith(("writing", "creating", "file edit", "editing", "updating", "modifying")):
-			balanced = "Editing code"
+			balanced = strings.EDITING_CODE
 	elif category == "completion":
 		if isTaskCompletionLabel(text):
-			balanced = "Task canceled" if lower.startswith(("cancelled", "canceled")) else "Task finished"
+			balanced = strings.TASK_CANCELED if lower.startswith(("cancelled", "canceled")) else strings.TASK_FINISHED
 		elif lower.startswith(("file edit", "file edited", "edited", "updated", "modified", "applied", "patched")):
-			balanced = "File updated"
+			balanced = strings.FILE_UPDATED
 	elif category == "other" and lower.startswith("waiting"):
 		if "command" in lower or "process" in lower:
-			balanced = "Waiting for command"
+			balanced = strings.WAITING_FOR_COMMAND
 		elif "tool" in lower:
-			balanced = "Waiting for tool"
+			balanced = strings.WAITING_FOR_TOOL
 	message = translate(balanced)
 	if profile != "informative":
 		return message
@@ -1237,8 +1250,8 @@ def minimalProfileMessage(label, translate=lambda text: text, profile="balanced"
 		details.append(countMatch.group(0))
 	seconds = elapsedSeconds(text)
 	if seconds is not None and seconds >= 10:
-		details.append(f"{seconds} seconds")
-	return f"{message}: {', '.join(details)}" if details else message
+		details.append(translate(strings.COUNT_SECONDS).format(count=seconds))
+	return translate(strings.STATUS_WITH_DETAILS).format(message=message, details=", ".join(details)) if details else message
 
 
 def statusMessage(label, translate=lambda text: text, verbosity="minimal", redact=False, fullProfile="developer", minimalProfile="balanced"):
@@ -1330,12 +1343,12 @@ def previewSelection(items, selection):
 	return items[selection]
 
 
-def formatCustomAnnouncement(template, message, activity="", seconds=0, duration=""):
+def formatCustomAnnouncement(template, message, activity="", seconds=0, duration="", translate=lambda text: text):
 	"""Format a user announcement without allowing unknown fields to break output."""
 	template = str(template or "").strip()
 	if not template:
 		return str(message or "")
-	duration = str(duration or formatElapsedDuration(seconds))
+	duration = str(duration or formatElapsedDuration(seconds, translate))
 	try:
 		return template.format(message=message, activity=activity, seconds=seconds, duration=duration)
 	except (AttributeError, KeyError, IndexError, ValueError):

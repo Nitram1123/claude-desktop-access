@@ -4,6 +4,8 @@ import re
 from collections import Counter
 from urllib.parse import urlsplit
 
+from . import strings
+
 
 _CONTAINER_PATTERN = re.compile(
 	r"\b(?:browser|web\s*view|webview|web preview|website preview)\b",
@@ -167,32 +169,32 @@ def browserNavigatorItemLabel(category, name, roleName="", value="", level=None,
 	label = normalizedText(name)
 	if not label:
 		fallbacks = {
-			"controls": translate("Unnamed browser control"),
-			"headings": translate("Unnamed heading"),
-			"landmarks": translate("Unnamed landmark"),
-			"links": translate("Unnamed link"),
-			"buttons": translate("Unnamed button"),
-			"formFields": translate("Unnamed form field"),
-			"tables": translate("Unnamed table"),
+			"controls": translate(strings.UNNAMED_BROWSER_CONTROL),
+			"headings": translate(strings.UNNAMED_HEADING),
+			"landmarks": translate(strings.UNNAMED_LANDMARK),
+			"links": translate(strings.UNNAMED_LINK),
+			"buttons": translate(strings.UNNAMED_BUTTON),
+			"formFields": translate(strings.UNNAMED_FORM_FIELD),
+			"tables": translate(strings.UNNAMED_TABLE),
 		}
-		label = fallbacks.get(category, translate("Unnamed item"))
+		label = fallbacks.get(category, translate(strings.UNNAMED_ITEM))
 	roleLabels = {
-		"controls": translate("browser control"),
-		"headings": translate("heading"),
-		"landmarks": translate("landmark"),
-		"links": translate("link"),
-		"buttons": translate("button"),
-		"formFields": translate("form field"),
-		"tables": translate("table"),
+		"controls": translate(strings.BROWSER_CONTROL),
+		"headings": translate(strings.HEADING),
+		"landmarks": translate(strings.LANDMARK),
+		"links": translate(strings.LINK),
+		"buttons": translate(strings.BUTTON),
+		"formFields": translate(strings.FORM_FIELD),
+		"tables": translate(strings.TABLE),
 	}
-	roleLabel = roleLabels.get(category, normalizedText(role) or translate("item"))
+	roleLabel = roleLabels.get(category, normalizedText(role) or translate(strings.ITEM))
 	if category == "headings" and level not in (None, ""):
-		roleLabel = translate("heading level {level}").format(level=level)
+		roleLabel = translate(strings.HEADING_LEVEL_LEVEL).format(level=level)
 	stateLabels = {
-		"checked": translate("checked"), "collapsed": translate("collapsed"),
-		"expanded": translate("expanded"), "pressed": translate("pressed"),
-		"required": translate("required"), "selected": translate("selected"),
-		"unavailable": translate("unavailable"), "visited": translate("visited"),
+		"checked": translate(strings.CHECKED), "collapsed": translate(strings.COLLAPSED),
+		"expanded": translate(strings.EXPANDED), "pressed": translate(strings.PRESSED),
+		"required": translate(strings.REQUIRED), "selected": translate(strings.SELECTED),
+		"unavailable": translate(strings.UNAVAILABLE), "visited": translate(strings.VISITED),
 	}
 	stateText = [stateLabels[state] for state in sorted(set(states)) if state in stateLabels]
 	parts = [label, roleLabel]
@@ -248,26 +250,26 @@ def browserPageIdentity(title, address):
 def browserPageSummary(title, address, items, loadingPercent=None, truncated=False, translate=lambda text: text):
 	"""Summarize page structure without exposing a full address or page text."""
 	counts = Counter(item.get("category", "") for item in items)
-	pageTitle = normalizedText(title) or translate("Untitled page")
-	domain = browserAddressDomain(address) or translate("address unavailable")
+	pageTitle = normalizedText(title) or translate(strings.UNTITLED_PAGE)
+	domain = browserAddressDomain(address) or translate(strings.ADDRESS_UNAVAILABLE)
 	parts = [
-		translate("Browser page: {title}").format(title=pageTitle),
-		translate("Domain: {domain}").format(domain=domain),
-		translate("{count} browser controls").format(count=counts["controls"]),
-		translate("{count} headings").format(count=counts["headings"]),
-		translate("{count} landmarks").format(count=counts["landmarks"]),
-		translate("{count} links").format(count=counts["links"]),
-		translate("{count} buttons").format(count=counts["buttons"]),
-		translate("{count} form fields").format(count=counts["formFields"]),
-		translate("{count} tables").format(count=counts["tables"]),
+		translate(strings.BROWSER_PAGE_TITLE).format(title=pageTitle),
+		translate(strings.DOMAIN_NAME).format(domain=domain),
+		translate(strings.COUNT_BROWSER_CONTROLS).format(count=counts["controls"]),
+		translate(strings.COUNT_HEADINGS).format(count=counts["headings"]),
+		translate(strings.COUNT_LANDMARKS).format(count=counts["landmarks"]),
+		translate(strings.COUNT_LINKS).format(count=counts["links"]),
+		translate(strings.COUNT_BUTTONS).format(count=counts["buttons"]),
+		translate(strings.COUNT_FORM_FIELDS).format(count=counts["formFields"]),
+		translate(strings.COUNT_TABLES).format(count=counts["tables"]),
 	]
 	if loadingPercent is not None:
 		parts.append(
-			translate("loaded") if loadingPercent >= 100
-			else translate("loading, {percent} percent").format(percent=loadingPercent)
+			translate(strings.LOADED) if loadingPercent >= 100
+			else translate(strings.LOADING_PERCENT_PERCENT).format(percent=loadingPercent)
 		)
 	if truncated:
-		parts.append(translate("scan limit reached"))
+		parts.append(translate(strings.SCAN_LIMIT_REACHED))
 	return ". ".join(parts) + "."
 
 
@@ -285,8 +287,8 @@ def browserSnapshotLine(roleName, name, value="", level=None, translate=lambda t
 
 def browserSnapshotText(title, address, lines, truncated=False, translate=lambda text: text):
 	"""Build an in-memory readable snapshot from already exposed accessibility text."""
-	pageTitle = normalizedText(title) or translate("Untitled page")
-	domain = browserAddressDomain(address) or translate("address unavailable")
+	pageTitle = normalizedText(title) or translate(strings.UNTITLED_PAGE)
+	domain = browserAddressDomain(address) or translate(strings.ADDRESS_UNAVAILABLE)
 	uniqueLines = []
 	previous = ""
 	for line in lines:
@@ -296,11 +298,11 @@ def browserSnapshotText(title, address, lines, truncated=False, translate=lambda
 		uniqueLines.append(line)
 		previous = line
 	parts = [
-		translate("Page: {title}").format(title=pageTitle),
-		translate("Domain: {domain}").format(domain=domain),
+		translate(strings.PAGE_TITLE).format(title=pageTitle),
+		translate(strings.DOMAIN_NAME).format(domain=domain),
 		"",
 	]
-	parts.extend(uniqueLines or [translate("No readable page text was exposed by Claude.")])
+	parts.extend(uniqueLines or [translate(strings.NO_READABLE_PAGE_TEXT_WAS_EXPOSED_BY_CLAUDE)])
 	if truncated:
-		parts.extend(("", translate("The snapshot ended at the safe scan limit.")))
+		parts.extend(("", translate(strings.THE_SNAPSHOT_ENDED_AT_THE_SAFE_SCAN_LIMIT)))
 	return "\n".join(parts)

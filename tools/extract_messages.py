@@ -26,8 +26,20 @@ def _version(projectRoot):
 
 
 def messages(projectRoot):
-	found = {}
 	sourceRoot = projectRoot / "globalPlugins" / "claudeDesktopAccess"
+	strings = sourceRoot / "strings.py"
+	tree = ast.parse(strings.read_text(encoding="utf-8"), filename=str(strings))
+	found = {}
+	for node in tree.body:
+		if not isinstance(node, ast.Assign):
+			continue
+		if not isinstance(node.value, ast.Constant) or not isinstance(node.value.value, str) or not node.value.value:
+			raise ValueError(f"{strings.name}:{node.lineno}: expected a nonempty message literal")
+		message = node.value.value
+		if message in found:
+			raise ValueError(f"{strings.name}:{node.lineno}: duplicate message ID {message!r}")
+		found[message] = [f"{strings.relative_to(projectRoot).as_posix()}:{node.lineno}"]
+
 	for path in sorted([*sourceRoot.glob("*.py"), *(projectRoot / "appModules").glob("*.py")], key=lambda item: item.as_posix().casefold()):
 		tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
 		for node in ast.walk(tree):
@@ -35,13 +47,13 @@ def messages(projectRoot):
 				continue
 			if not isinstance(node.func, ast.Name) or node.func.id not in ("_", "translate"):
 				continue
-			value = node.args[0]
-			if not isinstance(value, ast.Constant) or not isinstance(value.value, str) or not value.value:
-				continue
-			reference = "{path}:{line}".format(
-				path=path.relative_to(projectRoot).as_posix(), line=node.lineno,
-			)
-			found.setdefault(value.value, []).append(reference)
+			branches = [node.args[0]]
+			while branches:
+				value = branches.pop()
+				if isinstance(value, ast.IfExp):
+					branches.extend((value.body, value.orelse))
+				elif isinstance(value, (ast.Constant, ast.JoinedStr)):
+					raise ValueError(f"{path.name}:{value.lineno}: put the message in strings.py")
 	return found
 
 

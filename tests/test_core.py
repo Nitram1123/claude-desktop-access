@@ -1,5 +1,6 @@
 import importlib.util
 import ast
+import gettext
 import json
 import math
 import os
@@ -10,6 +11,8 @@ import sys
 import tempfile
 import unittest
 import wave
+
+from test_claude import core, load
 
 
 CORE_PATH = Path(__file__).parents[1] / "globalPlugins" / "claudeDesktopAccess" / "core.py"
@@ -28,18 +31,13 @@ BROWSER_ACCESS_PATH = CORE_PATH.parent / "browserAccess.py"
 BROWSER_NAVIGATOR_DIALOG_PATH = CORE_PATH.parent / "browserNavigatorDialog.py"
 CLAUDE_APP_MODULE_PATH = PROJECT_ROOT / "appModules" / "claude.py"
 CODE_APP_MODULE_PATH = PROJECT_ROOT / "appModules" / "code.py"
-SPEC = importlib.util.spec_from_file_location("code_status_core", CORE_PATH)
-core = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(core)
 STORE_SPEC = importlib.util.spec_from_file_location("code_store_metadata", ADDON_STORE_METADATA_PATH)
 storeMetadata = importlib.util.module_from_spec(STORE_SPEC)
 STORE_SPEC.loader.exec_module(storeMetadata)
 BUILD_SPEC = importlib.util.spec_from_file_location("code_package_builder", BUILD_PATH)
 packageBuilder = importlib.util.module_from_spec(BUILD_SPEC)
 BUILD_SPEC.loader.exec_module(packageBuilder)
-BROWSER_ACCESS_SPEC = importlib.util.spec_from_file_location("code_browser_access", BROWSER_ACCESS_PATH)
-browserAccess = importlib.util.module_from_spec(BROWSER_ACCESS_SPEC)
-BROWSER_ACCESS_SPEC.loader.exec_module(browserAccess)
+browserAccess = load("browserAccess")
 AnnouncementHistory = core.AnnouncementHistory
 firstStatusLabel = core.firstStatusLabel
 statusMessage = core.statusMessage
@@ -259,6 +257,18 @@ class StatusMessageTests(unittest.TestCase):
 		self.assertIn("globalPlugins/claudeDesktopAccess/browserNavigatorDialog.py", paths)
 		self.assertFalse(any(path.startswith("globalPlugins/claudeDesktopAccess/sounds/") and path.count("/") == 3 for path in paths))
 		self.assertFalse(any(path.endswith(".pot") for path in paths))
+
+	def test_french_catalog_translates_formatted_activity_and_falls_back_to_english(self):
+		localeDir = PROJECT_ROOT / "locale"
+		french = gettext.translation("nvda", localeDir, languages=["fr_CA"])
+		english = gettext.translation("nvda", localeDir, languages=["en"], fallback=True)
+		self.assertEqual("Claude Code est au repos", core.currentActivitySummary(
+			False, "", "", translate=french.gettext, agentName="Claude Code",
+		))
+		self.assertEqual("Claude Code is idle", core.currentActivitySummary(
+			False, "", "", translate=english.gettext, agentName="Claude Code",
+		))
+		self.assertEqual("2 minutes 3 secondes", core.formatElapsedDuration(123, french.gettext))
 
 
 

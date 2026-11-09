@@ -27,6 +27,7 @@ from gui.settingsDialogs import NVDASettingsDialog, SettingsPanel
 from logHandler import log
 from scriptHandler import script
 
+from . import strings
 from .browserAccess import (
 	browserAddressDomain, browserNavigatorCategory, browserNavigatorItemLabel,
 	browserNavigatorSignature, browserPageAddress, browserPageIdentity, browserPageSummary,
@@ -49,12 +50,7 @@ ADDON_VERSION = "2026.2.2"
 CLAUDE_USAGE_URL = "https://claude.ai/settings/usage"
 DEFAULT_SUPPORTED_APP_NAMES = "claude"
 CURRENT_RELEASE_NOTES = _(
-    "Claude Desktop Access 2026.2.2 — beta bug fixes\n\n"
-    "• Read aloud and ordinary links or sidebar titles no longer count as activity.\n"
-    "• Completed tool output no longer prevents the response-completion settling timer from starting.\n"
-    "• When generation resumes, completion waits for a fresh quiet interval.\n"
-    "• Unchanged chat history no longer schedules repeated confirmation scans.\n"
-    "This update targets stable NVDA 2026.2. Live beta testing remains ongoing."
+    strings.RELEASE_NOTES
 )
 VERBOSITY_CHOICES = ("minimal", "full")
 FULL_SPEECH_PROFILE_CHOICES = ("standard", "developer", "raw")
@@ -71,23 +67,23 @@ CATEGORY_OUTPUT_CONFIG = {
 	"other": "outputOther", "commentary": "outputCommentary",
 }
 PREVIEW_ITEMS = (
-	("thinking", "announcementThinking", _("Thinking"), _("Thinking")),
-	("working", "announcementWorking", _("Working"), _("Working")),
-	("command", "announcementCommand", _("Command"), _("Running command")),
-	("search", "announcementSearch", _("Search"), _("Searching the web")),
-	("file", "announcementFile", _("File"), _("Editing file")),
-	("build", "announcementBuild", _("Build and test"), _("Running tests")),
-	("tool", "announcementTool", _("Tool"), _("Using tool")),
-	("commentary", "announcementCommentary", _("Commentary"), _("I am inspecting the current task.")),
-	("backgroundPulse1", "announcementPulse1", _("Background progress one"), _("Command still running, 5 seconds")),
-	("backgroundPulse2", "announcementPulse2", _("Background progress two"), _("Command still running, 10 seconds")),
-	("completion", "announcementCompletion", _("Completion"), _("Command finished")),
-	("completion", "announcementFailure", _("Failure"), _("Command failed")),
-	("attention", "announcementAttention", _("Permission required"), _("Permission required")),
-	("other", "announcementOther", _("Other progress"), _("Waiting")),
-	("monitoringActive", "announcementMonitoringActive", _("Monitoring active"), _("Activity monitoring active")),
-	("monitoringInactive", "announcementMonitoringInactive", _("Monitoring inactive"), _("Activity monitoring inactive")),
-	("submission", "announcementSubmission", _("Prompt submitted"), _("Prompt submitted")),
+	("thinking", "announcementThinking", _(strings.THINKING), _(strings.THINKING)),
+	("working", "announcementWorking", _(strings.WORKING), _(strings.WORKING)),
+	("command", "announcementCommand", _(strings.COMMAND), _(strings.RUNNING_COMMAND)),
+	("search", "announcementSearch", _(strings.SEARCH), _(strings.SEARCHING_THE_WEB)),
+	("file", "announcementFile", _(strings.FILE), _(strings.EDITING_FILE)),
+	("build", "announcementBuild", _(strings.BUILD_AND_TEST), _(strings.RUNNING_TESTS)),
+	("tool", "announcementTool", _(strings.TOOL), _(strings.USING_TOOL)),
+	("commentary", "announcementCommentary", _(strings.COMMENTARY), _(strings.I_AM_INSPECTING_THE_CURRENT_TASK)),
+	("backgroundPulse1", "announcementPulse1", _(strings.BACKGROUND_PROGRESS_ONE), _(strings.COMMAND_STILL_RUNNING_5_SECONDS)),
+	("backgroundPulse2", "announcementPulse2", _(strings.BACKGROUND_PROGRESS_TWO), _(strings.COMMAND_STILL_RUNNING_10_SECONDS)),
+	("completion", "announcementCompletion", _(strings.COMPLETION), _(strings.COMMAND_FINISHED)),
+	("completion", "announcementFailure", _(strings.FAILURE), _(strings.COMMAND_FAILED)),
+	("attention", "announcementAttention", _(strings.PERMISSION_REQUIRED), _(strings.PERMISSION_REQUIRED)),
+	("other", "announcementOther", _(strings.OTHER_PROGRESS), _(strings.WAITING)),
+	("monitoringActive", "announcementMonitoringActive", _(strings.MONITORING_ACTIVE), _(strings.ACTIVITY_MONITORING_ACTIVE)),
+	("monitoringInactive", "announcementMonitoringInactive", _(strings.MONITORING_INACTIVE), _(strings.ACTIVITY_MONITORING_INACTIVE)),
+	("submission", "announcementSubmission", _(strings.PROMPT_SUBMITTED), _(strings.PROMPT_SUBMITTED)),
 )
 ANNOUNCEMENT_CONFIG_BY_ACTION = {item[0]: item[1] for item in PREVIEW_ITEMS if item[0] != "completion"}
 ANNOUNCEMENT_CONFIG_BY_ACTION.update({"completion": "announcementCompletion", "failure": "announcementFailure"})
@@ -279,7 +275,7 @@ def _migrateApplicationGestureMappings():
 def _customizeAnnouncement(message, action, activity="", seconds=0, values=None):
 	conf = values or _settings()
 	key = ANNOUNCEMENT_CONFIG_BY_ACTION.get(action)
-	return formatCustomAnnouncement(conf.get(key, "") if key else "", message, activity, seconds)
+	return formatCustomAnnouncement(conf.get(key, "") if key else "", message, activity, seconds, translate=_)
 
 
 def _speechIsOff():
@@ -350,18 +346,15 @@ def _saveSupportReport(parent, diagnosticReport):
 	)
 	with wx.FileDialog(
 		parent,
-		_("Save sanitized Claude Desktop Access support report"),
+		_(strings.SAVE_SANITIZED_CLAUDE_DESKTOP_ACCESS_SUPPORT_REPORT),
 		defaultFile=defaultName,
-		wildcard=_("Text files (*.txt)|*.txt"),
+		wildcard=_(strings.TEXT_FILE_FILTER),
 		style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
 	) as dialog:
 		if dialog.ShowModal() != wx.ID_OK:
 			return False
 		path = Path(dialog.GetPath())
-	payload = _(
-		"Claude Desktop Access sanitized support report\n"
-		"Generated: {generated}\nNVDA version: {nvdaVersion}\n\n{report}\n"
-	).format(
+	payload = _(strings.CLAUDE_DESKTOP_ACCESS_SANITIZED_SUPPORT_REPORT_GENERATED_GENERATED).format(
 		generated=time.strftime("%Y-%m-%d %H:%M:%S %z"),
 		nvdaVersion=getattr(versionInfo, "version", "unknown"),
 		report=diagnosticReport,
@@ -370,9 +363,9 @@ def _saveSupportReport(parent, diagnosticReport):
 		path.write_text(payload, encoding="utf-8")
 	except Exception:
 		log.error("Unable to save Claude Desktop Access support report", exc_info=True)
-		ui.message(_("The sanitized support report could not be saved"))
+		ui.message(_(strings.THE_SANITIZED_SUPPORT_REPORT_COULD_NOT_BE_SAVED))
 		return False
-	ui.message(_("Sanitized Claude Desktop Access support report saved"))
+	ui.message(_(strings.SANITIZED_CLAUDE_DESKTOP_ACCESS_SUPPORT_REPORT_SAVED))
 	return True
 
 
@@ -382,11 +375,11 @@ def _openUsageDashboard(message):
 	except Exception:
 		log.error("Unable to open Claude usage settings", exc_info=True)
 		opened = False
-	ui.message(message if opened else _("Claude usage settings could not be opened"))
+	ui.message(message if opened else _(strings.CLAUDE_USAGE_SETTINGS_COULD_NOT_BE_OPENED))
 
 
 class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
-	title = _("Claude Desktop Access")
+	title = _(strings.CLAUDE_DESKTOP_ACCESS)
 
 	def _addPage(self, title):
 		page = wx.Panel(self.notebook)
@@ -400,138 +393,133 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 		self.notebook = wx.Notebook(self)
 		settingsSizer.Add(self.notebook, proportion=1, flag=wx.EXPAND)
 
-		generalPage, helper = self._addPage(_("General"))
-		helper.addItem(wx.StaticText(generalPage, label=_(
-			"Settings are organized into pages. Press Control+Tab or Shift+Control+Tab to change pages. "
-			"Select Apply or OK to save changes."
-		)))
-		self.verbosity = helper.addLabeledControl(_("Announcement &detail:"), wx.Choice, choices=[
-			_("Minimal — brief activity summaries"),
-			_("Full — complete progress labels and commands"),
+		generalPage, helper = self._addPage(_(strings.GENERAL))
+		helper.addItem(wx.StaticText(generalPage, label=_(strings.SETTINGS_ARE_ORGANIZED_INTO_PAGES_PRESS_CONTROL_TAB)))
+		self.verbosity = helper.addLabeledControl(_(strings.ANNOUNCEMENT_DETAIL), wx.Choice, choices=[
+			_(strings.MINIMAL_BRIEF_ACTIVITY_SUMMARIES),
+			_(strings.FULL_COMPLETE_PROGRESS_LABELS_AND_COMMANDS),
 		])
 		self.verbosity.SetSelection(VERBOSITY_CHOICES.index(conf["verbosity"]))
-		self.speech = helper.addItem(wx.CheckBox(generalPage, label=_("Enable &speech announcements")))
-		self.braille = helper.addItem(wx.CheckBox(generalPage, label=_("Enable &braille flash messages")))
+		self.speech = helper.addItem(wx.CheckBox(generalPage, label=_(strings.ENABLE_SPEECH_ANNOUNCEMENTS)))
+		self.braille = helper.addItem(wx.CheckBox(generalPage, label=_(strings.ENABLE_BRAILLE_FLASH_MESSAGES)))
 		self.redactSensitive = helper.addItem(wx.CheckBox(
-			generalPage, label=_("&Redact likely secrets and personal path names in Full mode"),
+			generalPage, label=_(strings.REDACT_LIKELY_SECRETS_AND_PERSONAL_PATH_NAMES_IN),
 		))
 		for name in ("speech", "braille", "redactSensitive"):
 			getattr(self, name).SetValue(conf[name])
-		self.testButton = helper.addItem(wx.Button(generalPage, label=_("Test current announcement outputs (&T)")))
+		self.testButton = helper.addItem(wx.Button(generalPage, label=_(strings.TEST_CURRENT_ANNOUNCEMENT_OUTPUTS_T)))
 		self.testButton.Bind(wx.EVT_BUTTON, self._onTest)
 
-		speechPage, helper = self._addPage(_("Speech and Braille"))
+		speechPage, helper = self._addPage(_(strings.SPEECH_AND_BRAILLE))
 		self.fullSpeechProfile = helper.addLabeledControl(
-			_("&Full speech profile:"), wx.Choice,
+			_(strings.FULL_SPEECH_PROFILE), wx.Choice,
 			choices=[
-				_("Standard — action, target, counts, and useful timing"),
-				_("Developer — complete normalized commands and progress"),
-				_("Raw — exact exposed Claude progress text"),
+				_(strings.STANDARD_ACTION_TARGET_COUNTS_AND_USEFUL_TIMING),
+				_(strings.DEVELOPER_COMPLETE_NORMALIZED_COMMANDS_AND_PROGRESS),
+				_(strings.RAW_EXACT_EXPOSED_CLAUDE_PROGRESS_TEXT),
 			],
 		)
 		self.fullSpeechProfile.SetSelection(FULL_SPEECH_PROFILE_CHOICES.index(conf["fullSpeechProfile"]))
 		self.minimalSpeechProfile = helper.addLabeledControl(
-			_("&Minimal speech profile:"), wx.Choice,
+			_(strings.MINIMAL_SPEECH_PROFILE), wx.Choice,
 			choices=[
-				_("Essential — thinking, attention, failures, and task completion"),
-				_("Balanced — concise activity changes and results"),
-				_("Informative — Balanced plus filenames, counts, and timing"),
+				_(strings.ESSENTIAL_THINKING_ATTENTION_FAILURES_AND_TASK_COMPLETION),
+				_(strings.BALANCED_CONCISE_ACTIVITY_CHANGES_AND_RESULTS),
+				_(strings.INFORMATIVE_BALANCED_PLUS_FILENAMES_COUNTS_AND_TIMING),
 			],
 		)
 		self.minimalSpeechProfile.SetSelection(MINIMAL_SPEECH_PROFILE_CHOICES.index(conf["minimalSpeechProfile"]))
 		self.commandPunctuation = helper.addLabeledControl(
-			_("Command &punctuation for speech:"), wx.Choice,
-			choices=[_("Normal"), _("Enhanced — speak pipes and redirects naturally"), _("Literal — name command symbols")],
+			_(strings.COMMAND_PUNCTUATION_FOR_SPEECH), wx.Choice,
+			choices=[_(strings.NORMAL), _(strings.ENHANCED_SPEAK_PIPES_AND_REDIRECTS_NATURALLY), _(strings.LITERAL_NAME_COMMAND_SYMBOLS)],
 		)
 		self.commandPunctuation.SetSelection(COMMAND_PUNCTUATION_CHOICES.index(conf["commandPunctuation"]))
 		self.maximumSpokenCommandCharacters = helper.addLabeledControl(
-			_("Maximum spoken command &length:"), wx.SpinCtrl,
+			_(strings.MAXIMUM_SPOKEN_COMMAND_LENGTH), wx.SpinCtrl,
 			min=40, max=2000, initial=conf["maximumSpokenCommandCharacters"],
 		)
 		self.brailleDetail = helper.addLabeledControl(
-			_("Braille &detail:"), wx.Choice,
-			choices=[_("Concise"), _("Informative"), _("Full — complete commands and progress")],
+			_(strings.BRAILLE_DETAIL), wx.Choice,
+			choices=[_(strings.CONCISE), _(strings.INFORMATIVE), _(strings.FULL_COMPLETE_COMMANDS_AND_PROGRESS)],
 		)
 		self.brailleDetail.SetSelection(BRAILLE_DETAIL_CHOICES.index(conf["brailleDetail"]))
 		self.protectBrailleReading = helper.addItem(wx.CheckBox(
-			speechPage, label=_("Keep &conversation reading stable for speech and Braille during live updates"),
+			speechPage, label=_(strings.KEEP_CONVERSATION_READING_STABLE_FOR_SPEECH_AND_BRAILLE),
 		))
 		self.protectBrailleReading.SetValue(conf["protectBrailleReading"])
 		self.interruptUrgentSpeech = helper.addItem(wx.CheckBox(
-			speechPage, label=_("Allow &urgent permission and failure announcements to interrupt current speech"),
+			speechPage, label=_(strings.ALLOW_URGENT_PERMISSION_AND_FAILURE_ANNOUNCEMENTS_TO_INTERRUPT),
 		))
 		self.interruptUrgentSpeech.SetValue(conf["interruptUrgentSpeech"])
-		self.resetSpeechSettings = helper.addItem(wx.Button(speechPage, label=_("&Reset speech profile settings")))
+		self.resetSpeechSettings = helper.addItem(wx.Button(speechPage, label=_(strings.RESET_SPEECH_PROFILE_SETTINGS)))
 		self.resetSpeechSettings.Bind(wx.EVT_BUTTON, self._onResetSpeechSettings)
 
-		soundsPage, helper = self._addPage(_("Sounds"))
-		self.completionSound = helper.addItem(wx.CheckBox(soundsPage, label=_("Play a sound for task &completion or failure")))
+		soundsPage, helper = self._addPage(_(strings.SOUNDS))
+		self.completionSound = helper.addItem(wx.CheckBox(soundsPage, label=_(strings.PLAY_A_SOUND_FOR_TASK_COMPLETION_OR_FAILURE)))
 		self.progressSounds = helper.addItem(
-			wx.CheckBox(soundsPage, label=_("Play &progress sounds for enabled announcements")),
+			wx.CheckBox(soundsPage, label=_(strings.PLAY_PROGRESS_SOUNDS_FOR_ENABLED_ANNOUNCEMENTS)),
 		)
 		self.progressSoundStyle = helper.addLabeledControl(
-			_("Progress sound style (&J):"), wx.Choice,
-			choices=[_("Clicks — soft percussive earcons"), _("Tones — musical earcons")],
+			_(strings.PROGRESS_SOUND_STYLE_J), wx.Choice,
+			choices=[_(strings.CLICKS_SOFT_PERCUSSIVE_EARCONS), _(strings.TONES_MUSICAL_EARCONS)],
 		)
 		self.progressSoundStyle.SetSelection(SOUND_STYLE_CHOICES.index(conf["progressSoundStyle"]))
 		self.clickVolume = helper.addLabeledControl(
-			_("Click volume (&Z):"), wx.Choice,
-			choices=[_("Soft"), _("Normal"), _("Loud")],
+			_(strings.CLICK_VOLUME_Z), wx.Choice,
+			choices=[_(strings.SOFT), _(strings.NORMAL), _(strings.LOUD)],
 		)
 		self.clickVolume.SetSelection(CLICK_VOLUME_CHOICES.index(conf["clickVolume"]))
 		self.continuousWorkingClicks = helper.addItem(wx.CheckBox(
-			soundsPage, label=_("Play a continuous &Working sound while Claude is busy"),
+			soundsPage, label=_(strings.PLAY_A_CONTINUOUS_WORKING_SOUND_WHILE_CLAUDE_IS),
 		))
 		self.continuousWorkingClicks.SetValue(conf["continuousWorkingClicks"])
 		self.workingClickIntervalMs = helper.addLabeledControl(
-			_("Working sound &interval (milliseconds):"), wx.SpinCtrl,
+			_(strings.WORKING_SOUND_INTERVAL_MILLISECONDS), wx.SpinCtrl,
 			min=500, max=5000, initial=conf["workingClickIntervalMs"],
 		)
 		self.workingClickStartDelayMs = helper.addLabeledControl(
-			_("&Delay before repeating Working sounds (milliseconds):"), wx.SpinCtrl,
+			_(strings.DELAY_BEFORE_REPEATING_WORKING_SOUNDS_MILLISECONDS), wx.SpinCtrl,
 			min=0, max=10000, initial=conf["workingClickStartDelayMs"],
 		)
 		self.promptSubmissionClick = helper.addItem(wx.CheckBox(
-			soundsPage, label=_("Play a distinct sound when a prompt is &submitted"),
+			soundsPage, label=_(strings.PLAY_A_DISTINCT_SOUND_WHEN_A_PROMPT_IS),
 		))
 		self.promptSubmissionClick.SetValue(conf["promptSubmissionClick"])
 		self.monitoringFocusClicks = helper.addItem(wx.CheckBox(
-			soundsPage, label=_("Play sounds when Claude &monitoring becomes active or inactive"),
+			soundsPage, label=_(strings.PLAY_SOUNDS_WHEN_CLAUDE_MONITORING_BECOMES_ACTIVE_OR),
 		))
 		self.monitoringFocusClicks.SetValue(conf["monitoringFocusClicks"])
 		self.completionSound.SetValue(conf["completionSound"])
 		self.progressSounds.SetValue(conf["soundWhenSpeechUnavailable"])
-		self.testSoundButton = helper.addItem(wx.Button(soundsPage, label=_("Test command progress sound (&K)")))
+		self.testSoundButton = helper.addItem(wx.Button(soundsPage, label=_(strings.TEST_COMMAND_PROGRESS_SOUND_K)))
 		self.testSoundButton.Bind(wx.EVT_BUTTON, self._onTestSound)
 
-		activityPage, helper = self._addPage(_("Activity Output"))
-		helper.addItem(wx.StaticText(activityPage, label=_(
-			"Configure background timing, then choose each activity category to review its enabled state and output route."
-		)))
+		activityPage, helper = self._addPage(_(strings.ACTIVITY_OUTPUT))
+		helper.addItem(wx.StaticText(activityPage, label=_(strings.CONFIGURE_BACKGROUND_TIMING_THEN_CHOOSE_EACH_ACTIVITY_CATEGORY)))
 		self.workingIntervalSeconds = helper.addLabeledControl(
-			_("Background progress &interval (seconds):"), wx.SpinCtrl,
+			_(strings.BACKGROUND_PROGRESS_INTERVAL_SECONDS), wx.SpinCtrl,
 			min=1, max=300, initial=conf["workingIntervalSeconds"],
 		)
 		self.maximumBusyMinutes = helper.addLabeledControl(
-			_("Maximum background activity (&minutes):"), wx.SpinCtrl,
+			_(strings.MAXIMUM_BACKGROUND_ACTIVITY_MINUTES), wx.SpinCtrl,
 			min=1, max=240, initial=conf["maximumBusyMinutes"],
 		)
 		self.announceHeartbeat = helper.addItem(wx.CheckBox(
-			activityPage, label=_("Announce a recurring background progress &pulse"),
+			activityPage, label=_(strings.ANNOUNCE_A_RECURRING_BACKGROUND_PROGRESS_PULSE),
 		))
 		self.announceHeartbeat.SetValue(conf["announceHeartbeat"])
 		self._activityCategories = (
-			("announceThinking", "thinking", _("Thinking")),
-			("announceWorking", "working", _("Working and analysis")),
-			("announceCommands", "command", _("Commands")),
-			("announceSearches", "search", _("Web searches")),
-			("announceFiles", "file", _("File activity")),
-			("announceBuilds", "build", _("Builds, compilation, and tests")),
-			("announceTools", "tool", _("Tool use")),
-			("announceCompletions", "completion", _("Completions and failures")),
-			("announceAttention", "attention", _("Permission and input requests")),
-			("announceOther", "other", _("Other recognized progress")),
-			("announceCommentary", "commentary", _("Plain-language commentary")),
+			("announceThinking", "thinking", _(strings.THINKING)),
+			("announceWorking", "working", _(strings.WORKING_AND_ANALYSIS)),
+			("announceCommands", "command", _(strings.COMMANDS)),
+			("announceSearches", "search", _(strings.WEB_SEARCHES)),
+			("announceFiles", "file", _(strings.FILE_ACTIVITY)),
+			("announceBuilds", "build", _(strings.BUILDS_COMPILATION_AND_TESTS)),
+			("announceTools", "tool", _(strings.TOOL_USE)),
+			("announceCompletions", "completion", _(strings.COMPLETIONS_AND_FAILURES)),
+			("announceAttention", "attention", _(strings.PERMISSION_AND_INPUT_REQUESTS)),
+			("announceOther", "other", _(strings.OTHER_RECOGNIZED_PROGRESS)),
+			("announceCommentary", "commentary", _(strings.PLAIN_LANGUAGE_COMMENTARY)),
 		)
 		self._categoryEnabledValues = {key: bool(conf[key]) for key, category, label in self._activityCategories}
 		self._categoryOutputValues = {
@@ -539,17 +527,17 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 			for key, category, label in self._activityCategories
 		}
 		self._outputModeLabels = (
-			_("all enabled channels"), _("speech only"), _("sound only"), _("braille only"), _("off"),
+			_(strings.ALL_ENABLED_CHANNELS), _(strings.SPEECH_ONLY), _(strings.SOUND_ONLY), _(strings.BRAILLE_ONLY), _(strings.OFF),
 		)
 		self.activityCategory = helper.addLabeledControl(
-			_("Activity &category:"), wx.Choice,
+			_(strings.ACTIVITY_CATEGORY), wx.Choice,
 			choices=[self._activityCategoryDisplay(index) for index in range(len(self._activityCategories))],
 		)
 		self.activityCategory.SetSelection(0)
-		self.activityEnabled = helper.addItem(wx.CheckBox(activityPage, label=_("&Enable this activity category")))
+		self.activityEnabled = helper.addItem(wx.CheckBox(activityPage, label=_(strings.ENABLE_THIS_ACTIVITY_CATEGORY)))
 		self.activityOutput = helper.addLabeledControl(
-			_("Output &route for this category:"), wx.Choice,
-			choices=[_("All enabled channels"), _("Speech only"), _("Sound only"), _("Braille only"), _("Off")],
+			_(strings.OUTPUT_ROUTE_FOR_THIS_CATEGORY), wx.Choice,
+			choices=[_(strings.ALL_ENABLED_CHANNELS_OPTION), _(strings.SPEECH_ONLY_OPTION), _(strings.SOUND_ONLY_OPTION), _(strings.BRAILLE_ONLY_OPTION), _(strings.OFF_OPTION)],
 		)
 		self._activityCategorySelection = 0
 		self._loadActivityCategory(0)
@@ -557,78 +545,70 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 		self.activityEnabled.Bind(wx.EVT_CHECKBOX, self._onActivitySettingChanged)
 		self.activityOutput.Bind(wx.EVT_CHOICE, self._onActivitySettingChanged)
 
-		wordingPage, helper = self._addPage(_("Wording and Preview"))
+		wordingPage, helper = self._addPage(_(strings.WORDING_AND_PREVIEW))
 		self.previewItem = helper.addLabeledControl(
-			_("Preview action (&V):"), wx.Choice,
+			_(strings.PREVIEW_ACTION_V), wx.Choice,
 			choices=[label for category, key, label, message in PREVIEW_ITEMS],
 		)
 		self.previewItem.SetSelection(0)
 		self._announcementEdits = {key: str(conf[key]) for category, key, label, message in PREVIEW_ITEMS}
 		self.previewItem.Bind(wx.EVT_CHOICE, self._onPreviewItemChanged)
 		self.announcementText = helper.addLabeledControl(
-			_("Announcement &text (blank uses built-in):"), wx.TextCtrl,
+			_(strings.ANNOUNCEMENT_TEXT_BLANK_USES_BUILT_IN), wx.TextCtrl,
 		)
 		self.announcementText.SetValue(self._announcementEdits[PREVIEW_ITEMS[0][1]])
-		self.restoreAnnouncementButton = helper.addItem(wx.Button(wordingPage, label=_("&Restore built-in announcement")))
+		self.restoreAnnouncementButton = helper.addItem(wx.Button(wordingPage, label=_(strings.RESTORE_BUILT_IN_ANNOUNCEMENT)))
 		self.restoreAnnouncementButton.Bind(wx.EVT_BUTTON, self._onRestoreAnnouncement)
-		helper.addItem(wx.StaticText(wordingPage, label=_(
-			"Available placeholders: {message}, {activity}, {seconds}, and {duration}."
-		)))
-		self.previewSoundButton = helper.addItem(wx.Button(wordingPage, label=_("Preview selected &sound")))
+		helper.addItem(wx.StaticText(wordingPage, label=_(strings.AVAILABLE_PLACEHOLDERS_MESSAGE_ACTIVITY_SECONDS_AND_DURATION)))
+		self.previewSoundButton = helper.addItem(wx.Button(wordingPage, label=_(strings.PREVIEW_SELECTED_SOUND)))
 		self.previewSoundButton.Bind(wx.EVT_BUTTON, self._onPreviewSelectedSound)
-		self.previewSpeechButton = helper.addItem(wx.Button(wordingPage, label=_("Preview selected s&peech")))
+		self.previewSpeechButton = helper.addItem(wx.Button(wordingPage, label=_(strings.PREVIEW_SELECTED_S_PEECH)))
 		self.previewSpeechButton.Bind(wx.EVT_BUTTON, self._onPreviewSelectedSpeech)
 
-		browserPage, helper = self._addPage(_("Browser Access"))
-		helper.addItem(wx.StaticText(browserPage, label=_(
-			"Use Claude's embedded browser like any other web page in NVDA. Enter or Space activates the current control. Tab and Shift+Tab move between controls. NVDA browse-mode commands work normally."
-		)))
+		browserPage, helper = self._addPage(_(strings.BROWSER_ACCESS))
+		helper.addItem(wx.StaticText(browserPage, label=_(strings.USE_CLAUDES_EMBEDDED_BROWSER_LIKE_ANY_OTHER_WEB)))
 		self.announceEmbeddedBrowserProgress = helper.addItem(wx.CheckBox(
-			browserPage, label=_("Announce when embedded browser pages start and finish &loading"),
+			browserPage, label=_(strings.ANNOUNCE_WHEN_EMBEDDED_BROWSER_PAGES_START_AND_FINISH),
 		))
 		self.announceEmbeddedBrowserProgress.SetValue(conf["announceEmbeddedBrowserProgress"])
 
-		advancedPage, helper = self._addPage(_("Advanced"))
+		advancedPage, helper = self._addPage(_(strings.ADVANCED))
 		self.idlePollMs = helper.addLabeledControl(
-			_("Idle compatibility &polling interval (milliseconds):"), wx.SpinCtrl,
+			_(strings.IDLE_COMPATIBILITY_POLLING_INTERVAL_MILLISECONDS), wx.SpinCtrl,
 			min=100, max=5000, initial=conf["idlePollMs"],
 		)
 		self.supportedAppNames = helper.addLabeledControl(
-			_("Supported application &names, comma separated:"), wx.TextCtrl,
+			_(strings.SUPPORTED_APPLICATION_NAMES_COMMA_SEPARATED), wx.TextCtrl,
 		)
 		self.supportedAppNames.SetValue(conf["supportedAppNames"])
 		self.diagnosticLogging = helper.addItem(wx.CheckBox(
-			advancedPage, label=_("Enable sanitized dia&gnostic logging"),
+			advancedPage, label=_(strings.ENABLE_SANITIZED_DIA_GNOSTIC_LOGGING),
 		))
 		self.diagnosticLogging.SetValue(conf["diagnosticLogging"])
-		helper.addItem(wx.StaticText(advancedPage, label=_(
-			"Warning: NVDA debug logging records spoken Full-mode text, including commands, even when add-on diagnostics are sanitized."
-		)))
+		helper.addItem(wx.StaticText(advancedPage, label=_(strings.WARNING_NVDA_DEBUG_LOGGING_RECORDS_SPOKEN_FULL_MODE)))
 
-		supportPage, helper = self._addPage(_("Support"))
-		helper.addItem(wx.StaticText(supportPage, label=_(
-			"Open help and account pages, save sanitized troubleshooting information, or transfer add-on settings."
-		)))
-		self.checkUsageButton = helper.addItem(wx.Button(supportPage, label=_("&Open Claude usage settings")))
+		supportPage, helper = self._addPage(_(strings.SUPPORT))
+		helper.addItem(wx.StaticText(supportPage, label=_(strings.OPEN_HELP_AND_ACCOUNT_PAGES_SAVE_SANITIZED_TROUBLESHOOTING)))
+		self.checkUsageButton = helper.addItem(wx.Button(supportPage, label=_(strings.OPEN_CLAUDE_USAGE_SETTINGS_OPTION)))
 		self.checkUsageButton.Bind(wx.EVT_BUTTON, self._onCheckUsage)
-		self.buyCreditsButton = helper.addItem(wx.Button(supportPage, label=_("&Claude help and account information")))
+		self.buyCreditsButton = helper.addItem(wx.Button(supportPage, label=_(strings.CLAUDE_HELP_AND_ACCOUNT_INFORMATION)))
 		self.buyCreditsButton.Bind(wx.EVT_BUTTON, self._onBuyCredits)
-		self.viewCurrentRelease = helper.addItem(wx.Button(supportPage, label=_("View current release &notes…")))
+		self.viewCurrentRelease = helper.addItem(wx.Button(supportPage, label=_(strings.VIEW_CURRENT_RELEASE_NOTES)))
 		self.viewCurrentRelease.Bind(wx.EVT_BUTTON, self._onViewCurrentRelease)
-		self.viewCompleteHistory = helper.addItem(wx.Button(supportPage, label=_("View complete release &history…")))
+		self.viewCompleteHistory = helper.addItem(wx.Button(supportPage, label=_(strings.VIEW_COMPLETE_RELEASE_HISTORY)))
 		self.viewCompleteHistory.Bind(wx.EVT_BUTTON, self._onViewCompleteHistory)
-		self.saveSupportReport = helper.addItem(wx.Button(supportPage, label=_("Save sanitized support &report…")))
+		self.saveSupportReport = helper.addItem(wx.Button(supportPage, label=_(strings.SAVE_SANITIZED_SUPPORT_REPORT)))
 		self.saveSupportReport.Bind(wx.EVT_BUTTON, self._onSaveSupportReport)
-		self.exportSettings = helper.addItem(wx.Button(supportPage, label=_("&Export add-on settings…")))
+		self.exportSettings = helper.addItem(wx.Button(supportPage, label=_(strings.EXPORT_ADD_ON_SETTINGS)))
 		self.exportSettings.Bind(wx.EVT_BUTTON, self._onExportSettings)
-		self.importSettings = helper.addItem(wx.Button(supportPage, label=_("&Import add-on settings…")))
+		self.importSettings = helper.addItem(wx.Button(supportPage, label=_(strings.IMPORT_ADD_ON_SETTINGS)))
 		self.importSettings.Bind(wx.EVT_BUTTON, self._onImportSettings)
 
 	def _activityCategoryDisplay(self, index):
 		enabledKey, category, label = self._activityCategories[index]
-		state = _("enabled") if self._categoryEnabledValues[enabledKey] else _("disabled")
+		state = _(strings.ENABLED) if self._categoryEnabledValues[enabledKey] else _(strings.DISABLED)
 		output = self._outputModeLabels[OUTPUT_MODE_CHOICES.index(self._categoryOutputValues[category])]
-		return _("{label}: {state}; {output}").format(label=label, state=state, output=output)
+		return _(strings.LABEL_STATE_OUTPUT).format(label=label, state=state, output=output)
 
 	def _refreshActivityCategoryDisplay(self, index):
 		if 0 <= index < len(self._activityCategories):
@@ -662,7 +642,7 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 
 	def _onTest(self, evt):
 		verbosity = VERBOSITY_CHOICES[self.verbosity.GetSelection()]
-		label = "Testing project: 43 tests for 12 seconds" if verbosity == "minimal" else "Running shell command: python -m unittest discover -s tests"
+		label = strings.SAMPLE_TEST_STATUS if verbosity == "minimal" else strings.SAMPLE_COMMAND_STATUS
 		fullProfile = FULL_SPEECH_PROFILE_CHOICES[self.fullSpeechProfile.GetSelection()]
 		minimalProfile = MINIMAL_SPEECH_PROFILE_CHOICES[self.minimalSpeechProfile.GetSelection()]
 		speechMessage = statusMessage(
@@ -671,6 +651,10 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 		brailleMessage = brailleStatusMessage(
 			label, _, BRAILLE_DETAIL_CHOICES[self.brailleDetail.GetSelection()], self.redactSensitive.IsChecked(),
 		)
+		if speechMessage == label:
+			speechMessage = _(label)
+		if brailleMessage == label:
+			brailleMessage = _(label)
 		_send(
 			speechMessage,
 			self.speech.IsChecked(), self.braille.IsChecked(), "command",
@@ -683,7 +667,7 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 
 	def _onTestSound(self, evt):
 		_playProgressSound(
-			"command", _("Running command"),
+			"command", _(strings.RUNNING_COMMAND),
 			SOUND_STYLE_CHOICES[self.progressSoundStyle.GetSelection()],
 			CLICK_VOLUME_CHOICES[self.clickVolume.GetSelection()],
 		)
@@ -718,17 +702,17 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 	def _onPreviewSelectedSpeech(self, evt):
 		self._storeCurrentAnnouncementEdit()
 		category, key, label, message = self._selectedPreview()
-		speech.speakMessage(formatCustomAnnouncement(self._announcementEdits[key], message, label, 0))
+		speech.speakMessage(formatCustomAnnouncement(self._announcementEdits[key], message, label, 0, translate=_))
 
 	def _onCheckUsage(self, evt):
-		_openUsageDashboard(_("Opening Claude usage settings"))
+		_openUsageDashboard(_(strings.OPENING_CLAUDE_USAGE_SETTINGS))
 
 	def _onBuyCredits(self, evt):
 		wx.LaunchDefaultBrowser("https://support.claude.com/")
 
 	def _onViewCurrentRelease(self, evt):
 		_showBrowseableMessageAtTop(
-			CURRENT_RELEASE_NOTES, _("Claude Desktop Access — current release notes"),
+			CURRENT_RELEASE_NOTES, _(strings.CLAUDE_DESKTOP_ACCESS_CURRENT_RELEASE_NOTES),
 		)
 
 	def _onViewCompleteHistory(self, evt):
@@ -736,23 +720,23 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 			message = _completeChangelogMessage()
 		except Exception:
 			log.error("Unable to open the Claude Desktop Access changelog", exc_info=True)
-			ui.message(_("The complete release history could not be opened"))
+			ui.message(_(strings.THE_COMPLETE_RELEASE_HISTORY_COULD_NOT_BE_OPENED))
 			return
 		_showBrowseableMessageAtTop(
-			message, _("Claude Desktop Access — complete release history"),
+			message, _(strings.CLAUDE_DESKTOP_ACCESS_COMPLETE_RELEASE_HISTORY),
 		)
 
 	def _onSaveSupportReport(self, evt):
 		if _activePluginInstance is None:
-			ui.message(_("Claude Desktop Access is not currently running"))
+			ui.message(_(strings.CLAUDE_DESKTOP_ACCESS_IS_NOT_CURRENTLY_RUNNING))
 			return
 		_saveSupportReport(self, _activePluginInstance._diagnosticReport())
 
 	def _onExportSettings(self, evt):
 		with wx.FileDialog(
-			self, _("Export Claude Desktop Access settings"),
+			self, _(strings.EXPORT_CLAUDE_DESKTOP_ACCESS_SETTINGS),
 			defaultFile="claude-desktop-access-settings.json",
-			wildcard=_("JSON files (*.json)|*.json"), style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+			wildcard=_(strings.JSON_FILE_FILTER), style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
 		) as dialog:
 			if dialog.ShowModal() != wx.ID_OK:
 				return
@@ -762,14 +746,14 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 			path.write_text(json.dumps(values, ensure_ascii=False, indent=2), encoding="utf-8")
 		except Exception:
 			log.error("Unable to export Claude Desktop Access settings", exc_info=True)
-			ui.message(_("Settings could not be exported"))
+			ui.message(_(strings.SETTINGS_COULD_NOT_BE_EXPORTED))
 			return
-		ui.message(_("Claude Desktop Access settings exported"))
+		ui.message(_(strings.CLAUDE_DESKTOP_ACCESS_SETTINGS_EXPORTED))
 
 	def _onImportSettings(self, evt):
 		with wx.FileDialog(
-			self, _("Import Claude Desktop Access settings"),
-			wildcard=_("JSON files (*.json)|*.json"), style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+			self, _(strings.IMPORT_CLAUDE_DESKTOP_ACCESS_SETTINGS),
+			wildcard=_(strings.JSON_FILE_FILTER), style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
 		) as dialog:
 			if dialog.ShowModal() != wx.ID_OK:
 				return
@@ -801,9 +785,9 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 				log.debugWarning("Unable to save restored Claude Desktop Access settings", exc_info=True)
 			self._loadControlsFromConfiguration()
 			log.error("Unable to import Claude Desktop Access settings", exc_info=True)
-			ui.message(_("Settings could not be imported"))
+			ui.message(_(strings.SETTINGS_COULD_NOT_BE_IMPORTED))
 			return
-		ui.message(_("Settings imported and loaded into this panel."))
+		ui.message(_(strings.SETTINGS_IMPORTED_AND_LOADED_INTO_THIS_PANEL))
 
 	def _loadControlsFromConfiguration(self):
 		"""Refresh every editable control after an in-place settings import."""
@@ -855,7 +839,7 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 		self.commandPunctuation.SetSelection(COMMAND_PUNCTUATION_CHOICES.index("enhanced"))
 		self.maximumSpokenCommandCharacters.SetValue(240)
 		self.redactSensitive.SetValue(False)
-		ui.message(_("Speech profile settings reset. Select OK to save."))
+		ui.message(_(strings.SPEECH_PROFILE_SETTINGS_RESET_SELECT_OK_TO_SAVE))
 
 	def onSave(self):
 		conf = _settings()
@@ -995,14 +979,14 @@ class CodePromptControlOverlay:
 
 	def _get_description(self):
 		descriptions = {
-			"files": _("Opens file and attachment options. Press Enter or Space to open."),
-			"model": _("Opens the model list. Press Enter or Space to open, then use arrow keys and Enter."),
-			"permissions": _("Opens permission choices. Press Enter or Space to open, then use arrow keys and Enter."),
+			"files": _(strings.OPENS_FILE_AND_ATTACHMENT_OPTIONS_PRESS_ENTER_OR),
+			"model": _(strings.OPENS_THE_MODEL_LIST_PRESS_ENTER_OR_SPACE),
+			"permissions": _(strings.OPENS_PERMISSION_CHOICES_PRESS_ENTER_OR_SPACE_TO),
 		}
 		nativeDescription = str(getattr(self, "_codeNativeDescription", "") or "").strip()
 		helpDescription = descriptions.get(getattr(self, "_codePromptControlKind", ""), "")
 		if nativeDescription and helpDescription.casefold() not in nativeDescription.casefold():
-			return _("{native} {help}").format(native=nativeDescription, help=helpDescription)
+			return _(strings.NATIVE_HELP).format(native=nativeDescription, help=helpDescription)
 		return nativeDescription or helpDescription
 
 
@@ -1018,7 +1002,7 @@ class CodePromptEditableTextOverlay:
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
-	scriptCategory = _("Claude Desktop Access")
+	scriptCategory = _(strings.CLAUDE_DESKTOP_ACCESS)
 
 	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
 		"""Enhance known controls without adding or intercepting gestures."""
@@ -1302,7 +1286,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if conf["lastShownVersion"] == ADDON_VERSION:
 			return
 		_showBrowseableMessageAtTop(
-			CURRENT_RELEASE_NOTES, _("Claude Desktop Access — what's new"),
+			CURRENT_RELEASE_NOTES, _(strings.CLAUDE_DESKTOP_ACCESS_WHATS_NEW),
 		)
 		conf["lastShownVersion"] = ADDON_VERSION
 		conf["welcomeShown"] = True
@@ -1359,7 +1343,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def _historyMessage(self, offset):
 		if not self._speechHistory and not self._brailleHistory:
-			ui.message(_("No activity announcement history is available"))
+			ui.message(_(strings.NO_ACTIVITY_ANNOUNCEMENT_HISTORY_IS_AVAILABLE))
 			return
 		speechMessage = self._speechHistory.move(offset) if self._speechHistory else ""
 		brailleMessage = self._brailleHistory.move(offset) if self._brailleHistory else speechMessage
@@ -1384,33 +1368,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			messages = self._currentChatMessages()
 		except Exception:
 			log.debugWarning("Claude Desktop Access could not read recent chat messages", exc_info=True)
-			ui.message(_("Recent chat messages could not be read"))
+			ui.message(_(strings.RECENT_CHAT_MESSAGES_COULD_NOT_BE_READ))
 			return
 		if not messages:
-			ui.message(_("No recent chat messages are available"))
+			ui.message(_(strings.NO_RECENT_CHAT_MESSAGES_ARE_AVAILABLE))
 			return
 		if len(messages) < position:
-			ui.message(_("Only {count} recent chat messages are available").format(count=len(messages)))
+			ui.message(_(strings.ONLY_COUNT_RECENT_CHAT_MESSAGES_ARE_AVAILABLE).format(count=len(messages)))
 			return
 		speaker, text = messages[-position]
-		speakerLabel = _("You") if speaker == "user" else _("Claude")
-		ui.message(_("Chat message {position}, {speaker}: {text}").format(
+		speakerLabel = _(strings.YOU) if speaker == "user" else _(strings.CLAUDE)
+		ui.message(_(strings.CHAT_MESSAGE_POSITION_SPEAKER_TEXT).format(
 			position=position, speaker=speakerLabel, text=text,
 		))
 
 	def _diagnosticReport(self):
 		conf = _settings()
-		return _(
-			"Beta: live validation ongoing\nNVDA: {nvdaVersion}\nVersion: {version}\nVerbosity: {verbosity}\nFull speech profile: {profile}\nMinimal speech profile: {minimalProfile}\nBraille detail: {brailleDetail}\nSound style: {style}\nClick volume: {volume}\n"
-			"Monitoring attached: {attached}\nBackground state: {state}\nPaused: {paused}\n"
-			"Active category: {category}\nLast state reason: {reason}\nLast submission signal: {signal}\n"
-			"Claude document switches: {switches}\nFull buffer inspections: {inspections}\nLightweight ticks without inspection: {skipped}\nPrompt typing protection: {typingProtection}\nPreserved Braille compositions: {braillePreserved}\nSuppressed disruptive conversation updates: {conversationUpdates}\nLast inspection error: {error}\n"
-			"Embedded browser focus detected: {browserFocused}\nNative browser interaction: yes\n"
-			"Embedded browser loading announcements: {browserProgress}\n"
-			"Speech history entries: {speechHistory}\nBraille history entries: {brailleHistory}\nRecent chats cached: {recent}\nArchived chats cached: {archived}\n"
-			"Configuration repairs this session: {repairs}\nSupported applications: {apps}\n"
-			"Speech: {speech}\nBraille: {braille}\nStable conversation reading: {protectBraille}\nUrgent speech interruption: {interrupt}\nProgress sounds: {sounds}\nCategory output routing:\n{routing}"
-		).format(
+		return _(strings.DIAGNOSTIC_REPORT).format(
 			version=ADDON_VERSION, nvdaVersion=getattr(versionInfo, "version", "unknown"),
 			verbosity=conf["verbosity"], profile=conf["fullSpeechProfile"], minimalProfile=conf["minimalSpeechProfile"],
 			brailleDetail=conf["brailleDetail"],
@@ -1470,20 +1444,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if selectorRequested:
 			if not mode:
 				self._announceConversationModeNotice(
-					_("The Claude Chat, Cowork and Code mode switch is not available in this view"),
+					_(strings.THE_CLAUDE_CHAT_COWORK_AND_CODE_MODE_SWITCH),
 				)
 				log.debugWarning("Claude Desktop Access could not find the mode-switch control")
 				return
 			if not selectorOpened:
 				self._announceConversationModeNotice(
-					_("The Claude Chat, Cowork and Code mode menu could not be opened"),
+					_(strings.THE_CLAUDE_CHAT_COWORK_AND_CODE_MODE_MENU),
 				)
 				log.debugWarning("Claude Desktop Access could not expand the mode-switch control")
 				return
 			self._setConversationMode(mode, reason, authoritative=True)
-			modeName = _("Code") if mode == "code" else _("Claude")
+			modeName = _(strings.CODE) if mode == "code" else _(strings.CLAUDE)
 			self._announceConversationModeNotice(
-				_("{mode} mode. Mode selector open. Use Up or Down Arrow and Enter to choose a mode.").format(
+				_(strings.MODE_MODE_MODE_SELECTOR_OPEN_USE_UP_OR).format(
 					mode=modeName,
 				),
 			)
@@ -1504,12 +1478,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _openClaudeNavigator(self):
 		focus = api.getFocusObject()
 		if not _isClaudeObject(focus):
-			ui.message(_("Move to Claude before opening navigation"))
+			ui.message(_(strings.MOVE_TO_CLAUDE_BEFORE_OPENING_NAVIGATION))
 			return
 		self._rememberBuffer(focus)
 		root = getattr(self._buffer, "rootNVDAObject", None)
 		if root is None:
-			ui.message(_("Claude has not exposed a conversation document. Try browse mode, then try again."))
+			ui.message(_(strings.CLAUDE_HAS_NOT_EXPOSED_A_CONVERSATION_DOCUMENT_TRY))
 			return
 		if self._claudeNavigationScan:
 			self._claudeNavigationScan.cancel()
@@ -1521,14 +1495,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if not valid():
 				return
 			if not items:
-				ui.message(_("No recognized Claude navigation controls were exposed. Use native Tab navigation and include this result in beta feedback."))
+				ui.message(_(strings.NO_RECOGNIZED_CLAUDE_NAVIGATION_CONTROLS_WERE_EXPOSED_USE))
 				return
 			def closed():
 				self._claudeNavigationDialog = None
 				gui.mainFrame.postPopup()
 			def action(obj, kind):
 				if not valid() or not _isClaudeObject(obj) or _isDefunctObject(obj):
-					ui.message(_("The Claude view changed. Reopen navigation."))
+					ui.message(_(strings.THE_CLAUDE_VIEW_CHANGED_REOPEN_NAVIGATION))
 					return
 				try:
 					obj.setFocus()
@@ -1537,7 +1511,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					else:
 						api.setNavigatorObject(obj)
 				except Exception:
-					ui.message(_("This Claude control could not be reached. Try native Tab navigation."))
+					ui.message(_(strings.THIS_CLAUDE_CONTROL_COULD_NOT_BE_REACHED_TRY))
 			gui.mainFrame.prePopup()
 			try:
 				self._claudeNavigationDialog = ClaudeNavigator(items, action, closed, truncated)
@@ -1545,7 +1519,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			except Exception:
 				gui.mainFrame.postPopup()
 				raise
-		ui.message(_("Scanning Claude navigation"))
+		ui.message(_(strings.SCANNING_CLAUDE_NAVIGATION))
 		self._claudeNavigationScan = NavigationScan(root, valid, completed)
 		self._claudeNavigationScan.step()
 
@@ -1800,7 +1774,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _startChatHistoryExpansion(self, mode):
 		"""Load bounded native Recents pages before presenting the history dialog."""
 		if self._pendingChatHistoryExpansion:
-			ui.message(_("Recent chat history is already loading"))
+			ui.message(_(strings.RECENT_CHAT_HISTORY_IS_ALREADY_LOADING))
 			return True
 		if not self._chatHistoryMoreAvailable.get(mode, False):
 			return False
@@ -1814,7 +1788,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"staleScans": 0,
 			"settleScans": 0,
 		}
-		ui.message(_("Loading additional {agent} recent chats").format(agent=agentName))
+		ui.message(_(strings.LOADING_ADDITIONAL_AGENT_RECENT_CHATS).format(agent=agentName))
 		self._scheduleChatHistoryExpansion(50)
 		return True
 
@@ -1826,15 +1800,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		count = len(self._chatHistoryTitles(mode))
 		moreAvailable = self._chatHistoryMoreAvailable.get(mode, False)
 		if failed:
-			ui.message(_(
-				"More recent chats could not be loaded. Showing the {count} currently available {agent} chats"
-			).format(count=count, agent=agentName))
+			ui.message(_(strings.MORE_RECENT_CHATS_COULD_NOT_BE_LOADED_SHOWING).format(count=count, agent=agentName))
 		elif limitReached:
-			ui.message(_(
-				"Loaded {count} {agent} recent chats. More are available; open history again to continue loading"
-			).format(count=count, agent=agentName))
+			ui.message(_(strings.LOADED_COUNT_AGENT_RECENT_CHATS_MORE_ARE_AVAILABLE).format(count=count, agent=agentName))
 		else:
-			ui.message(_("Loaded {count} currently available {agent} recent chats").format(
+			ui.message(_(strings.LOADED_COUNT_CURRENTLY_AVAILABLE_AGENT_RECENT_CHATS).format(
 				count=count, agent=agentName,
 			))
 		log.info(
@@ -1854,7 +1824,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		mode = state["mode"]
 		if mode != self._conversationMode or self._buffer is None or not _isClaudeObject(api.getFocusObject()):
 			self._cancelChatHistoryExpansion()
-			ui.message(_("Recent chat history loading stopped because Claude is no longer focused"))
+			ui.message(_(strings.RECENT_CHAT_HISTORY_LOADING_STOPPED_BECAUSE_CLAUDE_IS))
 			return
 		currentCount = self._unifiedRecentCounts.get(mode, 0)
 		currentGeneration = self._chatHistoryScanGenerations.get(mode, 0)
@@ -2082,10 +2052,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if control is not None and resultingKind in expectedKinds[actionKind]:
 			self._pendingVoiceControlConfirmation = None
 			messages = {
-				"start": _("Voice mode started"),
-				"stop": _("Voice mode ended"),
-				"mute": _("Microphone muted"),
-				"unmute": _("Microphone unmuted"),
+				"start": _(strings.VOICE_MODE_STARTED),
+				"stop": _(strings.VOICE_MODE_ENDED),
+				"mute": _(strings.MICROPHONE_MUTED),
+				"unmute": _(strings.MICROPHONE_UNMUTED),
 			}
 			ui.message(messages[actionKind])
 			log.info("Claude Desktop Access confirmed Claude voice control: %s", actionKind)
@@ -2099,9 +2069,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return
 		self._pendingVoiceControlConfirmation = None
 		failure = (
-			_("Microphone state could not be confirmed")
+			_(strings.MICROPHONE_STATE_COULD_NOT_BE_CONFIRMED)
 			if actionKind in ("mute", "unmute")
-			else _("Voice mode state could not be confirmed")
+			else _(strings.VOICE_MODE_STATE_COULD_NOT_BE_CONFIRMED)
 		)
 		ui.message(failure)
 		log.debugWarning("Claude Desktop Access could not confirm Claude voice control: %s", actionKind)
@@ -2113,23 +2083,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			control, kind = self._voiceControlObject(wantedKinds)
 			if control is None:
 				if set(wantedKinds) == {"mute", "unmute"}:
-					ui.message(_("Microphone control is unavailable. Start voice mode first"))
+					ui.message(_(strings.MICROPHONE_CONTROL_IS_UNAVAILABLE_START_VOICE_MODE_FIRST))
 				else:
-					ui.message(_("Voice mode control is not available in this Claude view"))
+					ui.message(_(strings.VOICE_MODE_CONTROL_IS_NOT_AVAILABLE_IN_THIS))
 				return
 			control.doAction()
 			messages = {
-				"start": _("Starting voice mode"),
-				"stop": _("Ending voice mode"),
-				"mute": _("Muting microphone"),
-				"unmute": _("Unmuting microphone"),
+				"start": _(strings.STARTING_VOICE_MODE),
+				"stop": _(strings.ENDING_VOICE_MODE),
+				"mute": _(strings.MUTING_MICROPHONE),
+				"unmute": _(strings.UNMUTING_MICROPHONE),
 			}
 			ui.message(messages[kind])
 			self._scheduleVoiceControlConfirmation(kind)
 			log.info("Claude Desktop Access requested Claude voice control: %s", kind)
 		except Exception:
 			log.debugWarning("Claude Desktop Access could not activate a Claude voice control", exc_info=True)
-			ui.message(_("The Claude voice control could not be activated"))
+			ui.message(_(strings.THE_CLAUDE_VOICE_CONTROL_COULD_NOT_BE_ACTIVATED))
 
 	def _startDirectChatAction(self, title, action):
 		if self._chatActionRetryTimer:
@@ -2165,7 +2135,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					focusedAction = " ".join(str(getattr(actionButton, "name", "") or "").split())
 					log.info("Claude Desktop Access focused selected chat action: %s", focusedAction)
 				else:
-					ui.message(_("Chat action opened"))
+					ui.message(_(strings.CHAT_ACTION_OPENED))
 					log.info("Claude Desktop Access activated the selected chat action: %s", action)
 				return
 		except Exception:
@@ -2173,10 +2143,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._pendingDirectChatAction = None
 				if action == "focusActions":
 					log.debugWarning("Claude Desktop Access could not focus Pin, Unpin, or Archive", exc_info=True)
-					ui.message(_("The selected chat's Pin or Archive button could not be focused"))
+					ui.message(_(strings.THE_SELECTED_CHATS_PIN_OR_ARCHIVE_BUTTON_COULD))
 				else:
 					log.debugWarning("Claude Desktop Access could not activate the selected chat action", exc_info=True)
-					ui.message(_("The selected chat action could not be opened"))
+					ui.message(_(strings.THE_SELECTED_CHAT_ACTION_COULD_NOT_BE_OPENED))
 				return
 		# A missing action control is a normal transient state while Chromium updates
 		# the selected sidebar row, so it does not raise above. Apply the same retry
@@ -2185,10 +2155,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._pendingDirectChatAction = None
 			if action == "focusActions":
 				log.debugWarning("Claude Desktop Access could not find Pin, Unpin, or Archive after retrying")
-				ui.message(_("The selected chat's Pin or Archive button could not be focused"))
+				ui.message(_(strings.THE_SELECTED_CHATS_PIN_OR_ARCHIVE_BUTTON_COULD))
 			else:
 				log.debugWarning("Claude Desktop Access could not find the selected chat action after retrying")
-				ui.message(_("The selected chat action could not be opened"))
+				ui.message(_(strings.THE_SELECTED_CHAT_ACTION_COULD_NOT_BE_OPENED))
 			return
 		self._pendingDirectChatAction = (title, action, attempt + 1)
 		self._chatActionRetryTimer = wx.CallLater(100, self._retryDirectChatAction)
@@ -2223,7 +2193,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if self._unarchiveFocusAttempts < 25:
 			self._unarchiveFocusTimer = wx.CallLater(150, self._focusUnarchiveButton)
 		else:
-			ui.message(_("Unarchive confirmation opened; move to the Unarchive and open button"))
+			ui.message(_(strings.UNARCHIVE_CONFIRMATION_OPENED_MOVE_TO_THE_UNARCHIVE_AND))
 
 	def _usageLimitTextFromObject(self, obj):
 		"""Collect only a small Claude alert subtree when its own text is incomplete."""
@@ -2479,11 +2449,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._pluginProgressOwnedBusy.discard(expiredIdentity)
 		self._pluginProgressBuckets[identity] = bucket
 		if percent is None:
-			message = _("Plugin installation in progress")
+			message = _(strings.PLUGIN_INSTALLATION_IN_PROGRESS)
 		elif percent >= 100:
-			message = _("Plugin installation complete")
+			message = _(strings.PLUGIN_INSTALLATION_COMPLETE)
 		else:
-			message = _("Plugin installation {percent} percent").format(percent=percent)
+			message = _(strings.PLUGIN_INSTALLATION_PERCENT_PERCENT).format(percent=percent)
 		complete = percent is not None and percent >= 100
 		busy, ownsBusy = pluginProgressBusyTransition(
 			self._busy, identity in self._pluginProgressOwnedBusy, complete,
@@ -2574,7 +2544,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._embeddedBrowserLoadingPercent = 0
 		self._embeddedBrowserLoadIdentity = identity
 		self._embeddedBrowserCompletedIdentity = ""
-		self._embeddedBrowserNotice(_("Loading page"))
+		self._embeddedBrowserNotice(_(strings.LOADING_PAGE))
 		self._scheduleEmbeddedBrowserLoadComplete(busy=self._embeddedBrowserBusySeen)
 		log.info("Claude Desktop Access announced embedded browser load start")
 		return True
@@ -2593,7 +2563,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._embeddedBrowserLoadingPercent = 100
 		self._embeddedBrowserCompletedIdentity = self._embeddedBrowserLoadIdentity
 		if _settings()["announceEmbeddedBrowserProgress"]:
-			self._embeddedBrowserNotice(_("Loading complete"))
+			self._embeddedBrowserNotice(_(strings.LOADING_COMPLETE))
 			log.info("Claude Desktop Access announced embedded browser load completion")
 		return True
 
@@ -2706,7 +2676,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if root is None:
 			if self._browserNavigatorDialog:
 				self._browserNavigatorDialog.refreshFinished()
-			ui.message(_("No embedded browser is available in the current Claude window"))
+			ui.message(_(strings.NO_EMBEDDED_BROWSER_IS_AVAILABLE_IN_THE_CURRENT))
 			return
 		self._browserScanPurpose = purpose
 		self._browserScanState = {
@@ -2724,7 +2694,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"truncated": False,
 		}
 		if purpose != "navigatorRefresh":
-			ui.message(_("Scanning the embedded browser"))
+			ui.message(_(strings.SCANNING_THE_EMBEDDED_BROWSER))
 		self._browserScanTimer = wx.CallLater(
 			BROWSER_SCAN_YIELD_MILLISECONDS, self._continueEmbeddedBrowserScan,
 		)
@@ -2875,13 +2845,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			log.debugWarning("Claude Desktop Access could not present embedded-browser scan results", exc_info=True)
 			if self._browserNavigatorDialog:
 				self._browserNavigatorDialog.refreshFinished()
-			ui.message(_("Embedded-browser page information could not be presented"))
+			ui.message(_(strings.EMBEDDED_BROWSER_PAGE_INFORMATION_COULD_NOT_BE_PRESENTED))
 
 	def _dispatchEmbeddedBrowserScan(self, purpose, result):
 		if not result["found"]:
 			if self._browserNavigatorDialog:
 				self._browserNavigatorDialog.refreshFinished()
-			ui.message(_("Claude did not expose an accessible embedded-browser page"))
+			ui.message(_(strings.CLAUDE_DID_NOT_EXPOSE_AN_ACCESSIBLE_EMBEDDED_BROWSER))
 			return
 		if purpose in ("navigator", "navigatorRefresh"):
 			self._showOrUpdateBrowserNavigator(result)
@@ -2897,7 +2867,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def _showOrUpdateBrowserNavigator(self, result):
 		redact = _settings()["redactSensitive"]
-		title = self._displayBrowserText(result["title"] or _("Untitled page"))
+		title = self._displayBrowserText(result["title"] or _(strings.UNTITLED_PAGE))
 		address = (
 			browserAddressDomain(result["address"])
 			if redact else result["address"]
@@ -2910,7 +2880,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				title, address, result["summary"], items, result["truncated"], result["savedSignature"],
 			)
 			self._browserNavigatorDialog.refreshFinished()
-			ui.message(_("Browser Navigator refreshed"))
+			ui.message(_(strings.BROWSER_NAVIGATOR_REFRESHED))
 			return
 		gui.mainFrame.prePopup()
 		try:
@@ -2943,7 +2913,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _browserNavigatorAction(self, action, item):
 		result = self._browserNavigatorResult
 		if not result:
-			ui.message(_("Browser Navigator page information is no longer available"))
+			ui.message(_(strings.BROWSER_NAVIGATOR_PAGE_INFORMATION_IS_NO_LONGER_AVAILABLE))
 			return
 		if action == "summary":
 			ui.message(result["summary"])
@@ -2972,7 +2942,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			signature = self._browserSavedLocations.get(result["pageKey"], "")
 			restoredItem = next((entry for entry in result["items"] if entry["signature"] == signature), None)
 			if restoredItem is None:
-				ui.message(_("No remembered location is available for this browser page"))
+				ui.message(_(strings.NO_REMEMBERED_LOCATION_IS_AVAILABLE_FOR_THIS_BROWSER))
 			else:
 				self._focusEmbeddedBrowserItem(restoredItem)
 		elif action in ("move", "activate") and item is not None:
@@ -2998,7 +2968,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._rememberBrowserNavigatorLocation(item)
 			if activate:
 				obj.doAction()
-				ui.message(_("Activated {item}").format(item=item["label"]))
+				ui.message(_(strings.ACTIVATED_ITEM).format(item=item["label"]))
 				return
 			roleName = item.get("role", "")
 			if roleName in (
@@ -3013,10 +2983,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					position.collapse()
 					position.updateCaret()
 				api.setNavigatorObject(obj)
-			ui.message(_("Moved to {item}").format(item=item["label"]))
+			ui.message(_(strings.MOVED_TO_ITEM).format(item=item["label"]))
 		except Exception:
 			log.debugWarning("Claude Desktop Access could not move to a Browser Navigator item", exc_info=True)
-			ui.message(_("That browser item changed. Refresh Browser Navigator and try again"))
+			ui.message(_(strings.THAT_BROWSER_ITEM_CHANGED_REFRESH_BROWSER_NAVIGATOR_AND))
 
 	def _showEmbeddedBrowserSnapshot(self, result):
 		lines = result["snapshotLines"]
@@ -3025,36 +2995,36 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			lines = tuple(redactSensitive(line) for line in lines)
 			title = redactSensitive(title)
 		message = browserSnapshotText(title, result["address"], lines, result["truncated"], _)
-		_showBrowseableMessageAtTop(message, _("Claude embedded browser — accessible snapshot"))
+		_showBrowseableMessageAtTop(message, _(strings.CLAUDE_EMBEDDED_BROWSER_ACCESSIBLE_SNAPSHOT))
 
 	def _copyEmbeddedBrowserAddress(self, address):
 		if not address:
-			ui.message(_("The embedded browser did not expose its current address"))
+			ui.message(_(strings.THE_EMBEDDED_BROWSER_DID_NOT_EXPOSE_ITS_CURRENT))
 			return
 		if not wx.TheClipboard.Open():
-			ui.message(_("Could not open the clipboard"))
+			ui.message(_(strings.COULD_NOT_OPEN_THE_CLIPBOARD))
 			return
 		try:
 			wx.TheClipboard.SetData(wx.TextDataObject(address))
 			wx.TheClipboard.Flush()
 		finally:
 			wx.TheClipboard.Close()
-		ui.message(_("Browser page address copied"))
+		ui.message(_(strings.BROWSER_PAGE_ADDRESS_COPIED))
 
 	def _openEmbeddedBrowserExternallyFromResult(self, result):
 		address = result.get("address", "")
 		try:
 			if address and wx.LaunchDefaultBrowser(address):
-				ui.message(_("Opened the page in the default browser"))
+				ui.message(_(strings.OPENED_THE_PAGE_IN_THE_DEFAULT_BROWSER))
 				return
 			externalItem = next((item for item in result["items"] if item.get("kind") == "external"), None)
 			if externalItem is not None:
 				externalItem["object"].doAction()
-				ui.message(_("Requested the native Open in browser action"))
+				ui.message(_(strings.REQUESTED_THE_NATIVE_OPEN_IN_BROWSER_ACTION))
 				return
 		except Exception:
 			log.debugWarning("Claude Desktop Access could not open the embedded page externally", exc_info=True)
-		ui.message(_("The embedded browser did not expose a safe page address or external-browser control"))
+		ui.message(_(strings.THE_EMBEDDED_BROWSER_DID_NOT_EXPOSE_A_SAFE))
 
 	def _findClaudePromptObject(self):
 		candidates = [self._lastPromptObject, self._pendingPromptObject]
@@ -3099,10 +3069,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			prompt.setFocus()
 			api.setNavigatorObject(prompt)
 			self._lastPromptObject = prompt
-			ui.message(_("Returned to the Claude prompt"))
+			ui.message(_(strings.RETURNED_TO_THE_CLAUDE_PROMPT))
 		except Exception:
 			log.debugWarning("Claude Desktop Access could not return to the Claude prompt", exc_info=True)
-			ui.message(_("The Claude prompt could not be focused in this view"))
+			ui.message(_(strings.THE_CLAUDE_PROMPT_COULD_NOT_BE_FOCUSED_IN))
 
 	def _openEmbeddedBrowserNavigator(self):
 		if self._browserNavigatorDialog:
@@ -3166,7 +3136,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		mode = mode or self._conversationMode
 		agentName = modeDisplayName(mode)
 		if mode not in ("claude", "code", "cowork") or mode != self._conversationMode:
-			ui.message(_("The chat-history mode changed. Open chat history again"))
+			ui.message(_(strings.THE_CHAT_HISTORY_MODE_CHANGED_OPEN_CHAT_HISTORY))
 			return
 
 		try:
@@ -3182,7 +3152,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			log.info("Claude Desktop Access performed chat history action: %s", action)
 		except Exception:
 			log.debugWarning("Claude Desktop Access could not act on the selected chat", exc_info=True)
-			ui.message(_("The selected {agent} chat could not be opened").format(agent=agentName))
+			ui.message(_(strings.THE_SELECTED_AGENT_CHAT_COULD_NOT_BE_OPENED).format(agent=agentName))
 
 	def _queueChatHistoryAction(self, title, action, source, mode):
 		self._pendingChatHistoryAction = (title, action, source, mode)
@@ -3275,7 +3245,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				if conversationChanged:
 					self._documentSwitchCount += 1
 					self._resetTaskState("document changed")
-					message = _("Chat opened: {title}").format(title=title) if title else _("New chat opened")
+					message = _(strings.CHAT_OPENED_TITLE).format(title=title) if title else _(strings.NEW_CHAT_OPENED)
 					self._latestMessage = self._latestFullMessage = message
 					self._speakOnce(message, "other", "other", brailleMessage=message)
 					log.info("Claude Desktop Access detected a newly opened chat document")
@@ -3294,7 +3264,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if not self._monitoringAnnounced:
 				self._monitoringAnnounced = True
 				conf = _settings()
-				_send(_("Activity monitoring active"), conf["speech"], conf["braille"], None, False)
+				_send(_(strings.ACTIVITY_MONITORING_ACTIVE), conf["speech"], conf["braille"], None, False)
 			return
 
 	def _updateAppFocusState(self, obj):
@@ -3543,7 +3513,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			actions = categoryOutputActions(mode, conf["speech"], conf["braille"], conf["soundWhenSpeechUnavailable"])
 			if actions["sound"]:
 				_playProgressSound(
-					"submission", _("Prompt submitted"), conf["progressSoundStyle"], conf["clickVolume"],
+					"submission", _(strings.PROMPT_SUBMITTED), conf["progressSoundStyle"], conf["clickVolume"],
 				)
 				self._lastProgressSoundAt = time.monotonic()
 		else:
@@ -3843,12 +3813,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._latestFullMessage = brailleMessage
 		if category == "command" and conf["verbosity"] == "full":
 			message, shortened = formatCommandSpeech(
-				message, conf["commandPunctuation"], conf["maximumSpokenCommandCharacters"],
+				message, conf["commandPunctuation"], conf["maximumSpokenCommandCharacters"], _,
 			)
 			if shortened:
-				message += _(" Complete command available with Copy latest full Claude progress.")
-		priority = announcementPriority(category, message)
-		action = soundKey(category, message) if category == "completion" else category
+				message += _(strings.COMPLETE_COMMAND_AVAILABLE_WITH_COPY_LATEST_FULL_CLAUDE)
+		# Route failures using the native status before the message is localized.
+		priority = announcementPriority(category, label)
+		action = soundKey(category, label) if category == "completion" else category
 		message = _customizeAnnouncement(message, action)
 		log.info("Claude Desktop Access detected activity: %s", safeMessage)
 		self._latestMessage = message
@@ -4043,7 +4014,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			now - self._lastProgressSoundAt, interval,
 		):
 			return
-		_playProgressSound("working", _("Working"), conf["progressSoundStyle"], conf["clickVolume"])
+		_playProgressSound("working", _(strings.WORKING), conf["progressSoundStyle"], conf["clickVolume"])
 		self._lastProgressSoundAt = now
 
 	def _announceBackgroundPulse(self):
@@ -4067,12 +4038,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# sound as though it is still editing.
 		name = _(backgroundActivityName(self._activeCategory, self._latestFullMessage))
 		duration = formatElapsedDuration(elapsed, _)
-		fullMessage = _("{activity} still running, {duration}").format(activity=name, duration=duration)
+		fullMessage = _(strings.ACTIVITY_STILL_RUNNING_DURATION).format(activity=name, duration=duration)
 		minimalProfile = conf["minimalSpeechProfile"]
 		if conf["verbosity"] == "minimal" and minimalProfile == "essential":
 			message = ""
 		elif conf["verbosity"] == "minimal" and minimalProfile == "balanced" and elapsed < 30:
-			message = _("{activity} still running").format(activity=name)
+			message = _(strings.ACTIVITY_STILL_RUNNING).format(activity=name)
 		else:
 			message = fullMessage
 		if message:
@@ -4165,7 +4136,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._speakOnce(message, "commentary", brailleMessage=fullMessage)
 		return True
 
-	@script(description=_("Report current Claude activity or repeat the latest message"))
+	@script(description=_(strings.REPORT_CURRENT_CLAUDE_ACTIVITY_OR_REPEAT_THE_LATEST))
 	def script_repeatLatestStatus(self, gesture):
 		elapsed = time.monotonic() - self._busyStartedAt if self._busyStartedAt else 0
 		agentName = modeDisplayName(self._conversationMode)
@@ -4178,111 +4149,111 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			brailleMessage=self._latestFullMessage or message,
 		)
 
-	@script(description=_("Toggle Minimal and Full Claude announcements"))
+	@script(description=_(strings.TOGGLE_MINIMAL_AND_FULL_CLAUDE_ANNOUNCEMENTS))
 	def script_toggleVerbosity(self, gesture):
 		conf = _settings()
 		conf["verbosity"] = "minimal" if conf["verbosity"] == "full" else "full"
-		message = _("Claude announcements: {mode}").format(mode=conf["verbosity"])
+		message = _(strings.CLAUDE_ANNOUNCEMENTS_MODE).format(mode=_(strings.MINIMAL) if conf["verbosity"] == "minimal" else _(strings.FULL))
 		_send(message, conf["speech"], conf["braille"], "other", conf["soundWhenSpeechUnavailable"])
 
-	@script(description=_("Pause or resume Claude announcements"))
+	@script(description=_(strings.PAUSE_OR_RESUME_CLAUDE_ANNOUNCEMENTS))
 	def script_togglePause(self, gesture):
 		self._paused = not self._paused
-		ui.message(_("Claude announcements paused") if self._paused else _("Claude announcements resumed"))
+		ui.message(_(strings.CLAUDE_ANNOUNCEMENTS_PAUSED) if self._paused else _(strings.CLAUDE_ANNOUNCEMENTS_RESUMED))
 
-	@script(description=_("Read the previous Claude announcement"))
+	@script(description=_(strings.READ_THE_PREVIOUS_CLAUDE_ANNOUNCEMENT))
 	def script_previousHistory(self, gesture):
 		self._historyMessage(-1)
 
-	@script(description=_("Read the next Claude announcement"))
+	@script(description=_(strings.READ_THE_NEXT_CLAUDE_ANNOUNCEMENT))
 	def script_nextHistory(self, gesture):
 		self._historyMessage(1)
 
-	@script(description=_("Show Claude announcement history"))
+	@script(description=_(strings.SHOW_CLAUDE_ANNOUNCEMENT_HISTORY))
 	def script_showHistory(self, gesture):
 		if not self._speechHistory and not self._brailleHistory:
-			ui.message(_("No activity announcement history is available"))
+			ui.message(_(strings.NO_ACTIVITY_ANNOUNCEMENT_HISTORY_IS_AVAILABLE))
 			return
 		sections = []
 		if self._speechHistory:
-			sections.append(_("Speech history") + "\n" + "\n".join(self._speechHistory.items()))
+			sections.append(_(strings.SPEECH_HISTORY) + "\n" + "\n".join(self._speechHistory.items()))
 		if self._brailleHistory and self._brailleHistory.items() != self._speechHistory.items():
-			sections.append(_("Braille history") + "\n" + "\n".join(self._brailleHistory.items()))
-		ui.browseableMessage("\n\n".join(sections), title=_("Claude Desktop Access announcement history"))
+			sections.append(_(strings.BRAILLE_HISTORY) + "\n" + "\n".join(self._brailleHistory.items()))
+		ui.browseableMessage("\n\n".join(sections), title=_(strings.CLAUDE_DESKTOP_ACCESS_ANNOUNCEMENT_HISTORY))
 
-	@script(description=_("Clear Claude announcement history"))
+	@script(description=_(strings.CLEAR_CLAUDE_ANNOUNCEMENT_HISTORY))
 	def script_clearHistory(self, gesture):
 		self._speechHistory.clear()
 		self._brailleHistory.clear()
-		ui.message(_("Claude announcement history cleared"))
+		ui.message(_(strings.CLAUDE_ANNOUNCEMENT_HISTORY_CLEARED))
 
-	@script(description=_("Toggle Claude privacy redaction"))
+	@script(description=_(strings.TOGGLE_CLAUDE_PRIVACY_REDACTION))
 	def script_togglePrivacy(self, gesture):
 		conf = _settings()
 		conf["redactSensitive"] = not conf["redactSensitive"]
-		ui.message(_("Claude privacy redaction on") if conf["redactSensitive"] else _("Claude privacy redaction off"))
+		ui.message(_(strings.CLAUDE_PRIVACY_REDACTION_ON) if conf["redactSensitive"] else _(strings.CLAUDE_PRIVACY_REDACTION_OFF))
 
-	@script(description=_("Show sanitized Claude Desktop Access diagnostics"))
+	@script(description=_(strings.SHOW_SANITIZED_CLAUDE_DESKTOP_ACCESS_DIAGNOSTICS))
 	def script_showDiagnostics(self, gesture):
-		ui.browseableMessage(self._diagnosticReport(), title=_("Claude Desktop Access diagnostics"))
+		ui.browseableMessage(self._diagnosticReport(), title=_(strings.CLAUDE_DESKTOP_ACCESS_DIAGNOSTICS))
 
-	@script(description=_("Copy sanitized Claude Desktop Access diagnostics"))
+	@script(description=_(strings.COPY_SANITIZED_CLAUDE_DESKTOP_ACCESS_DIAGNOSTICS))
 	def script_copyDiagnostics(self, gesture):
 		if not wx.TheClipboard.Open():
-			ui.message(_("Could not open the clipboard"))
+			ui.message(_(strings.COULD_NOT_OPEN_THE_CLIPBOARD))
 			return
 		try:
 			wx.TheClipboard.SetData(wx.TextDataObject(self._diagnosticReport()))
 			wx.TheClipboard.Flush()
 		finally:
 			wx.TheClipboard.Close()
-		ui.message(_("Sanitized Claude diagnostics copied"))
+		ui.message(_(strings.SANITIZED_CLAUDE_DIAGNOSTICS_COPIED))
 
-	@script(description=_("Save a sanitized Claude Desktop Access support report"))
+	@script(description=_(strings.SAVE_A_SANITIZED_CLAUDE_DESKTOP_ACCESS_SUPPORT_REPORT))
 	def script_saveSupportReport(self, gesture):
 		_saveSupportReport(gui.mainFrame, self._diagnosticReport())
 
-	@script(description=_("Copy latest full Claude progress"))
+	@script(description=_(strings.COPY_LATEST_FULL_CLAUDE_PROGRESS))
 	def script_copyLatestFullProgress(self, gesture):
 		if not self._latestFullMessage:
-			ui.message(_("No complete Claude progress message is available"))
+			ui.message(_(strings.NO_COMPLETE_CLAUDE_PROGRESS_MESSAGE_IS_AVAILABLE))
 			return
 		if not wx.TheClipboard.Open():
-			ui.message(_("Could not open the clipboard"))
+			ui.message(_(strings.COULD_NOT_OPEN_THE_CLIPBOARD))
 			return
 		try:
 			wx.TheClipboard.SetData(wx.TextDataObject(self._latestFullMessage))
 			wx.TheClipboard.Flush()
 		finally:
 			wx.TheClipboard.Close()
-		ui.message(_("Latest full Claude progress copied"))
+		ui.message(_(strings.LATEST_FULL_CLAUDE_PROGRESS_COPIED))
 
-	@script(description=_("Run Claude Desktop Access compatibility self-test"))
+	@script(description=_(strings.RUN_CLAUDE_DESKTOP_ACCESS_COMPATIBILITY_SELF_TEST))
 	def script_runCompatibilitySelfTest(self, gesture):
 		checks = [
-			_("Global plugin loaded: yes"),
-			_("Claude monitoring attached: {value}").format(value=_("yes") if self._buffer else _("no")),
-			_("Speech enabled: {value}").format(value=_("yes") if _settings()["speech"] else _("no")),
-			_("Braille enabled: {value}").format(value=_("yes") if _settings()["braille"] else _("no")),
-			_("Sound inventory: {count} files").format(count=len(list((Path(__file__).parent / "sounds").rglob("*.wav")))),
-			_("Recent chats cached: {count}").format(count=len(self._chatHistoryTitles())),
-			_("Archived chats cached: {count}").format(count=len(self._loadArchivedChatHistory()[0])),
-			_("Native embedded browser navigation: yes"),
-			_("Embedded browser loading announcements: {value}").format(
-				value=_("yes") if _settings()["announceEmbeddedBrowserProgress"] else _("no"),
+			_(strings.GLOBAL_PLUGIN_LOADED_YES),
+			_(strings.CLAUDE_MONITORING_ATTACHED_VALUE).format(value=_(strings.YES) if self._buffer else _(strings.NO)),
+			_(strings.SPEECH_ENABLED_VALUE).format(value=_(strings.YES) if _settings()["speech"] else _(strings.NO)),
+			_(strings.BRAILLE_ENABLED_VALUE).format(value=_(strings.YES) if _settings()["braille"] else _(strings.NO)),
+			_(strings.SOUND_INVENTORY_COUNT_FILES).format(count=len(list((Path(__file__).parent / "sounds").rglob("*.wav")))),
+			_(strings.RECENT_CHATS_CACHED_COUNT).format(count=len(self._chatHistoryTitles())),
+			_(strings.ARCHIVED_CHATS_CACHED_COUNT).format(count=len(self._loadArchivedChatHistory()[0])),
+			_(strings.NATIVE_EMBEDDED_BROWSER_NAVIGATION_YES),
+			_(strings.EMBEDDED_BROWSER_LOADING_ANNOUNCEMENTS_VALUE).format(
+				value=_(strings.YES) if _settings()["announceEmbeddedBrowserProgress"] else _(strings.NO),
 			),
-			_("Embedded browser focus detected: {value}").format(
-				value=_("yes") if self._embeddedBrowserFocused else _("no"),
+			_(strings.EMBEDDED_BROWSER_FOCUS_DETECTED_VALUE).format(
+				value=_(strings.YES) if self._embeddedBrowserFocused else _(strings.NO),
 			),
-			_("Last inspection error: {value}").format(value=self._lastInspectionError),
+			_(strings.LAST_INSPECTION_ERROR_VALUE).format(value=self._lastInspectionError),
 		]
-		_showBrowseableMessageAtTop("\n".join(checks), _("Claude Desktop Access — compatibility self-test"))
+		_showBrowseableMessageAtTop("\n".join(checks), _(strings.CLAUDE_DESKTOP_ACCESS_COMPATIBILITY_SELF_TEST))
 
-	@script(description=_("Open Claude usage settings"))
+	@script(description=_(strings.OPEN_CLAUDE_USAGE_SETTINGS))
 	def script_openUsageStatistics(self, gesture):
-		_openUsageDashboard(_("Opening Claude usage settings"))
+		_openUsageDashboard(_(strings.OPENING_CLAUDE_USAGE_SETTINGS))
 
-	@script(description=_("Open Claude help"))
+	@script(description=_(strings.OPEN_CLAUDE_HELP))
 	def script_openUsageCredits(self, gesture):
 		wx.LaunchDefaultBrowser("https://support.claude.com/")
 
@@ -4290,17 +4261,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""Present the settled mode-specific history without starting another expansion."""
 		agentName = modeDisplayName(mode)
 		if mode != self._conversationMode or mode not in ("claude", "code", "cowork"):
-			ui.message(_("The chat-history mode changed. Open chat history again"))
+			ui.message(_(strings.THE_CHAT_HISTORY_MODE_CHANGED_OPEN_CHAT_HISTORY))
 			return False
 		if not self._chatHistoryCacheCurrent.get(mode, False):
 			self._schedulePoll(delay=150, requestInspection=True)
-			ui.message(_("{agent} chat history is refreshing. Try again in a moment").format(agent=agentName))
+			ui.message(_(strings.AGENT_CHAT_HISTORY_IS_REFRESHING_TRY_AGAIN_IN).format(agent=agentName))
 			log.info("Claude Desktop Access deferred opening unsettled %s chat history", mode)
 			return False
 		recentTitles = self._chatHistoryTitles(mode)
 		archivedTitles, archivedLoaded = self._loadArchivedChatHistory(mode)
 		if not recentTitles and not archivedTitles:
-			ui.message(_("No {agent} chats are cached yet. Wait a moment and try again").format(agent=agentName))
+			ui.message(_(strings.NO_AGENT_CHATS_ARE_CACHED_YET_WAIT_A).format(agent=agentName))
 			return False
 		if self._chatHistoryDialog:
 			if self._chatHistoryDialogMode == mode:
@@ -4327,30 +4298,30 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		)
 		return True
 
-	@script(description=_("Open searchable and arrow-navigable Claude chat history"))
+	@script(description=_(strings.OPEN_SEARCHABLE_AND_ARROW_NAVIGABLE_CLAUDE_CHAT_HISTORY))
 	def script_openChatHistory(self, gesture):
 		"""Expand native Recents, then show searchable Recent and Archived lists."""
 		focus = api.getFocusObject()
 		if not _isClaudeObject(focus):
-			ui.message(_("Move to Claude before opening chat history"))
+			ui.message(_(strings.MOVE_TO_CLAUDE_BEFORE_OPENING_CHAT_HISTORY))
 			return
 		try:
 			self._rememberBuffer(focus)
 			if not self._conversationModeObserved:
 				self._queueConversationModeProbe("history mode verification")
-				ui.message(_("Claude mode is being detected. Try history again in a moment"))
+				ui.message(_(strings.CLAUDE_MODE_IS_BEING_DETECTED_TRY_HISTORY_AGAIN))
 				return
 			mode = self._conversationMode
 			agentName = modeDisplayName(mode)
 			if not self._buffer or mode not in ("claude", "code", "cowork"):
-				ui.message(_("Chat history is not available in the current view"))
+				ui.message(_(strings.CHAT_HISTORY_IS_NOT_AVAILABLE_IN_THE_CURRENT))
 				return
 			if self._pendingChatHistoryExpansion:
-				ui.message(_("Recent chat history is already loading"))
+				ui.message(_(strings.RECENT_CHAT_HISTORY_IS_ALREADY_LOADING))
 				return
 			if not self._chatHistoryCacheCurrent.get(mode, False):
 				self._schedulePoll(delay=150, requestInspection=True)
-				ui.message(_("{agent} chat history is refreshing. Try again in a moment").format(agent=agentName))
+				ui.message(_(strings.AGENT_CHAT_HISTORY_IS_REFRESHING_TRY_AGAIN_IN).format(agent=agentName))
 				log.info("Claude Desktop Access deferred opening unsettled %s chat history", mode)
 				return
 			if self._startChatHistoryExpansion(mode):
@@ -4358,7 +4329,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._showChatHistoryDialog(mode)
 		except Exception:
 			log.debugWarning("Claude Desktop Access could not display chat history", exc_info=True)
-			ui.message(_("Chat history could not be opened"))
+			ui.message(_(strings.CHAT_HISTORY_COULD_NOT_BE_OPENED))
 
 	def event_gainFocus(self, obj, nextHandler):
 		nextHandler()

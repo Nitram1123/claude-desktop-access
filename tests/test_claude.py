@@ -1,8 +1,9 @@
 """Synthetic Claude contracts and executable integration tests (not live UI tests)."""
 import ast
-import importlib.util
+import importlib
 from pathlib import Path
-from types import SimpleNamespace
+import sys
+from types import ModuleType, SimpleNamespace
 import unittest
 import time
 
@@ -10,14 +11,17 @@ ROOT = Path(__file__).resolve().parents[1]
 PLUGIN = ROOT / "globalPlugins/claudeDesktopAccess"
 
 
+# Load pure helpers without running the NVDA global plugin's entry point.
+package = ModuleType("_claude_test_plugin")
+package.__path__ = [str(PLUGIN)]
+sys.modules[package.__name__] = package
+
+
 def load(name):
-	spec = importlib.util.spec_from_file_location(name, PLUGIN / (name + ".py"))
-	module = importlib.util.module_from_spec(spec)
-	spec.loader.exec_module(module)
-	return module
+	return importlib.import_module(f"{package.__name__}.{name}")
 
 
-adapter, core = load("claudeAdapter"), load("core")
+adapter, core, strings = load("claudeAdapter"), load("core"), load("strings")
 
 
 def field(role, name="", **attrs):
@@ -35,7 +39,7 @@ class ClaudeContracts(unittest.TestCase):
 		def later(delay, callback):
 			queue.append(callback)
 			return SimpleNamespace(Stop=lambda: queue.clear())
-		env = {"wx": SimpleNamespace(CallLater=later), "time": time, "navigationKind": adapter.navigationKind, "roleName": adapter.roleName}
+		env = {"wx": SimpleNamespace(CallLater=later), "time": time, "navigationKind": adapter.navigationKind, "roleName": adapter.roleName, "strings": strings, "_": lambda text: text}
 		exec(compile(ast.Module(body=[node], type_ignores=[]), "scan", "exec"), env)
 		return env["NavigationScan"], queue
 

@@ -6,6 +6,8 @@ No conversation text is sent to a service or written to disk by this module.
 
 import re
 
+from . import strings
+
 
 def normalized(value):
 	return " ".join(str(value or "").casefold().split())
@@ -102,11 +104,11 @@ def navigationKind(name, role):
 	if role not in ("tab", "button", "link"):
 		return ""
 	if label in ("chat", "cowork", "code"):
-		return "Mode"
+		return strings.MODE
 	if label in ("artifacts", "artifact", "open artifact", "show artifact", "view artifact") or label.startswith(("open artifact:", "view artifact:")):
-		return "Artifact"
+		return strings.ARTIFACT
 	if label in ("attach files", "add files", "add files or photos", "attachments", "upload file", "upload files") or label.startswith(("attachment:", "download file:")):
-		return "Attachment"
+		return strings.ATTACHMENT
 	if label in ("chats", "search chats", "search", "new chat", "projects", "recents", "recent chats"):
-		return "Navigation"
+		return strings.NAVIGATION
 	return ""

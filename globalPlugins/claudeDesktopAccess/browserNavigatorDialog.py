@@ -4,6 +4,7 @@ import addonHandler
 import ui
 import wx
 
+from . import strings
 from .browserAccess import browserNavigatorMatches
 
 
@@ -14,14 +15,14 @@ class BrowserNavigatorDialog(wx.Dialog):
 	"""Search page structure and invoke explicit browser navigation actions."""
 
 	_CATEGORY_CHOICES = (
-		("all", _("All items")),
-		("controls", _("Browser controls")),
-		("headings", _("Headings")),
-		("landmarks", _("Landmarks")),
-		("links", _("Links")),
-		("buttons", _("Buttons")),
-		("formFields", _("Form fields")),
-		("tables", _("Tables")),
+		("all", _(strings.ALL_ITEMS)),
+		("controls", _(strings.BROWSER_CONTROLS)),
+		("headings", _(strings.HEADINGS)),
+		("landmarks", _(strings.LANDMARKS)),
+		("links", _(strings.LINKS)),
+		("buttons", _(strings.BUTTONS)),
+		("formFields", _(strings.FORM_FIELDS)),
+		("tables", _(strings.TABLES)),
 	)
 	_CLOSE_ACTIONS = {"move", "activate", "restore", "snapshot", "external", "returnPrompt"}
 
@@ -29,7 +30,7 @@ class BrowserNavigatorDialog(wx.Dialog):
 		self, parent, pageTitle, addressLabel, summary, items, truncated, savedSignature,
 		onAction, onRefresh, onClose,
 	):
-		super().__init__(parent, title=_("Embedded Browser Navigator"), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+		super().__init__(parent, title=_(strings.EMBEDDED_BROWSER_NAVIGATOR), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
 		self._allItems = tuple(items)
 		self._visibleItems = ()
 		self._truncated = bool(truncated)
@@ -44,41 +45,41 @@ class BrowserNavigatorDialog(wx.Dialog):
 		self.pageInfo = wx.StaticText(self, label="")
 		mainSizer.Add(self.pageInfo, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
 
-		filterSizer = wx.StaticBoxSizer(wx.VERTICAL, self, _("Find page items"))
-		filterSizer.Add(wx.StaticText(self, label=_("Search current page:")), flag=wx.LEFT | wx.RIGHT | wx.TOP, border=8)
+		filterSizer = wx.StaticBoxSizer(wx.VERTICAL, self, _(strings.FIND_PAGE_ITEMS))
+		filterSizer.Add(wx.StaticText(self, label=_(strings.SEARCH_CURRENT_PAGE)), flag=wx.LEFT | wx.RIGHT | wx.TOP, border=8)
 		self.search = wx.TextCtrl(self)
 		filterSizer.Add(self.search, flag=wx.EXPAND | wx.ALL, border=8)
-		filterSizer.Add(wx.StaticText(self, label=_("Item category:")), flag=wx.LEFT | wx.RIGHT, border=8)
+		filterSizer.Add(wx.StaticText(self, label=_(strings.ITEM_CATEGORY)), flag=wx.LEFT | wx.RIGHT, border=8)
 		self.category = wx.Choice(self, choices=[label for key, label in self._CATEGORY_CHOICES])
 		self.category.SetSelection(0)
 		filterSizer.Add(self.category, flag=wx.EXPAND | wx.ALL, border=8)
 		mainSizer.Add(filterSizer, flag=wx.EXPAND | wx.ALL, border=10)
 
-		resultsSizer = wx.StaticBoxSizer(wx.VERTICAL, self, _("Page items"))
+		resultsSizer = wx.StaticBoxSizer(wx.VERTICAL, self, _(strings.PAGE_ITEMS))
 		self.results = wx.ListBox(self, style=wx.LB_SINGLE)
 		resultsSizer.Add(self.results, proportion=1, flag=wx.EXPAND | wx.ALL, border=8)
 		self.resultStatus = wx.StaticText(self, label="")
 		resultsSizer.Add(self.resultStatus, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=8)
 		mainSizer.Add(resultsSizer, proportion=1, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
 
-		itemActions = wx.StaticBoxSizer(wx.HORIZONTAL, self, _("Selected item"))
-		self.moveButton = wx.Button(self, wx.ID_OK, label=_("&Move to item"))
-		self.activateButton = wx.Button(self, label=_("&Activate item"))
+		itemActions = wx.StaticBoxSizer(wx.HORIZONTAL, self, _(strings.SELECTED_ITEM))
+		self.moveButton = wx.Button(self, wx.ID_OK, label=_(strings.MOVE_TO_ITEM))
+		self.activateButton = wx.Button(self, label=_(strings.ACTIVATE_ITEM))
 		itemActions.Add(self.moveButton, flag=wx.ALL, border=6)
 		itemActions.Add(self.activateButton, flag=wx.ALL, border=6)
 		mainSizer.Add(itemActions, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
 
-		pageActions = wx.StaticBoxSizer(wx.VERTICAL, self, _("Page actions"))
+		pageActions = wx.StaticBoxSizer(wx.VERTICAL, self, _(strings.PAGE_ACTIONS))
 		pageGrid = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
 		pageGrid.AddGrowableCol(0, 1)
 		pageGrid.AddGrowableCol(1, 1)
-		self.summaryButton = wx.Button(self, label=_("Page su&mmary"))
-		self.snapshotButton = wx.Button(self, label=_("Accessible &snapshot"))
-		self.refreshButton = wx.Button(self, label=_("&Refresh page items"))
-		self.restoreButton = wx.Button(self, label=_("Restore &last location"))
-		self.copyAddressButton = wx.Button(self, label=_("&Copy address"))
-		self.externalButton = wx.Button(self, label=_("Open in default &browser"))
-		self.returnButton = wx.Button(self, label=_("Return to Claude &prompt"))
+		self.summaryButton = wx.Button(self, label=_(strings.PAGE_SUMMARY))
+		self.snapshotButton = wx.Button(self, label=_(strings.ACCESSIBLE_SNAPSHOT))
+		self.refreshButton = wx.Button(self, label=_(strings.REFRESH_PAGE_ITEMS))
+		self.restoreButton = wx.Button(self, label=_(strings.RESTORE_LAST_LOCATION))
+		self.copyAddressButton = wx.Button(self, label=_(strings.COPY_ADDRESS))
+		self.externalButton = wx.Button(self, label=_(strings.OPEN_IN_DEFAULT_BROWSER))
+		self.returnButton = wx.Button(self, label=_(strings.RETURN_TO_CLAUDE_PROMPT_OPTION))
 		for button in (
 			self.summaryButton, self.snapshotButton, self.refreshButton, self.restoreButton,
 			self.copyAddressButton, self.externalButton, self.returnButton,
@@ -87,7 +88,7 @@ class BrowserNavigatorDialog(wx.Dialog):
 		pageActions.Add(pageGrid, flag=wx.EXPAND | wx.ALL, border=3)
 		mainSizer.Add(pageActions, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
 
-		closeButton = wx.Button(self, wx.ID_CANCEL, label=_("Close"))
+		closeButton = wx.Button(self, wx.ID_CANCEL, label=_(strings.CLOSE))
 		mainSizer.Add(closeButton, flag=wx.ALIGN_RIGHT | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
 		self.SetSizerAndFit(mainSizer)
 		self.SetMinSize((680, 560))
@@ -121,8 +122,8 @@ class BrowserNavigatorDialog(wx.Dialog):
 		self._allItems = tuple(items)
 		self._truncated = bool(truncated)
 		self._savedSignature = savedSignature
-		self.pageInfo.SetLabel(_("Page: {title}. Address: {address}").format(
-			title=pageTitle or _("Untitled page"), address=addressLabel or _("unavailable"),
+		self.pageInfo.SetLabel(_(strings.PAGE_TITLE_ADDRESS_ADDRESS).format(
+			title=pageTitle or _(strings.UNTITLED_PAGE), address=addressLabel or _(strings.UNAVAILABLE),
 		))
 		self.pageInfo.SetToolTip(summary)
 		self._onFilter(None)
@@ -134,7 +135,7 @@ class BrowserNavigatorDialog(wx.Dialog):
 		self.Layout()
 
 	def setLoading(self):
-		self.resultStatus.SetLabel(_("Refreshing accessible browser items…"))
+		self.resultStatus.SetLabel(_(strings.REFRESHING_ACCESSIBLE_BROWSER_ITEMS))
 		self.refreshButton.Disable()
 
 	def refreshFinished(self):
@@ -165,11 +166,11 @@ class BrowserNavigatorDialog(wx.Dialog):
 		if self._visibleItems:
 			self.results.SetSelection(selection)
 			self._preferredSelectionSignature = self._visibleItems[selection].get("signature", "")
-		status = _("{visible} matching items; {total} total items").format(
+		status = _(strings.VISIBLE_MATCHING_ITEMS_TOTAL_TOTAL_ITEMS).format(
 			visible=len(self._visibleItems), total=len(self._allItems),
 		)
 		if self._truncated:
-			status += _("; safe scan limit reached")
+			status += _(strings.SAFE_SCAN_LIMIT_REACHED)
 		self.resultStatus.SetLabel(status)
 		self.results.SetName(status)
 		self._updateActionState()
@@ -205,19 +206,19 @@ class BrowserNavigatorDialog(wx.Dialog):
 		menu = wx.Menu()
 		chosen = []
 		if item is not None:
-			moveItem = menu.Append(wx.ID_ANY, _("Move to item"))
+			moveItem = menu.Append(wx.ID_ANY, _(strings.MOVE_TO_ITEM_OPTION))
 			menu.Bind(wx.EVT_MENU, lambda evt: chosen.append("move"), moveItem)
-			activateItem = menu.Append(wx.ID_ANY, _("Activate item"))
+			activateItem = menu.Append(wx.ID_ANY, _(strings.ACTIVATE_ITEM_OPTION))
 			activateItem.Enable(bool(item.get("actionable")))
 			menu.Bind(wx.EVT_MENU, lambda evt: chosen.append("activate"), activateItem)
 			menu.AppendSeparator()
-		copyItem = menu.Append(wx.ID_ANY, _("Copy page address"))
+		copyItem = menu.Append(wx.ID_ANY, _(strings.COPY_PAGE_ADDRESS))
 		copyItem.Enable(self.copyAddressButton.IsEnabled())
 		menu.Bind(wx.EVT_MENU, lambda evt: chosen.append("copyAddress"), copyItem)
-		externalItem = menu.Append(wx.ID_ANY, _("Open page in default browser"))
+		externalItem = menu.Append(wx.ID_ANY, _(strings.OPEN_PAGE_IN_DEFAULT_BROWSER))
 		externalItem.Enable(self.externalButton.IsEnabled())
 		menu.Bind(wx.EVT_MENU, lambda evt: chosen.append("external"), externalItem)
-		returnItem = menu.Append(wx.ID_ANY, _("Return to Claude prompt"))
+		returnItem = menu.Append(wx.ID_ANY, _(strings.RETURN_TO_CLAUDE_PROMPT))
 		menu.Bind(wx.EVT_MENU, lambda evt: chosen.append("returnPrompt"), returnItem)
 		try:
 			self.PopupMenu(menu)
@@ -231,10 +232,10 @@ class BrowserNavigatorDialog(wx.Dialog):
 			return
 		item = None if pageAction else self.selectedItem()
 		if not pageAction and item is None:
-			ui.message(_("No matching browser item is selected"))
+			ui.message(_(strings.NO_MATCHING_BROWSER_ITEM_IS_SELECTED))
 			return
 		if action == "activate" and not item.get("actionable"):
-			ui.message(_("The selected browser item does not expose an activate action"))
+			ui.message(_(strings.THE_SELECTED_BROWSER_ITEM_DOES_NOT_EXPOSE_AN))
 			return
 		self._onActionCallback(action, item)
 		if action in self._CLOSE_ACTIONS:

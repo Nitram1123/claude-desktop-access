@@ -4,6 +4,8 @@ import addonHandler
 import ui
 import wx
 
+from . import strings
+
 
 addonHandler.initTranslation()
 
@@ -12,7 +14,7 @@ class ChatHistoryDialog(wx.Dialog):
 	"""Search and operate recent and archived titles exposed by Claude."""
 
 	def __init__(self, parent, mode, agentName, recentTitles, archivedTitles, archivedLoaded, onRefresh, onAction, onClose):
-		super().__init__(parent, title=_("{agent} chat history").format(agent=agentName))
+		super().__init__(parent, title=_(strings.AGENT_CHAT_HISTORY).format(agent=agentName))
 		self._mode = mode
 		self._agentName = agentName
 		self._allRecentTitles = tuple(recentTitles)
@@ -23,13 +25,13 @@ class ChatHistoryDialog(wx.Dialog):
 		self._closing = False
 		self._lastList = None
 		mainSizer = wx.BoxSizer(wx.VERTICAL)
-		mainSizer.Add(wx.StaticText(self, label=_("Search chats:")), flag=wx.LEFT | wx.RIGHT | wx.TOP, border=10)
+		mainSizer.Add(wx.StaticText(self, label=_(strings.SEARCH_CHATS)), flag=wx.LEFT | wx.RIGHT | wx.TOP, border=10)
 		self.search = wx.TextCtrl(self)
 		mainSizer.Add(self.search, flag=wx.EXPAND | wx.ALL, border=10)
-		mainSizer.Add(wx.StaticText(self, label=_("Recent chats:")), flag=wx.LEFT | wx.RIGHT, border=10)
+		mainSizer.Add(wx.StaticText(self, label=_(strings.RECENT_CHATS)), flag=wx.LEFT | wx.RIGHT, border=10)
 		self.recentList = wx.ListBox(self, choices=list(self._allRecentTitles), style=wx.LB_SINGLE)
 		mainSizer.Add(self.recentList, proportion=1, flag=wx.EXPAND | wx.ALL, border=10)
-		mainSizer.Add(wx.StaticText(self, label=_("Archived chats:")), flag=wx.LEFT | wx.RIGHT, border=10)
+		mainSizer.Add(wx.StaticText(self, label=_(strings.ARCHIVED_CHATS)), flag=wx.LEFT | wx.RIGHT, border=10)
 		self._archivedLoaded = archivedLoaded
 		self._archivedEmptyMessage = self._emptyArchivedMessage(archivedLoaded)
 		archivedChoices = list(self._allArchivedTitles) or [self._archivedEmptyMessage]
@@ -37,7 +39,7 @@ class ChatHistoryDialog(wx.Dialog):
 		mainSizer.Add(self.archivedList, proportion=1, flag=wx.EXPAND | wx.ALL, border=10)
 		self.resultStatus = wx.StaticText(self, label="")
 		mainSizer.Add(self.resultStatus, flag=wx.LEFT | wx.RIGHT, border=10)
-		self.refreshButton = wx.Button(self, label=_("&Refresh chat lists"))
+		self.refreshButton = wx.Button(self, label=_(strings.REFRESH_CHAT_LISTS))
 		mainSizer.Add(self.refreshButton, flag=wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
 		buttons = self.CreateButtonSizer(wx.OK | wx.CANCEL)
 		mainSizer.Add(buttons, flag=wx.EXPAND | wx.ALL, border=10)
@@ -64,8 +66,8 @@ class ChatHistoryDialog(wx.Dialog):
 
 	def _emptyArchivedMessage(self, archivedLoaded):
 		if archivedLoaded:
-			return _("No archived {agent} chats").format(agent=self._agentName)
-		return _("Claude has not exposed archived chats in this view. This beta reads only accessible native controls.")
+			return _(strings.NO_ARCHIVED_AGENT_CHATS).format(agent=self._agentName)
+		return _(strings.CLAUDE_HAS_NOT_EXPOSED_ARCHIVED_CHATS_IN_THIS)
 
 	def _rememberListFocus(self, evt, control):
 		self._lastList = control
@@ -89,7 +91,7 @@ class ChatHistoryDialog(wx.Dialog):
 		recentCount = self.recentList.GetCount()
 		archivedCount = len(self._allArchivedTitles) if self.archivedList.GetCount() and not self._allArchivedTitles else self.archivedList.GetCount()
 		self.resultStatus.SetLabel(
-			_("{recent} recent results; {archived} archived results").format(
+			_(strings.RECENT_RECENT_RESULTS_ARCHIVED_ARCHIVED_RESULTS).format(
 				recent=recentCount, archived=archivedCount,
 			)
 		)
@@ -122,7 +124,7 @@ class ChatHistoryDialog(wx.Dialog):
 			if self._lastList is self.archivedList and not self._allArchivedTitles:
 				ui.message(self._archivedEmptyMessage)
 			else:
-				ui.message(_("No matching {agent} chats").format(agent=self._agentName))
+				ui.message(_(strings.NO_MATCHING_AGENT_CHATS).format(agent=self._agentName))
 			return
 		self._onActionCallback(selection[0], "open", selection[1], self._mode)
 		self.Close()
@@ -141,7 +143,7 @@ class ChatHistoryDialog(wx.Dialog):
 			self._lastList = control
 		selection = self.selectedEntry()
 		if selection is None:
-			ui.message(_("No matching {agent} chats").format(agent=self._agentName))
+			ui.message(_(strings.NO_MATCHING_AGENT_CHATS).format(agent=self._agentName))
 			return
 		self._showChatActionMenu(selection)
 
@@ -152,7 +154,7 @@ class ChatHistoryDialog(wx.Dialog):
 			return
 		menu = wx.Menu()
 		chosen = []
-		openItem = menu.Append(wx.ID_ANY, _("Open archived chat"))
+		openItem = menu.Append(wx.ID_ANY, _(strings.OPEN_ARCHIVED_CHAT))
 		menu.Bind(wx.EVT_MENU, lambda evt: chosen.append("open"), openItem)
 		try:
 			self.PopupMenu(menu)

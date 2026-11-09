@@ -1,19 +1,47 @@
 """Audit the Claude beta without claiming live NVDA verification."""
 import argparse
 import ast
+from collections import Counter
+import gettext
 import hashlib
 import io
 from pathlib import Path, PurePosixPath
 import re
+from string import Formatter
 import tempfile
 import wave
 import zipfile
 
 from build_addon import buildPackage, packageData, packageFiles
+from extract_messages import messages
 
 
 def manifestVersionMatches(manifest, version):
 	return bool(re.search(rf"(?m)^version = {re.escape(version)}$", manifest))
+
+
+def formatFields(message):
+	return Counter(
+		(field, spec, conversion)
+		for _, field, spec, conversion in Formatter().parse(message)
+		if field is not None
+	)
+
+
+def auditFrenchCatalog(projectRoot, archive):
+	catalogPath = "locale/fr/LC_MESSAGES/nvda.mo"
+	assert catalogPath in archive.namelist(), "Missing compiled French catalog"
+	assert "locale/fr/manifest.ini" in archive.namelist(), "Missing French manifest"
+	translation = gettext.GNUTranslations(io.BytesIO(archive.read(catalogPath)))
+	assert translation.info().get("language") == "fr"
+	assert (projectRoot / "locale/fr/LC_MESSAGES/nvda.po").is_file(), "Missing French translation source"
+	sourceMessages = messages(projectRoot)
+	catalogMessages = set(translation._catalog) - {""}
+	assert catalogMessages == sourceMessages.keys(), "French catalog and source messages differ"
+	for message in sourceMessages:
+		localized = translation.gettext(message)
+		assert localized, f"Empty French translation: {message!r}"
+		assert formatFields(localized) == formatFields(message), f"Invalid French format fields: {message!r}"
 
 
 def audit(projectRoot, packagePath, version):
@@ -51,6 +79,7 @@ def audit(projectRoot, packagePath, version):
 		assert len(names) == len(set(names)), "Duplicate archive member"
 		assert archive.testzip() is None, "Corrupt archive"
 		assert sum(name.endswith(".wav") for name in names) == 51
+		auditFrenchCatalog(projectRoot, archive)
 		for path, name in zip(paths, names):
 			assert not PurePosixPath(name).is_absolute() and ".." not in PurePosixPath(name).parts
 			assert "__pycache__" not in name and not name.endswith((".pyc", ".pyo"))

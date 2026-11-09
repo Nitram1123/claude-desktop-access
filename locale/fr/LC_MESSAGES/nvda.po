@@ -1,0 +1,2071 @@
+# French translations for Claude Desktop Access.
+msgid ""
+msgstr ""
+"Project-Id-Version: Claude Desktop Access 2026.2.2\n"
+"Report-Msgid-Bugs-To: https://github.com/jcoffin1/claude-desktop-access/issues\n"
+"POT-Creation-Date: 2026-11-09 20:00+0100\n"
+"PO-Revision-Date: 2026-11-09 20:00+0100\n"
+"Last-Translator: Claude Desktop Access contributors\n"
+"Language: fr\n"
+"Language-Team: French\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid " Complete command available with Copy latest full Claude progress."
+msgstr " La commande complète est disponible avec « Copier la dernière activité détaillée de Claude »."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Activate item"
+msgstr "&Activer l’élément"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Claude help and account information"
+msgstr "&Aide de Claude et renseignements sur le compte"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Copy address"
+msgstr "&Copier l’adresse"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Delay before repeating Working sounds (milliseconds):"
+msgstr "&Délai avant de répéter les sons de travail (millisecondes) :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Enable this activity category"
+msgstr "&Activer cette catégorie d’activité"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Export add-on settings…"
+msgstr "&Exporter les paramètres de l’extension…"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Full speech profile:"
+msgstr "Profil de parole &détaillé :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Import add-on settings…"
+msgstr "&Importer les paramètres de l’extension…"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Minimal speech profile:"
+msgstr "Profil de parole &succinct :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Move to item"
+msgstr "&Déplacer le focus vers l’élément"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Open Claude usage settings"
+msgstr "Ouvrir les &paramètres d’utilisation de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Redact likely secrets and personal path names in Full mode"
+msgstr "Masquer les &secrets probables et les chemins personnels en mode détaillé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Refresh chat lists"
+msgstr "&Actualiser les listes de chats"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Refresh page items"
+msgstr "Act&ualiser les éléments de la page"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Reset speech profile settings"
+msgstr "&Réinitialiser les profils de parole"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Restore built-in announcement"
+msgstr "&Rétablir l’annonce par défaut"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "&Search modes, artifacts and attachments:"
+msgstr "&Rechercher des modes, des artefacts et des pièces jointes :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "; safe scan limit reached"
+msgstr ". Limite d’analyse atteinte"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Accessible &snapshot"
+msgstr "&Instantané accessible"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Activate item"
+msgstr "Activer l’élément"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Activated {item}"
+msgstr "Élément activé : {item}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Activity &category:"
+msgstr "&Catégorie d’activité :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Activity Output"
+msgstr "Sorties d’activité"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Activity monitoring active"
+msgstr "Suivi de l’activité activé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Activity monitoring inactive"
+msgstr "Suivi de l’activité désactivé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Advanced"
+msgstr "Avancé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "All enabled channels"
+msgstr "Toutes les sorties activées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "All items"
+msgstr "Tous les éléments"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Allow &urgent permission and failure announcements to interrupt current speech"
+msgstr "Autoriser les demandes de permission et les échecs &urgents à interrompre la parole"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Analyzing"
+msgstr "Analyse en cours"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Announce a recurring background progress &pulse"
+msgstr "Annoncer un &rappel régulier de l’activité en arrière-plan"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Announce when embedded browser pages start and finish &loading"
+msgstr "Annoncer le début et la fin du &chargement des pages du navigateur intégré"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Announcement &detail:"
+msgstr "Niveau de &détail des annonces :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Announcement &text (blank uses built-in):"
+msgstr "&Texte de l’annonce (laisser vide pour utiliser le texte par défaut) :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Applying changes"
+msgstr "Application des modifications"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Archived chats cached: {count}"
+msgstr "Chats archivés en cache : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Archived chats:"
+msgstr "Chats archivés :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Archived task {threadId}"
+msgstr "Tâche archivée {threadId}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Artifact"
+msgstr "Artefact"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Attachment"
+msgstr "Pièce jointe"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Available placeholders: {message}, {activity}, {seconds}, and {duration}."
+msgstr "Variables disponibles : {message}, {activity}, {seconds} et {duration}."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Background progress &interval (seconds):"
+msgstr "&Intervalle des rappels en arrière-plan (secondes) :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Background progress one"
+msgstr "Rappel d’activité en arrière-plan 1"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Background progress two"
+msgstr "Rappel d’activité en arrière-plan 2"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Balanced — concise activity changes and results"
+msgstr "Équilibré — changements d’activité et résultats résumés"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid ""
+"Beta: live validation ongoing\n"
+"NVDA: {nvdaVersion}\n"
+"Version: {version}\n"
+"Verbosity: {verbosity}\n"
+"Full speech profile: {profile}\n"
+"Minimal speech profile: {minimalProfile}\n"
+"Braille detail: {brailleDetail}\n"
+"Sound style: {style}\n"
+"Click volume: {volume}\n"
+"Monitoring attached: {attached}\n"
+"Background state: {state}\n"
+"Paused: {paused}\n"
+"Active category: {category}\n"
+"Last state reason: {reason}\n"
+"Last submission signal: {signal}\n"
+"Claude document switches: {switches}\n"
+"Full buffer inspections: {inspections}\n"
+"Lightweight ticks without inspection: {skipped}\n"
+"Prompt typing protection: {typingProtection}\n"
+"Preserved Braille compositions: {braillePreserved}\n"
+"Suppressed disruptive conversation updates: {conversationUpdates}\n"
+"Last inspection error: {error}\n"
+"Embedded browser focus detected: {browserFocused}\n"
+"Native browser interaction: yes\n"
+"Embedded browser loading announcements: {browserProgress}\n"
+"Speech history entries: {speechHistory}\n"
+"Braille history entries: {brailleHistory}\n"
+"Recent chats cached: {recent}\n"
+"Archived chats cached: {archived}\n"
+"Configuration repairs this session: {repairs}\n"
+"Supported applications: {apps}\n"
+"Speech: {speech}\n"
+"Braille: {braille}\n"
+"Stable conversation reading: {protectBraille}\n"
+"Urgent speech interruption: {interrupt}\n"
+"Progress sounds: {sounds}\n"
+"Category output routing:\n"
+"{routing}"
+msgstr ""
+"Bêta : validation en conditions réelles en cours\n"
+"NVDA : {nvdaVersion}\n"
+"Version : {version}\n"
+"Niveau de détail : {verbosity}\n"
+"Profil de parole détaillé : {profile}\n"
+"Profil de parole succinct : {minimalProfile}\n"
+"Niveau de détail du braille : {brailleDetail}\n"
+"Type de son : {style}\n"
+"Volume des clics : {volume}\n"
+"Suivi du document : {attached}\n"
+"État en arrière-plan : {state}\n"
+"En pause : {paused}\n"
+"Catégorie active : {category}\n"
+"Raison du dernier changement d’état : {reason}\n"
+"Dernier signal d’envoi : {signal}\n"
+"Changements de document Claude : {switches}\n"
+"Inspections complètes du tampon : {inspections}\n"
+"Cycles légers sans inspection : {skipped}\n"
+"Protection de la saisie : {typingProtection}\n"
+"Compositions braille préservées : {braillePreserved}\n"
+"Mises à jour perturbatrices de la conversation évitées : {conversationUpdates}\n"
+"Dernière erreur d’inspection : {error}\n"
+"Focus dans le navigateur intégré détecté : {browserFocused}\n"
+"Interaction native avec le navigateur : oui\n"
+"Annonces de chargement du navigateur intégré : {browserProgress}\n"
+"Entrées de l’historique vocal : {speechHistory}\n"
+"Entrées de l’historique braille : {brailleHistory}\n"
+"Chats récents en cache : {recent}\n"
+"Chats archivés en cache : {archived}\n"
+"Réparations de configuration pendant cette session : {repairs}\n"
+"Applications prises en charge : {apps}\n"
+"Parole : {speech}\n"
+"Braille : {braille}\n"
+"Lecture stable de la conversation : {protectBraille}\n"
+"Interruption par les annonces urgentes : {interrupt}\n"
+"Sons d’activité : {sounds}\n"
+"Canaux de sortie par catégorie :\n"
+"{routing}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Braille &detail:"
+msgstr "Niveau de détail en &braille :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Braille enabled: {value}"
+msgstr "Braille activé : {value}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Braille history"
+msgstr "Historique braille"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Braille only"
+msgstr "Braille uniquement"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Browser Access"
+msgstr "Accès au navigateur"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Browser Navigator page information is no longer available"
+msgstr "Les renseignements sur la page ne sont plus disponibles"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Browser Navigator refreshed"
+msgstr "Navigation du navigateur actualisée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Browser controls"
+msgstr "Contrôles du navigateur"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Browser page address copied"
+msgstr "Adresse de la page copiée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Browser page: {title}"
+msgstr "Page du navigateur : {title}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Build and test"
+msgstr "Compilation et tests"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Build failed"
+msgstr "Échec de la compilation"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Builds, compilation, and tests"
+msgstr "Compilation et tests"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Buttons"
+msgstr "Boutons"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Changes finished"
+msgstr "Modifications terminées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Chat action opened"
+msgstr "Action du chat ouverte"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Chat history could not be opened"
+msgstr "Impossible d’ouvrir l’historique des chats"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Chat history is not available in the current view"
+msgstr "L’historique des chats est indisponible dans la vue actuelle"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Chat message {position}, {speaker}: {text}"
+msgstr "Message {position}, {speaker} : {text}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Chat opened: {title}"
+msgstr "Chat ouvert : {title}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Checking files"
+msgstr "Vérification des fichiers"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude"
+msgstr "Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access"
+msgstr "Claude Desktop Access"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid ""
+"Claude Desktop Access 2026.2.2 — beta bug fixes\n"
+"\n"
+"• Read aloud and ordinary links or sidebar titles no longer count as activity.\n"
+"• Completed tool output no longer prevents the response-completion settling timer from starting.\n"
+"• When generation resumes, completion waits for a fresh quiet interval.\n"
+"• Unchanged chat history no longer schedules repeated confirmation scans.\n"
+"This update targets stable NVDA 2026.2. Live beta testing remains ongoing."
+msgstr ""
+"Claude Desktop Access 2026.2.2 — correctifs de la bêta\n"
+"\n"
+"• La lecture à voix haute, les liens ordinaires et les titres de la barre latérale ne sont plus "
+"considérés comme de l’activité.\n"
+"• Les résultats d’outils terminés ne bloquent plus le délai de confirmation de fin de réponse.\n"
+"• Si la génération reprend, la fin attend un nouvel intervalle sans activité.\n"
+"• Un historique inchangé ne déclenche plus d’analyses de confirmation répétées.\n"
+"Cette mise à jour cible NVDA 2026.2 stable. Les essais en conditions réelles se poursuivent."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access announcement history"
+msgstr "Historique des annonces de Claude Desktop Access"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access diagnostics"
+msgstr "Diagnostics de Claude Desktop Access"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access is not currently running"
+msgstr "Claude Desktop Access est inactif"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access is not ready"
+msgstr "Claude Desktop Access est en cours d’initialisation"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid ""
+"Claude Desktop Access sanitized support report\n"
+"Generated: {generated}\n"
+"NVDA version: {nvdaVersion}\n"
+"\n"
+"{report}\n"
+msgstr ""
+"Rapport d’assistance de Claude Desktop Access avec données sensibles masquées\n"
+"Généré le : {generated}\n"
+"Version de NVDA : {nvdaVersion}\n"
+"\n"
+"{report}\n"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access settings exported"
+msgstr "Paramètres de Claude Desktop Access exportés"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access — compatibility self-test"
+msgstr "Claude Desktop Access — test de compatibilité"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access — complete release history"
+msgstr "Claude Desktop Access — historique complet des versions"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access — current release notes"
+msgstr "Claude Desktop Access — notes de la version actuelle"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude Desktop Access — what's new"
+msgstr "Claude Desktop Access — nouveautés"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude announcement history cleared"
+msgstr "Historique des annonces de Claude effacé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude announcements paused"
+msgstr "Annonces de Claude en pause"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude announcements resumed"
+msgstr "Annonces de Claude réactivées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Claude announcements: {mode}"
+msgstr "Annonces de Claude : {mode}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude did not expose an accessible embedded-browser page"
+msgstr "Claude ne fournit aucune page accessible dans le navigateur intégré"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude embedded browser — accessible snapshot"
+msgstr "Navigateur intégré de Claude — instantané accessible"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude has not exposed a conversation document. Try browse mode, then try again."
+msgstr "Claude ne fournit aucun document de conversation. Passez en mode navigation, puis réessayez."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid ""
+"Claude has not exposed archived chats in this view. This beta reads only accessible native "
+"controls."
+msgstr ""
+"Claude ne fournit aucun chat archivé dans cette vue. Cette bêta utilise les contrôles natifs "
+"accessibles."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude mode is being detected. Try history again in a moment"
+msgstr "Détection du mode de Claude en cours. Réessayez d’ouvrir l’historique dans un instant."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Claude monitoring attached: {value}"
+msgstr "Suivi de Claude établi : {value}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude navigation"
+msgstr "Navigation dans Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude privacy redaction off"
+msgstr "Masquage des données sensibles de Claude désactivé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude privacy redaction on"
+msgstr "Masquage des données sensibles de Claude activé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Claude usage settings could not be opened"
+msgstr "Impossible d’ouvrir les paramètres d’utilisation de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Clear Claude announcement history"
+msgstr "Effacer l’historique des annonces de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Click volume (&Z):"
+msgstr "&Volume des clics :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Clicks — soft percussive earcons"
+msgstr "Clics — sons de percussion discrets"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Close"
+msgstr "Fermer"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Code"
+msgstr "Code"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Command"
+msgstr "Commande"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Command &punctuation for speech:"
+msgstr "&Ponctuation des commandes à la lecture :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Command and web search finished"
+msgstr "Commande et recherche web terminées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Command failed"
+msgstr "Échec de la commande"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Command finished"
+msgstr "Commande terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Command still running, 10 seconds"
+msgstr "Commande en cours depuis 10 secondes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Command still running, 5 seconds"
+msgstr "Commande en cours depuis 5 secondes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Commands"
+msgstr "Commandes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Commentary"
+msgstr "Commentaires"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Compilation finished"
+msgstr "Compilation terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Compiling"
+msgstr "Compilation en cours"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Completion"
+msgstr "Fin de tâche"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Completions and failures"
+msgstr "Fins de tâche et échecs"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Concise"
+msgstr "Concis"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid ""
+"Configure background timing, then choose each activity category to review its enabled state and "
+"output route."
+msgstr ""
+"Réglez la fréquence des rappels en arrière-plan, puis sélectionnez chaque catégorie pour vérifier"
+" son état et ses sorties."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Copy latest full Claude progress"
+msgstr "Copier la dernière activité détaillée de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Copy page address"
+msgstr "Copier l’adresse de la page"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Copy sanitized Claude Desktop Access diagnostics"
+msgstr "Copier les diagnostics de Claude Desktop Access avec données sensibles masquées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Could not open the clipboard"
+msgstr "Impossible d’ouvrir le presse-papiers"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Developer — complete normalized commands and progress"
+msgstr "Développeur — commandes et activités complètes, avec mise en forme normalisée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Domain: {domain}"
+msgstr "Domaine : {domain}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Editing"
+msgstr "Modification en cours"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Editing code"
+msgstr "Modification du code"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Editing file"
+msgstr "Modification du fichier"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Embedded Browser Navigator"
+msgstr "Navigation dans le navigateur intégré"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Embedded browser focus detected: {value}"
+msgstr "Le navigateur intégré a le focus : {value}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Embedded browser loading announcements: {value}"
+msgstr "Annonces de chargement du navigateur intégré : {value}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Embedded-browser page information could not be presented"
+msgstr "Impossible de présenter les renseignements sur la page du navigateur intégré"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Enable &braille flash messages"
+msgstr "Activer les messages &braille temporaires"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Enable &speech announcements"
+msgstr "Activer les annonces &vocales"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Enable sanitized dia&gnostic logging"
+msgstr "Activer le &journal de diagnostic avec masquage des données sensibles"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Ending voice mode"
+msgstr "Fermeture du mode vocal"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Enhanced — speak pipes and redirects naturally"
+msgstr "Enrichie — lire naturellement les tubes et les redirections"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Essential — thinking, attention, failures, and task completion"
+msgstr "Essentiel — réflexion, alertes, échecs et fins de tâche"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Export Claude Desktop Access settings"
+msgstr "Exporter les paramètres de Claude Desktop Access"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Failure"
+msgstr "Échec"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "File"
+msgstr "Fichier"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "File activity"
+msgstr "Activité sur les fichiers"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "File edit finished"
+msgstr "Modification du fichier terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "File operations"
+msgstr "Opérations sur les fichiers"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "File updated"
+msgstr "Fichier mis à jour"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Find page items"
+msgstr "Rechercher des éléments dans la page"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Finished"
+msgstr "Terminé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Form fields"
+msgstr "Champs de formulaire"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Full — complete commands and progress"
+msgstr "Détaillé — commandes et activités complètes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Full — complete progress labels and commands"
+msgstr "Détaillé — libellés d’activité et commandes au complet"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "General"
+msgstr "Général"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Generating"
+msgstr "Génération en cours"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Generation finished"
+msgstr "Génération terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Global plugin loaded: yes"
+msgstr "Plugin global chargé : oui"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Headings"
+msgstr "Titres"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "I am inspecting the current task."
+msgstr "J’examine la tâche actuelle."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Idle compatibility &polling interval (milliseconds):"
+msgstr "&Intervalle de vérification au repos (millisecondes) :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Import Claude Desktop Access settings"
+msgstr "Importer les paramètres de Claude Desktop Access"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Informative"
+msgstr "Informatif"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Informative — Balanced plus filenames, counts, and timing"
+msgstr "Informatif — profil équilibré avec noms de fichiers, quantités et durées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Item category:"
+msgstr "Catégorie d’éléments :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "JSON files (*.json)|*.json"
+msgstr "Fichiers JSON (*.json)|*.json"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Keep &conversation reading stable for speech and Braille during live updates"
+msgstr "Préserver la le&cture vocale et braille de la conversation pendant les mises à jour"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Landmarks"
+msgstr "Régions"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Last inspection error: {value}"
+msgstr "Dernière erreur de vérification : {value}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Latest full Claude progress copied"
+msgstr "Dernière activité détaillée de Claude copiée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Links"
+msgstr "Liens"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Literal — name command symbols"
+msgstr "Littérale — lire le nom des symboles de commande"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Loaded {count} currently available {agent} recent chats"
+msgstr "{count} chats récents de {agent} chargés"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Loaded {count} {agent} recent chats. More are available; open history again to continue loading"
+msgstr "{count} chats récents de {agent} chargés. Rouvrez l’historique pour en charger davantage"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Loading additional {agent} recent chats"
+msgstr "Chargement d’autres chats récents de {agent}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Loading complete"
+msgstr "Chargement terminé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Loading page"
+msgstr "Chargement de la page"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Loud"
+msgstr "Fort"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Maximum background activity (&minutes):"
+msgstr "Durée &maximale de l’activité en arrière-plan (minutes) :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Maximum spoken command &length:"
+msgstr "&Longueur maximale des commandes lues :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Microphone control is unavailable. Start voice mode first"
+msgstr "Micro indisponible. Lancez d’abord le mode vocal"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Microphone muted"
+msgstr "Micro coupé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Microphone state could not be confirmed"
+msgstr "Impossible de confirmer l’état du micro"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Microphone unmuted"
+msgstr "Micro réactivé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Minimal — brief activity summaries"
+msgstr "Succinct — résumés brefs de l’activité"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Mode"
+msgstr "Mode"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Monitoring active"
+msgstr "Suivi actif"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Monitoring inactive"
+msgstr "Suivi inactif"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "More recent chats could not be loaded. Showing the {count} currently available {agent} chats"
+msgstr ""
+"Impossible de charger davantage de chats récents. Les {count} chats de {agent} disponibles sont "
+"affichés"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Move to Claude before opening chat history"
+msgstr "Placez le focus dans Claude avant d’ouvrir l’historique des chats"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Move to Claude before opening navigation"
+msgstr "Placez le focus dans Claude avant d’ouvrir la navigation"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Move to item"
+msgstr "Déplacer le focus vers l’élément"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Moved to {item}"
+msgstr "Focus placé sur {item}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Mute or unmute the Claude microphone"
+msgstr "Couper ou réactiver le micro de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Muting microphone"
+msgstr "Coupure du micro"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Native embedded browser navigation: yes"
+msgstr "Navigation native dans le navigateur intégré : oui"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Navigation"
+msgstr "Navigation"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "New chat opened"
+msgstr "Nouveau chat ouvert"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "No Claude control is selected"
+msgstr "Aucun contrôle de Claude n’est sélectionné"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "No activity announcement history is available"
+msgstr "Aucun historique des annonces d’activité disponible"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "No archived {agent} chats"
+msgstr "Aucun chat archivé dans {agent}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "No complete Claude progress message is available"
+msgstr "Aucune annonce détaillée de Claude disponible"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "No embedded browser is available in the current Claude window"
+msgstr "Aucun navigateur intégré n’est disponible dans la fenêtre Claude actuelle"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "No matching browser item is selected"
+msgstr "Aucun élément correspondant n’est sélectionné dans le navigateur"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "No matching {agent} chats"
+msgstr "Aucun chat correspondant dans {agent}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "No readable page text was exposed by Claude."
+msgstr "Claude ne fournit aucun texte lisible pour cette page."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "No recent chat messages are available"
+msgstr "Aucun message récent disponible"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid ""
+"No recognized Claude navigation controls were exposed. Use native Tab navigation and include this"
+" result in beta feedback."
+msgstr ""
+"Aucun contrôle de navigation de Claude n’a été reconnu. Utilisez la touche Tab et signalez ce "
+"résultat dans vos commentaires sur la bêta."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "No remembered location is available for this browser page"
+msgstr "Aucune position mémorisée pour cette page du navigateur"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "No {agent} chats are cached yet. Wait a moment and try again"
+msgstr "Aucun chat de {agent} en cache pour le moment. Réessayez dans un instant"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Normal"
+msgstr "Normal"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Off"
+msgstr "Désactivé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Only {count} recent chat messages are available"
+msgstr "Seuls {count} messages récents sont disponibles"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Open Claude help"
+msgstr "Ouvrir l’aide de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Open Claude navigation for modes, artifacts and attachments"
+msgstr "Ouvrir la navigation de Claude pour les modes, les artefacts et les pièces jointes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Open Claude usage settings"
+msgstr "Ouvrir les paramètres d’utilisation de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Open archived chat"
+msgstr "Ouvrir le chat archivé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid ""
+"Open help and account pages, save sanitized troubleshooting information, or transfer add-on "
+"settings."
+msgstr ""
+"Ouvrez les pages d’aide et de compte, enregistrez des diagnostics avec les données sensibles "
+"masquées ou transférez les paramètres de l’extension."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Open in default &browser"
+msgstr "Ouvrir dans le &navigateur par défaut"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Open page in default browser"
+msgstr "Ouvrir la page dans le navigateur par défaut"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Open searchable and arrow-navigable Claude chat history"
+msgstr "Ouvrir l’historique des chats de Claude avec recherche et navigation par flèches"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Opened the page in the default browser"
+msgstr "Page ouverte dans le navigateur par défaut"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Opening Claude usage settings"
+msgstr "Ouverture des paramètres d’utilisation de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Opens file and attachment options. Press Enter or Space to open."
+msgstr "Ouvre les options de fichiers et de pièces jointes. Appuyez sur Entrée ou Espace pour les ouvrir."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Opens permission choices. Press Enter or Space to open, then use arrow keys and Enter."
+msgstr ""
+"Ouvre les choix de permissions. Appuyez sur Entrée ou Espace pour ouvrir, puis utilisez les "
+"flèches et Entrée."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Opens the model list. Press Enter or Space to open, then use arrow keys and Enter."
+msgstr "Ouvre la liste des modèles. Appuyez sur Entrée ou Espace, puis utilisez les flèches et Entrée."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Other progress"
+msgstr "Autre activité"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Other recognized progress"
+msgstr "Autres activités reconnues"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Output &route for this category:"
+msgstr "&Sortie pour cette catégorie :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Page actions"
+msgstr "Actions sur la page"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Page items"
+msgstr "Éléments de la page"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Page su&mmary"
+msgstr "&Résumé de la page"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Page: {title}"
+msgstr "Page : {title}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Page: {title}. Address: {address}"
+msgstr "Page : {title}. Adresse : {address}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Pause or resume Claude announcements"
+msgstr "Mettre en pause ou reprendre les annonces de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Permission and input requests"
+msgstr "Demandes de permission et de saisie"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Permission required"
+msgstr "Permission requise"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Plain-language commentary"
+msgstr "Commentaires en langage courant"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Play &progress sounds for enabled announcements"
+msgstr "Jouer les sons de &progression des annonces activées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Play a continuous &Working sound while Claude is busy"
+msgstr "Jouer un son &continu pendant que Claude travaille"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Play a distinct sound when a prompt is &submitted"
+msgstr "Jouer un son distinct à l’&envoi d’un message"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Play a sound for task &completion or failure"
+msgstr "Jouer un son à la &fin ou à l’échec d’une tâche"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Play sounds when Claude &monitoring becomes active or inactive"
+msgstr "Jouer un son à l’activation ou à la désactivation du &suivi de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Plugin installation complete"
+msgstr "Installation de l’extension terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Plugin installation in progress"
+msgstr "Installation de l’extension en cours"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Plugin installation {percent} percent"
+msgstr "Installation de l’extension : {percent} pour cent"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Preview action (&V):"
+msgstr "Action à pré&visualiser :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Preview selected &sound"
+msgstr "Écouter le &son sélectionné"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Preview selected s&peech"
+msgstr "Écouter l’annonce vocal&e sélectionnée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Processing"
+msgstr "Traitement"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Progress sound style (&J):"
+msgstr "St&yle des sons de progression :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Prompt submitted"
+msgstr "Message envoyé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Raw — exact exposed Claude progress text"
+msgstr "Brut — texte d’activité de Claude tel qu’il est fourni"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the eighth-most-recent Claude message"
+msgstr "Lire le huitième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the fifth-most-recent Claude message"
+msgstr "Lire le cinquième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the fourth-most-recent Claude message"
+msgstr "Lire le quatrième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the most recent Claude message"
+msgstr "Lire le message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the next Claude announcement"
+msgstr "Lire l’annonce suivante de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the ninth-most-recent Claude message"
+msgstr "Lire le neuvième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the previous Claude announcement"
+msgstr "Lire l’annonce précédente de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the second-most-recent Claude message"
+msgstr "Lire le deuxième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the seventh-most-recent Claude message"
+msgstr "Lire le septième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the sixth-most-recent Claude message"
+msgstr "Lire le sixième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the tenth-most-recent Claude message"
+msgstr "Lire le dixième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Read the third-most-recent Claude message"
+msgstr "Lire le troisième message le plus récent de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Reading"
+msgstr "Lecture en cours"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Reading finished"
+msgstr "Lecture terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Recent chat history is already loading"
+msgstr "L’historique des chats récents est déjà en cours de chargement"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Recent chat history loading stopped because Claude is no longer focused"
+msgstr "Chargement de l’historique récent interrompu, car Claude a perdu le focus"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Recent chat messages could not be read"
+msgstr "Impossible de lire les messages récents"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Recent chats cached: {count}"
+msgstr "Chats récents en cache : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Recent chats:"
+msgstr "Chats récents :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Refreshing accessible browser items…"
+msgstr "Actualisation des éléments accessibles du navigateur…"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Report current Claude activity or repeat the latest message"
+msgstr "Annoncer l’activité actuelle de Claude ou répéter la dernière annonce"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Requested the native Open in browser action"
+msgstr "Action native « Ouvrir dans le navigateur » demandée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Restore &last location"
+msgstr "Rétablir la dernière &position"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Return to Claude &prompt"
+msgstr "Revenir à la &zone de saisie de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Return to Claude prompt"
+msgstr "Revenir à la zone de saisie de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Returned to the Claude prompt"
+msgstr "Focus revenu dans la zone de saisie de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Run Claude Desktop Access compatibility self-test"
+msgstr "Lancer le test de compatibilité de Claude Desktop Access"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Running command"
+msgstr "Exécution de la commande"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Running shell command: python -m unittest discover -s tests"
+msgstr "Exécution de la commande : python -m unittest discover -s tests"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Running tests"
+msgstr "Exécution des tests"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Sanitized Claude Desktop Access support report saved"
+msgstr "Rapport d’assistance de Claude Desktop Access enregistré avec les données sensibles masquées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Sanitized Claude diagnostics copied"
+msgstr "Diagnostics de Claude copiés avec les données sensibles masquées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Save a sanitized Claude Desktop Access support report"
+msgstr "Enregistrer un rapport d’assistance de Claude Desktop Access avec les données sensibles masquées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Save sanitized Claude Desktop Access support report"
+msgstr "Enregistrer le rapport d’assistance de Claude Desktop Access"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Save sanitized support &report…"
+msgstr "Enregistrer le &rapport d’assistance avec les données sensibles masquées…"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Scan limit reached. Some controls may be missing."
+msgstr "Limite d’analyse atteinte. Certains contrôles peuvent manquer."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Scanning Claude navigation"
+msgstr "Analyse des contrôles de navigation de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Scanning the embedded browser"
+msgstr "Analyse du navigateur intégré"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Search"
+msgstr "Recherche"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Search chats:"
+msgstr "Rechercher des chats :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Search current page:"
+msgstr "Rechercher dans la page actuelle :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Searching the web"
+msgstr "Recherche sur le web"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Selected item"
+msgstr "Élément sélectionné"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid ""
+"Settings are organized into pages. Press Control+Tab or Shift+Control+Tab to change pages. Select"
+" Apply or OK to save changes."
+msgstr ""
+"Les paramètres sont répartis en pages. Appuyez sur Ctrl+Tab ou Ctrl+Maj+Tab pour changer de page."
+" Sélectionnez Appliquer ou OK pour enregistrer les modifications."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Settings could not be exported"
+msgstr "Impossible d’exporter les paramètres"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Settings could not be imported"
+msgstr "Impossible d’importer les paramètres"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Settings imported and loaded into this panel."
+msgstr "Paramètres importés et chargés dans cette page."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Show Claude announcement history"
+msgstr "Afficher l’historique des annonces de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Show sanitized Claude Desktop Access diagnostics"
+msgstr "Afficher les diagnostics de Claude Desktop Access avec les données sensibles masquées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Soft"
+msgstr "Doux"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Sound inventory: {count} files"
+msgstr "Inventaire des sons : {count} fichiers"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Sound only"
+msgstr "Son uniquement"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Sounds"
+msgstr "Sons"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Speech and Braille"
+msgstr "Parole et braille"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "Speech enabled: {value}"
+msgstr "Parole activée : {value}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Speech history"
+msgstr "Historique vocal"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Speech only"
+msgstr "Parole uniquement"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Speech profile settings reset. Select OK to save."
+msgstr "Profils de parole réinitialisés. Sélectionnez OK pour enregistrer."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Standard — action, target, counts, and useful timing"
+msgstr "Standard — action, cible, quantités et durées utiles"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Start or end Claude voice mode"
+msgstr "Démarrer ou arrêter le mode vocal de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Starting voice mode"
+msgstr "Démarrage du mode vocal"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Support"
+msgstr "Assistance"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Supported application &names, comma separated:"
+msgstr "&Noms des applications prises en charge, séparés par des virgules :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Tables"
+msgstr "Tableaux"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Task canceled"
+msgstr "Tâche annulée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Task finished"
+msgstr "Tâche terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Test command progress sound (&K)"
+msgstr "Tester le son de commande (&K)"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Test current announcement outputs (&T)"
+msgstr "&Tester les sorties d’annonce actuelles"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Testing project: 43 tests for 12 seconds"
+msgstr "Tests du projet : 43 tests en 12 secondes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Tests"
+msgstr "Tests"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Tests failed"
+msgstr "Échec des tests"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Tests passed"
+msgstr "Tests réussis"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Text files (*.txt)|*.txt"
+msgstr "Fichiers texte (*.txt)|*.txt"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "That browser item changed. Refresh Browser Navigator and try again"
+msgstr "Cet élément du navigateur a changé. Actualisez la liste et réessayez."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The Claude Chat, Cowork and Code mode menu could not be opened"
+msgstr "Impossible d’ouvrir le menu des modes Chat, Cowork et Code de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The Claude Chat, Cowork and Code mode switch is not available in this view"
+msgstr "Le sélecteur des modes Chat, Cowork et Code de Claude est indisponible dans cette vue"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The Claude prompt could not be focused in this view"
+msgstr "Impossible de placer le focus dans la zone de saisie de Claude dans cette vue"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The Claude view changed. Reopen navigation."
+msgstr "La vue de Claude a changé. Rouvrez la navigation."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The Claude voice control could not be activated"
+msgstr "Impossible d’activer la commande vocale de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The chat-history mode changed. Open chat history again"
+msgstr "Le mode a changé. Rouvrez l’historique des chats"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The complete release history could not be opened"
+msgstr "Impossible d’ouvrir l’historique complet des versions"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The embedded browser did not expose a safe page address or external-browser control"
+msgstr ""
+"Le navigateur intégré ne fournit ni adresse sûre ni contrôle pour ouvrir la page dans un "
+"navigateur externe"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The embedded browser did not expose its current address"
+msgstr "Le navigateur intégré ne fournit pas son adresse actuelle"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The sanitized support report could not be saved"
+msgstr "Impossible d’enregistrer le rapport d’assistance"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The selected browser item does not expose an activate action"
+msgstr "L’élément sélectionné dans le navigateur ne peut pas être activé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The selected chat action could not be opened"
+msgstr "Impossible d’ouvrir l’action du chat sélectionné"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The selected chat's Pin or Archive button could not be focused"
+msgstr "Impossible de placer le focus sur le bouton Épingler ou Archiver du chat sélectionné"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "The selected {agent} chat could not be opened"
+msgstr "Impossible d’ouvrir le chat sélectionné dans {agent}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "The snapshot ended at the safe scan limit."
+msgstr "L’instantané s’arrête à la limite d’analyse."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Thinking"
+msgstr "Réflexion"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "This Claude control could not be reached. Try native Tab navigation."
+msgstr "Impossible d’atteindre ce contrôle de Claude. Essayez la touche Tab."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Toggle Claude privacy redaction"
+msgstr "Activer ou désactiver le masquage des données sensibles de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Toggle Minimal and Full Claude announcements"
+msgstr "Alterner entre les annonces minimales et détaillées de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Tones — musical earcons"
+msgstr "Tonalités — sons musicaux"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Tool"
+msgstr "Outil"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Tool operation"
+msgstr "Opération d’un outil"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Tool use"
+msgstr "Utilisation d’outils"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unarchive confirmation opened; move to the Unarchive and open button"
+msgstr "Confirmation de désarchivage ouverte. Placez le focus sur le bouton « Désarchiver et ouvrir »"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unmuting microphone"
+msgstr "Réactivation du micro"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unnamed browser control"
+msgstr "Contrôle du navigateur sans nom"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unnamed button"
+msgstr "Bouton sans nom"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unnamed form field"
+msgstr "Champ de formulaire sans nom"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unnamed heading"
+msgstr "Titre sans nom"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unnamed item"
+msgstr "Élément sans nom"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unnamed landmark"
+msgstr "Région sans nom"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unnamed link"
+msgstr "Lien sans nom"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Unnamed table"
+msgstr "Tableau sans nom"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Untitled page"
+msgstr "Page sans titre"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Usage limit reached"
+msgstr "Limite d’utilisation atteinte"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid ""
+"Use Claude's embedded browser like any other web page in NVDA. Enter or Space activates the "
+"current control. Tab and Shift+Tab move between controls. NVDA browse-mode commands work "
+"normally."
+msgstr ""
+"Utilisez le navigateur intégré à Claude comme toute autre page web dans NVDA. Entrée ou Espace "
+"active le contrôle actuel. Tab et Maj+Tab déplacent le focus d’un contrôle à l’autre. Les "
+"commandes du mode navigation de NVDA fonctionnent normalement."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "User input required"
+msgstr "Votre intervention est requise"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Using tool"
+msgstr "Utilisation d’un outil"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "View complete release &history…"
+msgstr "Afficher l’&historique complet des versions…"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "View current release &notes…"
+msgstr "Afficher les &notes de la version actuelle…"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Voice mode control is not available in this Claude view"
+msgstr "Le mode vocal est indisponible dans cette vue de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Voice mode ended"
+msgstr "Mode vocal arrêté"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Voice mode started"
+msgstr "Mode vocal démarré"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Voice mode state could not be confirmed"
+msgstr "Impossible de confirmer l’état du mode vocal"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Waiting"
+msgstr "En attente"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Waiting for command"
+msgstr "En attente d’une commande"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Waiting for tool"
+msgstr "En attente d’un outil"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid ""
+"Warning: NVDA debug logging records spoken Full-mode text, including commands, even when add-on "
+"diagnostics are sanitized."
+msgstr ""
+"Attention : le journal de débogage de NVDA enregistre le texte lu en mode détaillé, y compris les"
+" commandes, même si les diagnostics de l’extension masquent les données sensibles."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Web search"
+msgstr "Recherche web"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Web search finished"
+msgstr "Recherche web terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Web searches"
+msgstr "Recherches web"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Wording and Preview"
+msgstr "Libellés et aperçu"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Work"
+msgstr "Travail"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Working"
+msgstr "Travail en cours"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Working and analysis"
+msgstr "Travail et analyse"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Working sound &interval (milliseconds):"
+msgstr "&Intervalle des sons de travail (millisecondes) :"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Writing"
+msgstr "Écriture en cours"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "Writing finished"
+msgstr "Écriture terminée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "You"
+msgstr "Vous"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "address unavailable"
+msgstr "adresse indisponible"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "all enabled channels"
+msgstr "toutes les sorties activées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "ampersand ampersand"
+msgstr "perluète perluète"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "and then"
+msgstr "et ensuite"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "append to"
+msgstr "ajouter à"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "braille only"
+msgstr "braille uniquement"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "browser control"
+msgstr "contrôle du navigateur"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "button"
+msgstr "bouton"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "checked"
+msgstr "coché"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "collapsed"
+msgstr "replié"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "disabled"
+msgstr "désactivée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "enabled"
+msgstr "activée"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "expanded"
+msgstr "déplié"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "form field"
+msgstr "champ de formulaire"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "full"
+msgstr "détaillées"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "greater than"
+msgstr "supérieur à"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "heading"
+msgstr "titre"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "heading level {level}"
+msgstr "titre de niveau {level}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "item"
+msgstr "élément"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "landmark"
+msgstr "région"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "less than"
+msgstr "inférieur à"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "link"
+msgstr "lien"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "loaded"
+msgstr "chargé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "loading, {percent} percent"
+msgstr "chargement à {percent} pour cent"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "minimal"
+msgstr "succinctes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "no"
+msgstr "non"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "off"
+msgstr "désactivé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "or else"
+msgstr "sinon"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "pipe"
+msgstr "barre verticale"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "pipe pipe"
+msgstr "barre verticale barre verticale"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "pressed"
+msgstr "enfoncé"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "purchase more credits in Claude usage settings"
+msgstr "acheter des crédits dans les paramètres d’utilisation de Claude"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "redirect to"
+msgstr "rediriger vers"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "required"
+msgstr "obligatoire"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "running commands"
+msgstr "en train d’exécuter des commandes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "running tests"
+msgstr "en train d’exécuter des tests"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "scan limit reached"
+msgstr "limite d’analyse atteinte"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "searching"
+msgstr "en train de chercher"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "selected"
+msgstr "sélectionné"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "sound only"
+msgstr "son uniquement"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "speech only"
+msgstr "parole uniquement"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "table"
+msgstr "tableau"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "thinking"
+msgstr "en train de réfléchir"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "try again {when}"
+msgstr "réessayer {when}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "unavailable"
+msgstr "indisponible"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "upgrade to Pro"
+msgstr "passer à Pro"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "upgrade your plan"
+msgstr "changer de forfait"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "using tools"
+msgstr "en train d’utiliser des outils"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "visited"
+msgstr "visité"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "working"
+msgstr "en train de travailler"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "working with files"
+msgstr "en train de travailler sur les fichiers"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+msgid "yes"
+msgstr "oui"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{activity} still running"
+msgstr "Toujours en cours : {activity}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{activity} still running, {duration}"
+msgstr "Toujours en cours : {activity}, depuis {duration}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{agentName} is idle"
+msgstr "{agentName} est au repos"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{agentName} is still {activity}"
+msgstr "{agentName} est toujours {activity}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{agentName} is still {activity}, {duration}"
+msgstr "{agentName} est toujours {activity}, depuis {duration}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{agent} chat history"
+msgstr "Historique des chats de {agent}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{agent} chat history is refreshing. Try again in a moment"
+msgstr "L’historique des chats de {agent} est en cours d’actualisation. Réessayez dans un instant."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} browser controls"
+msgstr "Contrôles du navigateur : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} buttons"
+msgstr "Boutons : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} form fields"
+msgstr "Champs de formulaire : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} headings"
+msgstr "Titres : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} hour"
+msgstr "{count} heure"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} hours"
+msgstr "{count} heures"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} items. Enter moves to the selected item."
+msgstr "Nombre d’éléments : {count}. Appuyez sur Entrée pour placer le focus sur l’élément sélectionné."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} landmarks"
+msgstr "Régions : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} links"
+msgstr "Liens : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} minute"
+msgstr "{count} minute"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} minutes"
+msgstr "{count} minutes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} second"
+msgstr "{count} seconde"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} seconds"
+msgstr "{count} secondes"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{count} tables"
+msgstr "Tableaux : {count}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{first} or {last}"
+msgstr "{first} ou {last}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{first}, {middle}, or {last}"
+msgstr "{first}, {middle} ou {last}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{kind}: {name}"
+msgstr "{kind} : {name}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{label}: {state}; {output}"
+msgstr "{label} : {state}. Sortie : {output}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{message}. Check Claude usage settings for reset details."
+msgstr ""
+"{message}. Consultez les paramètres d’utilisation de Claude pour connaître la date de "
+"réinitialisation."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{message}. You can {actions}."
+msgstr "{message}. Vous pouvez {actions}."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{message}: {details}"
+msgstr "{message} : {details}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{mode} mode. Mode selector open. Use Up or Down Arrow and Enter to choose a mode."
+msgstr ""
+"Mode {mode}. Le sélecteur de mode est ouvert. Choisissez avec Flèche haut ou Flèche bas, puis "
+"Entrée."
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{native} {help}"
+msgstr "{native} {help}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{recent} recent results; {archived} archived results"
+msgstr "Chats récents trouvés : {recent}. Chats archivés trouvés : {archived}"
+
+#: globalPlugins/claudeDesktopAccess/strings.py
+#, python-brace-format
+msgid "{visible} matching items; {total} total items"
+msgstr "Éléments correspondants : {visible} sur {total}"
