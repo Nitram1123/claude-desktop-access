@@ -27,7 +27,117 @@ def field(role, name="", **attrs):
 END = SimpleNamespace(command="controlEnd", field={})
 
 
+def node(role, name, *children, classes="", aria="", props="", accelerator="", **attrs):
+	obj = SimpleNamespace(role=role, name=name, firstChild=children[0] if children else None,
+		lastChild=children[-1] if children else None,
+		UIAElement=SimpleNamespace(currentClassName=classes, currentAriaRole=aria,
+			currentAriaProperties=props, currentAcceleratorKey=accelerator), **attrs)
+	for child in children:
+		child.parent = obj
+	for previous, following in zip(children, children[1:]):
+		previous.next, following.previous = following, previous
+	return obj
+
+
 class ClaudeContracts(unittest.TestCase):
+	def test_code_document_uses_native_url_without_its_title(self):
+		for name in ("", "Beliebiger Titel", "セッション"):
+			self.assertTrue(adapter.isCodeDocument(node("document", name, value="https://claude.ai/epitaxy/session")))
+		for value in ("https://other.test/epitaxy/", "https://claude.ai/epitaxy-other", "https://claude.ai/settings"):
+			self.assertFalse(adapter.isCodeDocument(node("document", "Claude Code", value=value)))
+
+	def test_composer_suggestions_require_native_selection_in_a_listbox(self):
+		ia2 = node("listitem", "über Datei", IA2Attributes={"xml-roles": "option"}, states={"SELECTED"})
+		uia = node("listitem", "élément", aria="option", states={"FOCUSED"})
+		box = node("list", "", node("grouping", "", ia2), uia, IA2Attributes={"xml-roles": "listbox"})
+		self.assertIs(box, adapter.selectedComposerSuggestionList(ia2))
+		self.assertIsNone(adapter.selectedComposerSuggestionList(uia))
+		uia.states.add("SELECTED")
+		self.assertIs(box, adapter.selectedComposerSuggestionList(uia))
+		editor = node("editabletext", "", aria="textbox", classes="ProseMirror")
+		node("section", "", editor, box, classes="rounded-composer")
+		self.assertIsNone(adapter.selectedComposerMention(editor))
+		ia2.states.clear()
+		self.assertIs(uia, adapter.selectedComposerMention(editor))
+		command = node("menuitem", "command", aria="menuitem", states={"FOCUSED"})
+		node("popupmenu", "", command, aria="menu")
+		self.assertIsNone(adapter.selectedComposerSuggestionList(command))
+		for identifier in ("kb:upArrow", "kb(desktop):downArrow"):
+			self.assertTrue(adapter.isComposerArrowGestureIdentifier(identifier))
+		for identifier in ("kb:shift+upArrow", "kb:NVDA+downArrow", "br(display):upArrow"):
+			self.assertFalse(adapter.isComposerArrowGestureIdentifier(identifier))
+
+	def test_composer_selection_is_spoken_once_after_an_arrow(self):
+		tree = ast.parse((PLUGIN / "__init__.py").read_text(encoding="utf-8"))
+		plugin = next(item for item in tree.body if isinstance(item, ast.ClassDef) and item.name == "GlobalPlugin")
+		method = next(item for item in plugin.body if getattr(item, "name", "") == "_announceComposerSuggestion")
+		choice = node("listitem", "選択肢")
+		focus = SimpleNamespace(makeTextInfo=lambda position: SimpleNamespace(text="@"), treeInterceptor=SimpleNamespace(rootNVDAObject=node(
+			"document", "Code", value="https://claude.ai/epitaxy/local_test",
+		)))
+		current = SimpleNamespace(focus=focus)
+		messages = []
+		env = {
+			"api": SimpleNamespace(getFocusObject=lambda: current.focus),
+			"ui": SimpleNamespace(message=messages.append),
+			"textInfos": SimpleNamespace(POSITION_ALL="all"),
+			"selectedComposerMention": lambda obj: choice,
+			"isNativeComposer": lambda obj: obj is focus,
+			"isCodeDocument": adapter.isCodeDocument,
+		}
+		exec(compile(ast.Module(body=[method], type_ignores=[]), "composerSuggestion", "exec"), env)
+		announce = env[method.name]
+		addon = SimpleNamespace(
+			_appFocusState=True, _composerCommandMenu=None, _lastComposerSuggestion=None,
+		)
+		announce(addon, focus)
+		announce(addon, focus)
+		self.assertEqual(["選択肢"], messages)
+		current.focus = None
+		choice.name = "Autre choix"
+		announce(addon, focus)
+		self.assertEqual(["選択肢"], messages)
+
+	def test_slash_menu_uses_the_unique_visible_row_with_a_different_background(self):
+		def background(color):
+			return SimpleNamespace(attributes=lambda offset: (0, 1, f"background-color:{color};"))
+
+		first = node("menuitem", "Uno", states=set(), IAccessibleTextObject=background("rgb(10,10,10)"))
+		second = node("menuitem", "二", states=set(), IAccessibleTextObject=background("rgb(30,30,30)"))
+		third = node("menuitem", "Trois", states={"OFFSCREEN"}, IAccessibleTextObject=background("rgb(40,40,40)"))
+		menu = node("popupmenu", "", node("grouping", "", first, second, third),
+			IAccessibleTextObject=background("rgb(10,10,10)"))
+		self.assertIs(second, adapter.highlightedComposerCommand(menu)[0])
+		third.states.clear()
+		self.assertIsNone(adapter.highlightedComposerCommand(menu)[0])
+		third.states.add("OFFSCREEN")
+		first.next = third
+		self.assertIsNone(adapter.highlightedComposerCommand(menu)[0])
+		menu.firstChild = second
+		self.assertIs(second, adapter.highlightedComposerCommand(menu)[0])
+
+	def test_slash_menu_reuses_the_ordinary_color_when_the_filtered_range_is_mixed(self):
+		first = node("menuitem", "Uno", states=set(), background=0)
+		second = node("menuitem", "二", states=set(), background=5)
+		third = node("menuitem", "Trois", states=set(), background=0)
+		menu = node("popupmenu", "", first, second, third, background=None)
+		backgroundFor = lambda obj: obj.background
+		selection, background = adapter.highlightedComposerCommand(menu, backgroundFor)
+		self.assertIs(second, selection)
+		self.assertEqual(0, background)
+		second.next = None
+		self.assertIsNone(adapter.highlightedComposerCommand(menu, backgroundFor)[0])
+		self.assertIs(second, adapter.highlightedComposerCommand(menu, backgroundFor, background)[0])
+
+	def test_slash_menu_can_be_located_while_focus_remains_in_the_composer(self):
+		nested = node("popupmenu", "", aria="menu", classes="bg-surface-3 max-h-96", states=set())
+		hidden = node("popupmenu", "", aria="menu", classes="bg-surface-3 max-h-96", states={"INVISIBLE"})
+		visible = node("popupmenu", "", aria="menu", classes="bg-surface-3 max-h-96", states=set())
+		document = node("document", "", node("grouping", "",
+			node("document", "", nested), node("section", "", visible), hidden,
+		))
+		self.assertIs(visible, adapter.composerCommandMenu(document))
+
 	def scanClass(self):
 		tree = ast.parse((PLUGIN / "claudeNavigator.py").read_text(encoding="utf-8"))
 		node = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "NavigationScan")

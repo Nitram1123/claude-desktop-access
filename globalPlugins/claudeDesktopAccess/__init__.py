@@ -39,6 +39,10 @@ from .chatHistoryDialog import ChatHistoryDialog
 from .core import AnnouncementHistory, CATEGORY_SETTING, announcementPriority, backgroundActivityName, brailleStatusMessage, brailleTypingGestureCommitsText, bufferInspectionDue, categoryOutputActions, changelogForDisplay, chatActionMatches, chatHistorySnapshotDecision, chatMessagesFromTokens, chatTitleMatches, coalescedPollDelay, completedTextDelta, confirmedUserMessageSubmission, conversationModeFromDocumentNames, conversationModeFromSwitchLabel, conversationWindowShouldDetach, currentActivitySummary, duplicateChannelActions, elapsedSeconds, firstStatusLabel, focusStateTransition, formatCommandSpeech, formatCustomAnnouncement, formatElapsedDuration, intermediateCompletionCategory, isBrailleTypingGestureIdentifier, isChatHistoryConversationBoundary, isChatHistoryInterfaceText, isCodePromptLabel, isKnownNonStatusButton, isPermissionDecisionLabel, isPermissionPromptText, isPromptSubmissionGestureIdentifier, isResponseCompletionMarkerText, isStopControlLabel, isTaskCompletionLabel, looksLikeBlankCodeConversation, mergeSupportedAppNames, modeSpecificRecentChatTitles, nextBusyState, outputActions, pendingChatTitle, pluginInstallProgress, pluginProgressBusyTransition, pollDelay, previewSelection, promptControlKind, promptSubmissionGestureShouldStart, promptSubmissionTransition, redactSensitive, repairConfigurationValues, responseCompletionScanMarker, responseCompletionTransition, shouldFinalizeResponseCompletion, shouldLogDiagnosticSnapshot, shouldPlayContinuousWorkingClick, shouldPreserveBrailleComposition, shouldReplaceScheduledPoll, shouldSuppressNativeConversationUpdate, shouldSuppressRoutineBraille, shouldSuppressSemanticDuplicate, soundKey, statusDetails, statusMessage, stopControlTransition, supersedesResponseCompletionCandidate, usageLimitNotice, userMessageNumber, userMessageSubmissionTransition, viewerTitleMatches
 from .core import voiceControlKind
 from .claudeAdapter import modeDisplayName, speakerFromLabel, modeFromTab, promptLabel, navigationKind, conversationDocumentMode, messageTokens
+from .claudeAdapter import (
+	composerCommandMenu, highlightedComposerCommand, isCodeDocument, isComposerArrowGestureIdentifier,
+	isComposerCommandMenu, isNativeComposer, selectedComposerMention,
+)
 from .claudeNavigator import ClaudeNavigator, NavigationScan
 from .soundOutput import playProgressSound as _playProgressSound, safeBeep as _safeBeep
 
@@ -1111,6 +1115,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._promptTypingUntil = 0.0
 		self._conversationNavigationUntil = 0.0
 		self._promptFocused = False
+		self._composerCommandMenu = None
+		self._composerCommandPalette = None
+		self._lastComposerSuggestion = None
+		self._composerSuggestionTimer = None
 		self._brailleCompositionActive = False
 		self._lastBrailleTextInjectionAt = 0.0
 		self._brailleCaretMoveSuppressions = 0
@@ -1207,6 +1215,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def terminate(self):
 		global _activePluginInstance
+		if self._composerSuggestionTimer:
+			self._composerSuggestionTimer.Stop()
+			self._composerSuggestionTimer = None
 		if self._claudeNavigationScan:
 			self._claudeNavigationScan.cancel()
 		if self._claudeNavigationDialog:
@@ -3301,6 +3312,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		appFocused = _isClaudeObject(obj)
 		self._appFocusState, cue = focusStateTransition(self._appFocusState, appFocused)
 		if cue == "inactive":
+			self._composerCommandMenu = self._lastComposerSuggestion = None
+			self._composerCommandPalette = None
 			self._promptFocused = False
 			self._brailleCompositionActive = False
 			self._promptTypingUntil = 0.0
@@ -3320,14 +3333,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _observeInputGesture(self, gesture):
 		"""Observe prompt input and defer large scans during conversation navigation."""
 		try:
-			if not self._appFocusState:
-				return True
 			identifiers = getattr(gesture, "identifiers", ()) or ()
 			if isinstance(identifiers, str):
 				identifiers = (identifiers,)
 			if not identifiers:
 				identifier = getattr(gesture, "identifier", "")
 				identifiers = (identifier,) if identifier else ()
+			if self._appFocusState is not False and any(
+				isComposerArrowGestureIdentifier(identifier) for identifier in identifiers
+			):
+				wx.CallAfter(self._scheduleComposerSuggestion, api.getFocusObject())
+			if not self._appFocusState:
+				return True
 			if not self._promptFocused:
 				# Whole-buffer reads are the most expensive operation in a large
 				# conversation. Any user gesture outside the prompt means navigation is
@@ -4371,7 +4388,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				return
 			isPrompt = _isCodePromptObject(obj)
 			self._promptFocused = isPrompt
-			if isPrompt:
+			self._updateComposerCommandMenu(obj)
+			if obj == self._composerCommandMenu:
+				self._scheduleComposerSuggestion(obj)
+			if isPrompt or (_isClaudeObject(obj) and isNativeComposer(obj)):
 				self._lastPromptObject = obj
 			if not isPrompt:
 				self._brailleCompositionActive = False
@@ -4435,6 +4455,92 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._schedulePoll(requestInspection=submitted or not (pluginHandled or statusHandled))
 		except Exception:
 			log.debugWarning("Claude Desktop Access value-change handling failed", exc_info=True)
+
+	def _updateComposerCommandMenu(self, obj):
+		if obj == self._composerCommandMenu:
+			return
+		self._composerCommandMenu = self._lastComposerSuggestion = None
+		if _roleName(obj) != "popupmenu" or not _isClaudeObject(obj):
+			return
+		editor = self._lastPromptObject
+		buffer = getattr(obj, "treeInterceptor", None)
+		if (
+			editor is None or buffer is None or getattr(editor, "treeInterceptor", None) is not buffer
+			or not isCodeDocument(getattr(buffer, "rootNVDAObject", None))
+			or not isComposerCommandMenu(obj)
+		):
+			return
+		if editor.makeTextInfo(textInfos.POSITION_ALL).text.lstrip().startswith("/"):
+			self._composerCommandMenu = obj
+
+	def _scheduleComposerSuggestion(self, focus):
+		if focus is None or _activePluginInstance is not self or not _isClaudeObject(focus):
+			return
+		try:
+			if focus != self._composerCommandMenu and isComposerCommandMenu(focus):
+				self._updateComposerCommandMenu(focus)
+			if focus != self._composerCommandMenu and not isNativeComposer(focus):
+				return
+			if self._composerSuggestionTimer:
+				self._composerSuggestionTimer.Stop()
+			self._composerSuggestionTimer = wx.CallLater(140, self._announceComposerSuggestion, focus)
+		except Exception:
+			log.debugWarning("Claude Desktop Access could not schedule a composer suggestion", exc_info=True)
+
+	def _announceComposerSuggestion(self, focus):
+		self._composerSuggestionTimer = None
+		try:
+			if focus != api.getFocusObject():
+				return
+			buffer = getattr(focus, "treeInterceptor", None)
+			root = getattr(buffer, "rootNVDAObject", None)
+			menu = self._composerCommandMenu if focus == self._composerCommandMenu else None
+			option = None
+			if menu is None:
+				if not getattr(buffer, "passThrough", True) or not isNativeComposer(focus) or not isCodeDocument(root):
+					return
+				text = focus.makeTextInfo(textInfos.POSITION_ALL).text
+				if text.lstrip().startswith("/"):
+					menu = composerCommandMenu(root)
+				elif "@" in text:
+					option = selectedComposerMention(focus)
+			if menu is not None:
+				option = self._readComposerCommand(menu, root)
+			else:
+				self._composerCommandPalette = None
+			if option is None:
+				self._lastComposerSuggestion = None
+				return
+			name = str(getattr(option, "name", "") or "").strip()
+			selection = (option, name)
+			if name and selection != self._lastComposerSuggestion:
+				self._lastComposerSuggestion = selection
+				ui.message(name)
+		except Exception:
+			log.debugWarning("Claude Desktop Access could not read the active composer suggestion", exc_info=True)
+
+	def _readComposerCommand(self, menu, root):
+		textPattern = getattr(root, "UIATextPattern", None) if getattr(menu, "UIAElement", None) else None
+		if textPattern is None:
+			return highlightedComposerCommand(menu)[0]
+		from UIAHandler import UIA_BackgroundColorAttributeId
+
+		def backgroundFor(obj):
+			# The UIA range for the menu includes its rows, so its color can be mixed
+			# or represent only the highlighted row when the list is filtered.
+			if obj is menu:
+				return None
+			try:
+				color = textPattern.RangeFromChild(obj.UIAElement).GetAttributeValue(UIA_BackgroundColorAttributeId)
+				return color if isinstance(color, int) else None
+			except Exception:
+				return None
+
+		palette = self._composerCommandPalette
+		previousBackground = palette[1] if palette is not None and palette[0] == menu else None
+		option, background = highlightedComposerCommand(menu, backgroundFor, previousBackground)
+		self._composerCommandPalette = (menu, background)
+		return option
 
 	def event_stateChange(self, obj, nextHandler):
 		nextHandler()
