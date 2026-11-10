@@ -7,7 +7,7 @@ import gui
 import ui
 import wx
 
-from .claudeAdapter import navigationKind, roleName
+from .claudeAdapter import isCodeDocument, nativeNavigationKind, navigationKind, roleName
 
 addonHandler.initTranslation()
 
@@ -89,6 +89,7 @@ class NavigationScan:
 		self.seen = {}
 		self.items = []
 		self.valid, self.completed = valid, completed
+		self.codeDocument = isCodeDocument(root)
 		self.timer = None
 		self.cancelled = False
 		self.startTime = time.monotonic()
@@ -116,9 +117,13 @@ class NavigationScan:
 			self.seen[id(obj)] = obj
 			count += 1
 			try:
-				kind = navigationKind(getattr(obj, "name", ""), getattr(obj, "role", None))
+				name = getattr(obj, "name", "")
+				role = getattr(obj, "role", None)
+				kind = nativeNavigationKind(obj)
+				if not kind and not self.codeDocument:
+					kind = navigationKind(name, role)
 				if kind:
-					self.items.append((f"{kind}: {obj.name}", obj))
+					self.items.append((f"{kind}: {name}" if name else kind, obj))
 				# One sibling at a time avoids unbounded child enumeration.
 				sibling = getattr(obj, "next", None)
 				child = getattr(obj, "firstChild", None) if obj is self.root or roleName(getattr(obj, "role", None)) != "document" else None

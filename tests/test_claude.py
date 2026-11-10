@@ -131,7 +131,7 @@ class ClaudeContracts(unittest.TestCase):
 		def later(delay, callback):
 			queue.append(callback)
 			return SimpleNamespace(Stop=lambda: queue.clear())
-		env = {"wx": SimpleNamespace(CallLater=later), "time": time, "navigationKind": adapter.navigationKind, "roleName": adapter.roleName}
+		env = {"wx": SimpleNamespace(CallLater=later), "time": time, "navigationKind": adapter.navigationKind, "nativeNavigationKind": adapter.nativeNavigationKind, "isCodeDocument": adapter.isCodeDocument, "roleName": adapter.roleName}
 		exec(compile(ast.Module(body=[node], type_ignores=[]), "scan", "exec"), env)
 		return env["NavigationScan"], queue
 
@@ -182,11 +182,32 @@ class ClaudeContracts(unittest.TestCase):
 		for names in (["ChatGPT"], ["Code"], ["Google Chrome"], ["Artifact", "Claude"], []):
 			self.assertFalse(adapter.conversationDocumentMode(names))
 
+	def test_code_document_uses_native_url_without_its_title(self):
+		for name in ("", "Beliebiger Titel", "セッション"):
+			self.assertTrue(adapter.isCodeDocument(node("document", name, value="https://claude.ai/epitaxy/session")))
+		for value in ("https://other.test/epitaxy/", "https://claude.ai/epitaxy-other", "https://claude.ai/settings"):
+			self.assertFalse(adapter.isCodeDocument(node("document", "Claude Code", value=value)))
+
 	def test_only_selected_tabs_change_mode(self):
 		for label, expected in (("Chat", "claude"), ("Cowork", "cowork"), ("Code", "code")):
 			self.assertEqual(expected, adapter.modeFromTab(label, True, True))
 			self.assertEqual("", adapter.modeFromTab(label, True, False))
 			self.assertEqual("", adapter.modeFromTab(label, False, True))
+
+	def test_compact_mode_uses_selection_and_structure(self):
+		home = node("radiobutton", "Code", states={"CHECKED"})
+		code = node("radiobutton", "", states={"FOCUSABLE"})
+		group = node("grouping", "Mode", home, code, aria="radiogroup",
+			classes="bg-[var(--cds-segmented-control-track)]")
+		node("grouping", "", group, classes="dframe-chrome-bar")
+		self.assertEqual("Mode", adapter.nativeNavigationKind(home))
+		self.assertEqual("Mode", adapter.nativeNavigationKind(code))
+		self.assertFalse(adapter.nativeMode(home))
+		self.assertFalse(adapter.nativeMode(code))
+		code.states = {"CHECKED"}
+		self.assertEqual("code", adapter.nativeMode(code))
+		code.next = node("radiobutton", "Cowork")
+		self.assertFalse(adapter.nativeMode(code))
 
 	def test_prompt_rejects_other_editors(self):
 		for label in ("Reply to Claude…", "Message Claude", "Ask Claude:"):
@@ -211,6 +232,76 @@ class ClaudeContracts(unittest.TestCase):
 		fields = [field("DOCUMENT", "Claude"), field("GROUPING", "Claude response"), "Answer",
 			field("DOCUMENT", "Artifact"), "Private embedded document", END, END, END]
 		self.assertEqual((("assistant", "Answer"),), core.chatMessagesFromTokens(adapter.messageTokens(fields)))
+
+	def test_native_code_articles_ignore_names_and_preserve_repeated_content(self):
+		def article(position, wrapper, *children):
+			return node("article", "Ignorierter Titel", wrapper, *children,
+				aria="article", props=f"posinset={position};setsize=3")
+		user = article(1, node("grouping", "", node("statictext", "Copier"), classes="group/bubble"),
+			node("heading", "Claude a répondu", classes="sr-only"))
+		assistant = article(2, node("grouping", "",
+			node("heading", "ユーザー", classes="sr-only"),
+			node("heading", "Copier"), node("toolbar", "", node("statictext", "Ignore")),
+			node("document", "", node("statictext", "Ignore")),
+			classes="group/message-row select-text print:block"))
+		another = article(3, node("grouping", "", node("statictext", "Copier"),
+			classes="group/message-row select-text print:block"))
+		unrelated = article(4, node("grouping", "", node("statictext", "Ignore"), classes="group/bubble"))
+		root = node("document", "", node("grouping", "", user, assistant, another, aria="feed"), unrelated)
+		self.assertEqual((("user", "Copier"), ("assistant", "Copier"), ("assistant", "Copier")),
+			adapter.nativeArticleMessages(root))
+		self.assertEqual((("assistant", "Copier"),), adapter.nativeArticleMessages(root, limit=1))
+		user.firstChild.UIAElement.currentClassName = ""
+		self.assertEqual((("assistant", "Copier"), ("assistant", "Copier")), adapter.nativeArticleMessages(root))
+
+	def test_native_transcript_rejects_an_old_viewport_and_ambiguous_panels(self):
+		message = node("article", "", node("grouping", "", node("statictext", "First"), classes="group/bubble"),
+			props="posinset=1;setsize=2")
+		first = node("grouping", "", message, aria="feed")
+		root = node("document", "", first)
+		self.assertEqual((), adapter.nativeArticleMessages(root))
+		message.UIAElement.currentAriaProperties = "posinset=1;setsize=1"
+		self.assertEqual((("user", "First"),), adapter.nativeArticleMessages(root))
+		prompt = node("editabletext", "", classes="ProseMirror")
+		left = node("grouping", "", first, prompt, classes="epitaxy-chat-panel")
+		right = node("grouping", "", node("grouping", "", aria="feed"), classes="epitaxy-chat-panel")
+		root = node("document", "", left, right)
+		self.assertEqual((), adapter.nativeArticleMessages(root))
+		self.assertEqual((("user", "First"),), adapter.nativeArticleMessages(root, focus=prompt))
+
+	def test_ia2_uses_document_url_and_structural_message_fields(self):
+		doc = node("document", "", IAccessibleObject=SimpleNamespace(accValue=lambda child: "https://claude.ai/epitaxy/session"))
+		self.assertTrue(adapter.isCodeDocument(doc))
+		def ia2(role, **attrs):
+			return field(role, "任意", **{"IAccessible2::attribute_" + key.replace("_", "-"): val for key, val in attrs.items()})
+		fields = [
+			ia2("document"), ia2("section", xml_roles="feed"), ia2("article", posinset=1, setsize=2),
+			ia2("heading", **{"class": "sr-only"}), "Invisible heading", END,
+			ia2("section", **{"class": "group/bubble"}), "Copier", END, END,
+			ia2("article", posinset=2, setsize=2),
+			ia2("section", **{"class": "group/message-row select-text print:block"}),
+			ia2("heading", **{"class": "sr-only"}), "Other invisible heading", END,
+			ia2("toolbar"), "Ignore", END, END, END,
+			ia2("section", **{"class": "group/message-row select-text print:block"}),
+			ia2("paragraph"), "L", "ooks ", "good.", END, END, END, END,
+		]
+		self.assertEqual((("user", "Copier"), ("assistant", "Looks good.")), adapter.codeBufferMessages(fields, 10))
+		self.assertEqual((("assistant", "Looks good."),), adapter.codeBufferMessages(fields, 1))
+
+	def test_native_search_and_attachments_require_semantic_context(self):
+		search = node("button", "任意", classes="hit-row", accelerator="Control+Shift+k")
+		fake = node("button", "Rechercher", classes="hit-row")
+		node("grouping", "", search, fake, classes="dframe-sidebar")
+		self.assertEqual("Navigation", adapter.nativeNavigationKind(search))
+		self.assertFalse(adapter.nativeNavigationKind(fake))
+		add = node("button", "", props="haspopup=menu")
+		ordinary = node("button", "Ajouter")
+		slot = node("grouping", "", add, ordinary, classes="absolute bottom-0 start-0 pe-[var(--cds-gap-xs)]")
+		node("grouping", "", slot, classes="rounded-composer")
+		self.assertEqual("Attachment", adapter.nativeNavigationKind(add))
+		self.assertFalse(adapter.nativeNavigationKind(ordinary))
+		slot.parent = None
+		self.assertFalse(adapter.nativeNavigationKind(add))
 
 	def test_unlabeled_content_does_not_become_message(self):
 		self.assertEqual((), core.chatMessagesFromTokens(adapter.messageTokens(["settings", "a draft", field("BUTTON", "Claude"), END])))
@@ -238,22 +329,35 @@ class ClaudeContracts(unittest.TestCase):
 
 	def test_executable_prompt_guard_requires_claude_process(self):
 		text = (PLUGIN / "__init__.py").read_text(encoding="utf-8")
-		names = {"_isClaudeObject", "_isCodePromptObject"}
+		names = {"_isClaudeObject", "_isCodePromptObject", "_roleName"}
 		nodes = [node for node in ast.parse(text).body if isinstance(node, ast.FunctionDef) and node.name in names]
-		env = {"_settings": lambda: {"supportedAppNames": "claude"}, "Role": SimpleNamespace(EDITABLETEXT="edit"), "promptLabel": adapter.promptLabel}
+		env = {"_settings": lambda: {"supportedAppNames": "claude"}, "Role": SimpleNamespace(EDITABLETEXT="edit"), "promptLabel": adapter.promptLabel, "nativeNavigationKind": adapter.nativeNavigationKind, "isCodeDocument": adapter.isCodeDocument, "_conversationModeForObject": lambda obj: getattr(obj, "mode", ""), "isNativeComposer": adapter.isNativeComposer}
 		exec(compile(ast.Module(body=nodes, type_ignores=[]), "guards", "exec"), env)
 		for app, role, label, expected in (("claude", "edit", "Reply to Claude", True), ("chatgpt", "edit", "Reply to Claude", False), ("code", "edit", "Reply to Claude", False), ("claude", "edit", "Search chats", False), ("claude", "button", "Reply to Claude", False)):
 			obj = SimpleNamespace(appModule=SimpleNamespace(appName=app), role=role, name=label)
 			self.assertEqual(expected, env["_isCodePromptObject"](obj))
+		prompt = node("edit", "Reply to Claude", mode="code", appModule=SimpleNamespace(appName="claude"),
+			classes="ProseMirror")
+		self.assertFalse(env["_isCodePromptObject"](prompt))
+		node("section", "", prompt, classes="rounded-composer")
+		for label in ("", "Eingabe", "入力"):
+			prompt.name = label
+			self.assertTrue(env["_isCodePromptObject"](prompt))
 
 	def test_current_messages_runs_adapter_through_plugin(self):
 		tree = ast.parse((PLUGIN / "__init__.py").read_text(encoding="utf-8"))
-		node = next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "_currentChatMessages")
+		method = next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == "_currentChatMessages")
 		fields = [field("GROUPING", "Claude response"), "Test answer", END]
-		env = {"api": SimpleNamespace(getFocusObject=lambda: "claude"), "_isClaudeObject": lambda obj: obj == "claude", "textInfos": SimpleNamespace(POSITION_ALL="all"), "chatMessagesFromTokens": core.chatMessagesFromTokens, "messageTokens": adapter.messageTokens}
-		exec(compile(ast.Module(body=[node], type_ignores=[]), "messages", "exec"), env)
-		instance = SimpleNamespace(_rememberBuffer=lambda obj: None, _buffer=SimpleNamespace(makeTextInfo=lambda pos: SimpleNamespace(getTextWithFields=lambda: fields)))
+		env = {"api": SimpleNamespace(getFocusObject=lambda: "claude"), "_isClaudeObject": lambda obj: obj == "claude", "textInfos": SimpleNamespace(POSITION_ALL="all"), "chatMessagesFromTokens": core.chatMessagesFromTokens, "messageTokens": adapter.messageTokens, "isCodeDocument": adapter.isCodeDocument, "nativeArticleMessages": adapter.nativeArticleMessages, "codeBufferMessages": adapter.codeBufferMessages}
+		exec(compile(ast.Module(body=[method], type_ignores=[]), "messages", "exec"), env)
+		buffer = SimpleNamespace(makeTextInfo=lambda pos: SimpleNamespace(getTextWithFields=lambda: fields))
+		instance = SimpleNamespace(_rememberBuffer=lambda obj: buffer, _buffer=buffer)
 		self.assertEqual((("assistant", "Test answer"),), env["_currentChatMessages"](instance))
+		buffer.rootNVDAObject = node("document", "任意", value="https://claude.ai/epitaxy/session")
+		# In Code, a label-shaped virtual-buffer string cannot become a message.
+		self.assertEqual((), env["_currentChatMessages"](instance))
+		instance._rememberBuffer = lambda obj: None
+		self.assertEqual((), env["_currentChatMessages"](instance))
 
 	def test_independent_identity_and_version(self):
 		manifest = (ROOT / "manifest.ini").read_text(encoding="utf-8")

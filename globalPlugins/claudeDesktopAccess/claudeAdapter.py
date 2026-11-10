@@ -4,7 +4,9 @@ Labels are candidate English patterns for beta testing, not captured live fixtur
 No conversation text is sent to a service or written to disk by this module.
 """
 
+from collections import deque
 import re
+import time
 from urllib.parse import urlsplit
 
 
@@ -72,6 +74,22 @@ def nativeClasses(obj):
 	return set(str(attrs.get("class") or _uiaProperty(obj, "cachedClassName") or _uiaProperty(obj, "currentClassName") or "").split())
 
 
+def _ariaRole(obj):
+	attrs = getattr(obj, "IA2Attributes", None) or {}
+	return attrs.get("xml-roles") or _uiaProperty(obj, "currentAriaRole") or roleName(getattr(obj, "role", None))
+
+
+def _ariaProperty(obj, name):
+	attrs = getattr(obj, "IA2Attributes", None) or {}
+	if name in attrs:
+		return str(attrs[name])
+	for pair in (_uiaProperty(obj, "currentAriaProperties") or "").split(";"):
+		key, _, value = pair.partition("=")
+		if key == name:
+			return value
+	return ""
+
+
 def isCodeDocument(obj):
 	if roleName(getattr(obj, "role", None)) != "document":
 		return False
@@ -110,6 +128,265 @@ def isNativeComposer(obj):
 def isComposerArrowGestureIdentifier(identifier):
 	source, _, key = str(identifier or "").casefold().rpartition(":")
 	return source.startswith("kb") and key in ("uparrow", "downarrow")
+
+
+def _compactModeChoice(obj):
+	if roleName(getattr(obj, "role", None)) != "radiobutton":
+		return ""
+	group = getattr(obj, "parent", None)
+	if _ariaRole(group) != "radiogroup" or not (
+		"bg-[var(--cds-segmented-control-track)]" in nativeClasses(group)
+		and _inside(group, "dframe-chrome-bar")
+	):
+		return ""
+	first = getattr(group, "firstChild", None)
+	second = getattr(first, "next", None)
+	if (
+		roleName(getattr(first, "role", None)) != "radiobutton"
+		or roleName(getattr(second, "role", None)) != "radiobutton"
+		or getattr(second, "next", None) is not None
+	):
+		return ""
+	# The compact switcher presents the shared Chat/Cowork option before Code.
+	return "home" if obj == first else "code" if obj == second else ""
+
+
+def nativeMode(obj):
+	if roleName(getattr(obj, "role", None)) != "radiobutton":
+		return ""
+	states = {roleName(state) for state in getattr(obj, "states", ())}
+	if states.intersection(("checked", "selected")) and _compactModeChoice(obj) == "code":
+		return "code"
+	return ""
+
+
+def nativeNavigationKind(obj):
+	role = roleName(getattr(obj, "role", None))
+	if role == "radiobutton" and _compactModeChoice(obj):
+		return "Mode"
+	if role not in ("button", "menubutton"):
+		return ""
+	if (
+		{"absolute", "bottom-0", "start-0", "pe-[var(--cds-gap-xs)]"} <= nativeClasses(getattr(obj, "parent", None))
+		and _inside(obj, "rounded-composer")
+		and (role == "menubutton" or _ariaProperty(obj, "haspopup") == "menu")
+	):
+		return "Attachment"
+	if "hit-row" in nativeClasses(obj) and _inside(obj, "dframe-sidebar"):
+		shortcut = _ariaProperty(obj, "keyshortcuts") or _uiaProperty(obj, "currentAcceleratorKey") or getattr(obj, "keyboardShortcut", "")
+		if str(shortcut).casefold() in ("ctrl+shift+k", "control+shift+k"):
+			return "Navigation"
+	return ""
+
+
+_MESSAGE_CONTROL_ROLES = {
+	"alert", "button", "checkbox", "combobox", "editabletext", "menu", "menubutton",
+	"radiobutton", "statusbar", "togglebutton", "toolbar",
+}
+
+
+def _codeFeed(root, focus, deadline):
+	panel = next((obj for obj in _ancestors(focus) if "epitaxy-chat-panel" in nativeClasses(obj)), None)
+	pending = deque([(getattr(panel or root, "firstChild", None), 0)])
+	feed = None
+	seen = {}
+	while pending and len(seen) < 300 and time.monotonic() < deadline:
+		obj, depth = pending.popleft()
+		if obj is None or id(obj) in seen:
+			continue
+		seen[id(obj)] = obj
+		pending.appendleft((getattr(obj, "next", None), depth))
+		role = roleName(getattr(obj, "role", None))
+		if role not in ("grouping", "section", "region", "landmark", "unknown", "pane", "complementary", "application", "feed"):
+			continue
+		if _ariaRole(obj) == "feed":
+			if feed is not None:
+				return None
+			feed = obj
+		elif depth < 16:
+			pending.append((getattr(obj, "firstChild", None), depth + 1))
+	return feed if not pending else None
+
+
+def _transcriptObjects(root, deadline, reverse=False, continuations=False):
+	childAttr, siblingAttr = ("lastChild", "previous") if reverse else ("firstChild", "next")
+	pending = [getattr(root, childAttr, None)]
+	seen = {}
+	while pending and len(seen) < 600 and time.monotonic() < deadline:
+		obj = pending.pop()
+		if obj is None or id(obj) in seen:
+			continue
+		seen[id(obj)] = obj
+		pending.append(getattr(obj, siblingAttr, None))
+		role = roleName(getattr(obj, "role", None))
+		if role == "document" or role in _MESSAGE_CONTROL_ROLES:
+			continue
+		if role == "article" or (role in ("grouping", "section") and _ariaRole(obj) == "article"):
+			yield obj, "article", True
+			continue
+		classes = nativeClasses(obj) if role != "statictext" else set()
+		if "sr-only" in classes:
+			continue
+		if continuations and _messageAuthor(classes) == "assistant":
+			yield obj, "continuation", True
+			continue
+		child = None if role in ("heading", "statictext") else getattr(obj, childAttr, None)
+		yield obj, role, child is None
+		if child is not None:
+			pending.append(child)
+
+
+def _messageAuthor(classes):
+	if "group/bubble" in classes:
+		return "user"
+	if {"group/message-row", "select-text", "print:block"} <= classes:
+		return "assistant"
+	return ""
+
+
+def _messageRecord(position, size, author, parts):
+	body = " ".join("".join(parts).split())
+	return (position, size, (author, body) if author and body else None)
+
+
+def _latestMessages(records, limit, busy):
+	messages = []
+	expected = lastPosition = None
+	for position, size, message in records:
+		if not position.isdecimal():
+			continue
+		position = int(position)
+		if expected is None:
+			expected = lastPosition = int(size) if size.isdecimal() else position
+		if position != expected:
+			break
+		if message is None:
+			# A pending response can have an article before there is any readable body.
+			if position != lastPosition or not busy:
+				break
+		else:
+			messages.append(message)
+			if len(messages) >= limit:
+				break
+		expected -= 1
+	return tuple(reversed(messages))
+
+
+def codeBufferMessages(fields, limit):
+	"""Read positioned articles in the IA2 virtual buffer when it contains the Code feed."""
+	stack = []
+	records = []
+	feedDepth = articleDepth = continuationDepth = blockedDepth = 0
+	feeds = 0
+	author, parts = "", []
+	position = size = ""
+	busy = False
+	for item in fields:
+		if isinstance(item, str):
+			if (articleDepth or continuationDepth) and not blockedDepth:
+				parts.append(item)
+			continue
+		command = getattr(item, "command", "")
+		if command == "controlStart":
+			field = item.field or {}
+			role = roleName(field.get("role"))
+			ariaRole = field.get("IAccessible2::attribute_xml-roles")
+			classes = set(str(field.get("IAccessible2::attribute_class") or "").split())
+			nested = role == "document" and ("document" in stack or feedDepth)
+			stack.append(role)
+			depth = len(stack)
+			if blockedDepth:
+				continue
+			if nested or "sr-only" in classes or role in _MESSAGE_CONTROL_ROLES:
+				blockedDepth = depth
+			elif ariaRole == "feed":
+				feeds += 1
+				feedDepth = depth
+				busy = str(field.get("IAccessible2::attribute_busy")).casefold() == "true"
+			elif feedDepth and (role == "article" or ariaRole == "article"):
+				if articleDepth:
+					blockedDepth = depth
+				else:
+					if position:
+						records.append(_messageRecord(position, size, author if author != "ambiguous" else "", parts))
+					articleDepth = depth
+					position = str(field.get("IAccessible2::attribute_posinset", ""))
+					size = str(field.get("IAccessible2::attribute_setsize", ""))
+					author, parts = "", []
+			elif articleDepth and depth == articleDepth + 1:
+				candidate = _messageAuthor(classes)
+				if candidate and author and candidate != author:
+					author = "ambiguous"
+				elif candidate:
+					author = candidate
+			elif feedDepth and not (articleDepth or continuationDepth) and author == "assistant" and _messageAuthor(classes) == "assistant":
+				# Large answers have continuation rows without their own article or position.
+				continuationDepth = depth
+				parts.append(" ")
+		elif command == "controlEnd" and stack:
+			depth = len(stack)
+			role = stack.pop()
+			if blockedDepth:
+				if depth == blockedDepth:
+					blockedDepth = 0
+			elif depth == articleDepth:
+				articleDepth = 0
+			elif depth == continuationDepth:
+				continuationDepth = 0
+			elif depth == feedDepth:
+				if position:
+					records.append(_messageRecord(position, size, author if author != "ambiguous" else "", parts))
+				position = ""
+				feedDepth = 0
+			elif (articleDepth or continuationDepth) and role in ("paragraph", "heading", "listitem"):
+				parts.append(" ")
+	return _latestMessages(reversed(records), limit, busy) if feeds == 1 else ()
+
+
+def _readArticle(article, deadline):
+	author, parts = "", []
+	for obj, role, leaf in _transcriptObjects(article, deadline):
+		if role == "article":
+			continue
+		if role in ("grouping", "section") and getattr(obj, "parent", None) == article:
+			candidate = _messageAuthor(nativeClasses(obj))
+			if candidate:
+				if author and author != candidate:
+					return "", ""
+				author = candidate
+		if leaf and role in ("statictext", "heading", "link", "paragraph"):
+			body = " ".join(str(getattr(obj, "name", "") or "").split())
+			if body:
+				parts.append(body)
+	return (author, " ".join(parts)) if time.monotonic() < deadline else ("", "")
+
+
+def nativeArticleMessages(root, limit=10, focus=None):
+	"""Read the contiguous end of Claude Code's native, possibly virtualized feed."""
+	if limit < 1:
+		return ()
+	deadline = time.monotonic() + 1.0
+	feed = _codeFeed(root, focus, deadline)
+	if feed is None:
+		return ()
+	def records():
+		fragments = []
+		for obj, role, _leaf in _transcriptObjects(feed, deadline, reverse=True, continuations=True):
+			if role == "continuation":
+				_, text = _readArticle(obj, deadline)
+				if text:
+					fragments.append(text)
+			elif role == "article":
+				author, text = _readArticle(obj, deadline)
+				if author == "assistant" and fragments:
+					text = " ".join(part for part in (text, *reversed(fragments)) if part)
+				yield (
+					_ariaProperty(obj, "posinset"), _ariaProperty(obj, "setsize"),
+					(author, text) if author and text else None,
+				)
+				fragments.clear()
+
+	return _latestMessages(records(), limit, _ariaProperty(feed, "busy") == "true")
 
 
 def messageTokens(fields):

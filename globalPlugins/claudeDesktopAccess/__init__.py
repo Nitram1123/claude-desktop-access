@@ -38,7 +38,7 @@ from .browserNavigatorDialog import BrowserNavigatorDialog
 from .chatHistoryDialog import ChatHistoryDialog
 from .core import AnnouncementHistory, CATEGORY_SETTING, announcementPriority, backgroundActivityName, brailleStatusMessage, brailleTypingGestureCommitsText, bufferInspectionDue, categoryOutputActions, changelogForDisplay, chatActionMatches, chatHistorySnapshotDecision, chatMessagesFromTokens, chatTitleMatches, coalescedPollDelay, completedTextDelta, confirmedUserMessageSubmission, conversationModeFromDocumentNames, conversationModeFromSwitchLabel, conversationWindowShouldDetach, currentActivitySummary, duplicateChannelActions, elapsedSeconds, firstStatusLabel, focusStateTransition, formatCommandSpeech, formatCustomAnnouncement, formatElapsedDuration, intermediateCompletionCategory, isBrailleTypingGestureIdentifier, isChatHistoryConversationBoundary, isChatHistoryInterfaceText, isCodePromptLabel, isKnownNonStatusButton, isPermissionDecisionLabel, isPermissionPromptText, isPromptSubmissionGestureIdentifier, isResponseCompletionMarkerText, isStopControlLabel, isTaskCompletionLabel, looksLikeBlankCodeConversation, mergeSupportedAppNames, modeSpecificRecentChatTitles, nextBusyState, outputActions, pendingChatTitle, pluginInstallProgress, pluginProgressBusyTransition, pollDelay, previewSelection, promptControlKind, promptSubmissionGestureShouldStart, promptSubmissionTransition, redactSensitive, repairConfigurationValues, responseCompletionScanMarker, responseCompletionTransition, shouldFinalizeResponseCompletion, shouldLogDiagnosticSnapshot, shouldPlayContinuousWorkingClick, shouldPreserveBrailleComposition, shouldReplaceScheduledPoll, shouldSuppressNativeConversationUpdate, shouldSuppressRoutineBraille, shouldSuppressSemanticDuplicate, soundKey, statusDetails, statusMessage, stopControlTransition, supersedesResponseCompletionCandidate, usageLimitNotice, userMessageNumber, userMessageSubmissionTransition, viewerTitleMatches
 from .core import voiceControlKind
-from .claudeAdapter import modeDisplayName, speakerFromLabel, modeFromTab, promptLabel, navigationKind, conversationDocumentMode, messageTokens
+from .claudeAdapter import codeBufferMessages, modeDisplayName, speakerFromLabel, modeFromTab, promptLabel, conversationDocumentMode, messageTokens, nativeArticleMessages, nativeMode, isCodeDocument, isNativeComposer
 from .claudeNavigator import ClaudeNavigator, NavigationScan
 from .soundOutput import playProgressSound as _playProgressSound, safeBeep as _safeBeep
 
@@ -905,14 +905,18 @@ def _isClaudeObject(obj):
 def _conversationModeForObject(obj):
 	if not _isClaudeObject(obj):
 		return ""
-	current, names = obj, []
-	for _ in range(20):
+	current, documents = obj, []
+	for _ in range(40):
 		if current is None:
 			break
 		if _roleName(current) == "document":
-			names.append(getattr(current, "name", ""))
+			if isCodeDocument(current):
+				return "" if documents else "code"
+			documents.append(current)
 		current = getattr(current, "parent", None)
-	return conversationDocumentMode(names)
+	if len(documents) != 1:
+		return ""
+	return conversationDocumentMode([getattr(documents[0], "name", "")])
 
 
 def _isConversationObject(obj):
@@ -921,6 +925,10 @@ def _isConversationObject(obj):
 
 def _isCodePromptObject(obj):
 	if not _isClaudeObject(obj) or getattr(obj, "role", None) != Role.EDITABLETEXT:
+		return False
+	if isNativeComposer(obj):
+		return True
+	if _conversationModeForObject(obj) == "code":
 		return False
 	return any(promptLabel(getattr(obj, attr, "")) for attr in ("name", "placeholder", "description"))
 
@@ -1369,19 +1377,22 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			None, False, brailleMessage=brailleMessage,
 		)
 
-	def _currentChatMessages(self):
+	def _currentChatMessages(self, limit=10):
 		focus = api.getFocusObject()
 		if not _isClaudeObject(focus):
 			return ()
-		self._rememberBuffer(focus)
-		if not self._buffer:
+		buffer = self._rememberBuffer(focus)
+		if buffer is None:
 			return ()
-		info = self._buffer.makeTextInfo(textInfos.POSITION_ALL)
-		return chatMessagesFromTokens(messageTokens(info.getTextWithFields()), 10)
+		root = getattr(buffer, "rootNVDAObject", None)
+		info = buffer.makeTextInfo(textInfos.POSITION_ALL)
+		if isCodeDocument(root):
+			return codeBufferMessages(info.getTextWithFields(), limit) or nativeArticleMessages(root, limit, focus)
+		return chatMessagesFromTokens(messageTokens(info.getTextWithFields()), limit)
 
 	def _readRecentChatMessage(self, position):
 		try:
-			messages = self._currentChatMessages()
+			messages = self._currentChatMessages(position)
 		except Exception:
 			log.debugWarning("Claude Desktop Access could not read recent chat messages", exc_info=True)
 			ui.message(_("Recent chat messages could not be read"))
@@ -1506,8 +1517,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if not _isClaudeObject(focus):
 			ui.message(_("Move to Claude before opening navigation"))
 			return
-		self._rememberBuffer(focus)
-		root = getattr(self._buffer, "rootNVDAObject", None)
+		buffer = self._rememberBuffer(focus)
+		root = getattr(buffer, "rootNVDAObject", None)
 		if root is None:
 			ui.message(_("Claude has not exposed a conversation document. Try browse mode, then try again."))
 			return
@@ -1515,7 +1526,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._claudeNavigationScan.cancel()
 		window = self._conversationWindowHandle
 		def valid():
-			return _activePluginInstance is self and _isClaudeObject(api.getFocusObject()) and window == self._conversationWindowHandle
+			return _activePluginInstance is self and _isClaudeObject(api.getFocusObject()) and buffer is self._buffer and window == self._conversationWindowHandle
 		def completed(items, truncated):
 			self._claudeNavigationScan = None
 			if not valid():
@@ -1555,7 +1566,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _observeConversationModeControl(self, obj, reason):
 		if not _isClaudeObject(obj):
 			return False
-		mode = modeFromTab(getattr(obj, "name", ""), getattr(obj, "role", None) == Role.TAB, State.SELECTED in getattr(obj, "states", set()))
+		mode = nativeMode(obj)
+		if not mode and getattr(obj, "role", None) == Role.TAB and _conversationModeForObject(obj) != "code":
+			mode = modeFromTab(getattr(obj, "name", ""), True, State.SELECTED in getattr(obj, "states", ()))
 		if mode and self._eventBelongsToRetainedConversationBuffer(obj):
 			return self._setConversationMode(mode, reason, authoritative=True)
 		return False
@@ -3204,8 +3217,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _rememberBuffer(self, obj):
 		if not _isClaudeObject(obj):
 			return
-		explicitMode = conversationModeFromSwitchLabel(getattr(obj, "name", ""))
 		mode = _conversationModeForObject(obj)
+		explicitMode = nativeMode(obj)
+		if not explicitMode and mode != "code":
+			explicitMode = conversationModeFromSwitchLabel(getattr(obj, "name", ""))
 		isPrompt = _isCodePromptObject(obj)
 		isEmbeddedBrowser = False if isPrompt else _isEmbeddedBrowserObject(obj)
 		for current in self._bufferCandidates(obj):
@@ -3229,6 +3244,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					log.debug("Claude Desktop Access ignored a buffer from a closed or hidden window")
 				continue
 			self._lastRejectedBufferLogAt = 0.0
+			if isCodeDocument(getattr(buffer, "rootNVDAObject", None)):
+				explicitMode = "code"
 			if explicitMode:
 				self._setConversationMode(explicitMode, "mode switch control event", authoritative=True)
 			differentWindow = bool(
@@ -3295,7 +3312,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._monitoringAnnounced = True
 				conf = _settings()
 				_send(_("Activity monitoring active"), conf["speech"], conf["braille"], None, False)
-			return
+			return buffer
 
 	def _updateAppFocusState(self, obj):
 		appFocused = _isClaudeObject(obj)
