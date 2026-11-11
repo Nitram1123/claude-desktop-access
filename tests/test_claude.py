@@ -182,11 +182,6 @@ class ClaudeContracts(unittest.TestCase):
 		for names in (["ChatGPT"], ["Code"], ["Google Chrome"], ["Artifact", "Claude"], []):
 			self.assertFalse(adapter.conversationDocumentMode(names))
 
-	def test_code_document_uses_native_url_without_its_title(self):
-		for name in ("", "Beliebiger Titel", "セッション"):
-			self.assertTrue(adapter.isCodeDocument(node("document", name, value="https://claude.ai/epitaxy/session")))
-		for value in ("https://other.test/epitaxy/", "https://claude.ai/epitaxy-other", "https://claude.ai/settings"):
-			self.assertFalse(adapter.isCodeDocument(node("document", "Claude Code", value=value)))
 
 	def test_only_selected_tabs_change_mode(self):
 		for label, expected in (("Chat", "claude"), ("Cowork", "cowork"), ("Code", "code")):

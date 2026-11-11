@@ -57,6 +57,10 @@ In the Claude Code editor, use Up/Down in focus mode to recall prompts through C
 
 The recalled prompt is editable immediately. Use Left/Right, Control+Left/Right and Home/End to position the caret, then type your changes. In a single-line prompt, Up/Down can continue recalling history because Claude handles those keys at the first or last visual line. If the keys read the page instead of moving the editing caret, return to the editor and use NVDA+Space to enable focus mode. Prompt recall and editing were tested with the French Claude interface and NVDA; multiline recall still needs live verification.
 
+For Control+1 through Control+0 in long Claude Code conversations, the add-on uses Claude's native accessibility paging buttons to load missing recent messages on demand. It preserves their actual positions rather than skipping unloaded gaps. Loading is limited to five seconds and stops when you press another key, leave Claude or change sessions. The transcript may scroll as Claude loads a page; focus returns to the prompt when the request started there. Controls are identified by their native structure and surrounding message positions, without matching translated button names.
+
+Recent-message shortcuts announce the speaker and message text directly, without repeating the message number.
+
 Completion is inferred from exposed activity and the disappearance of a Stop control after a settling delay. It means generation appears to have ended, not that Claude's work succeeded. Cancel/error scenarios are particularly important beta tests.
 
 ## Settings

@@ -90,23 +90,34 @@ def _ariaProperty(obj, name):
 	return ""
 
 
-def isCodeDocument(obj):
+def nativeDocumentUrl(obj):
 	if roleName(getattr(obj, "role", None)) != "document":
-		return False
+		return ""
 	value = getattr(obj, "value", "")
 	if not value:
 		try:
-			# Chromium IA2 exposes the document URL through MSAA, even when NVDA's value is empty.
+			# Chromium IA2 exposes the document URL through MSAA.
 			value = obj.IAccessibleObject.accValue(0)
 		except Exception:
-			return False
+			return ""
+	return value or ""
+
+
+def codeDocumentUrl(obj):
+	value = nativeDocumentUrl(obj)
 	try:
-		url = urlsplit(value or "")
-		return url.scheme == "https" and url.hostname == "claude.ai" and (
-			url.path == "/epitaxy" or url.path.startswith("/epitaxy/")
-		)
+		url = urlsplit(value)
 	except ValueError:
-		return False
+		return ""
+	if url.scheme == "https" and url.hostname == "claude.ai" and (
+		url.path == "/epitaxy" or url.path.startswith("/epitaxy/")
+	):
+		return value
+	return ""
+
+
+def isCodeDocument(obj):
+	return bool(codeDocumentUrl(obj))
 
 
 def _ancestors(obj, limit=12):
@@ -272,8 +283,8 @@ def _latestMessages(records, limit, busy):
 	return tuple(reversed(messages))
 
 
-def codeBufferMessages(fields, limit):
-	"""Read positioned articles in the IA2 virtual buffer when it contains the Code feed."""
+def _codeBufferRecords(fields):
+	"""Collect positioned articles and the busy state from one Code feed."""
 	stack = []
 	records = []
 	feedDepth = articleDepth = continuationDepth = blockedDepth = 0
@@ -340,7 +351,94 @@ def codeBufferMessages(fields, limit):
 				feedDepth = 0
 			elif (articleDepth or continuationDepth) and role in ("paragraph", "heading", "listitem"):
 				parts.append(" ")
-	return _latestMessages(reversed(records), limit, busy) if feeds == 1 else ()
+	return (records, busy) if feeds == 1 else ([], False)
+
+
+def codeBufferMessages(fields, limit):
+	"""Read positioned articles in the IA2 virtual buffer when it contains the Code feed."""
+	records, busy = _codeBufferRecords(fields)
+	return _latestMessages(reversed(records), limit, busy)
+
+
+def codeMessageLoadTarget(fields, limit):
+	"""Find a native paging button spanning a missing recent article position.
+
+	Claude puts these screen-reader buttons directly in the feed's row container,
+	outside articles and answer fragments. Their surrounding positions determine
+	which gap they load; their translated names are never used.
+	"""
+	fields = tuple(fields)
+	records, busy = _codeBufferRecords(fields)
+	if busy and records and records[-1][2] is None and records[-1][0] == records[-1][1]:
+		# An empty streaming placeholder does not count as a readable message.
+		limit += 1
+	stack, articles, buttons = [], [], []
+	feedDepth = blockedDepth = feeds = 0
+	total = None
+	for item in fields:
+		if isinstance(item, str):
+			continue
+		if item.command == "controlStart":
+			attrs = item.field or {}
+			role = roleName(attrs.get("role"))
+			aria = attrs.get("IAccessible2::attribute_xml-roles")
+			classes = set(str(attrs.get("IAccessible2::attribute_class") or "").split())
+			nested = role == "document" and bool(stack)
+			stack.append(role)
+			depth = len(stack)
+			if blockedDepth:
+				continue
+			if nested:
+				blockedDepth = depth
+			elif aria == "feed":
+				feeds += 1
+				feedDepth = depth
+			elif feedDepth and (role == "article" or aria == "article"):
+				position = str(attrs.get("IAccessible2::attribute_posinset", ""))
+				size = str(attrs.get("IAccessible2::attribute_setsize", ""))
+				if not position.isdecimal() or not size.isdecimal():
+					return None
+				position, size = int(position), int(size)
+				if position < 1 or position > size or total is not None and total != size:
+					return None
+				if articles and position <= articles[-1]:
+					return None
+				total = size
+				articles.append(position)
+				blockedDepth = depth
+			elif feedDepth and depth == feedDepth + 2 and role == "button" and classes == {"sr-only", "select-none"}:
+				states = {roleName(s) for s in attrs.get("states", ())}
+				if states.intersection(("unavailable", "invisible")) or attrs.get("isHidden"):
+					continue
+				try:
+					identifier = (int(attrs["controlIdentifier_docHandle"]), int(attrs["controlIdentifier_ID"]))
+				except (KeyError, TypeError, ValueError):
+					continue
+				buttons.append((articles[-1] if articles else 0, len(articles), identifier))
+			elif feedDepth and (_messageAuthor(classes) or role in _MESSAGE_CONTROL_ROLES):
+				blockedDepth = depth
+		elif item.command == "controlEnd" and stack:
+			depth = len(stack)
+			if depth == blockedDepth:
+				blockedDepth = 0
+			if depth == feedDepth:
+				feedDepth = 0
+			stack.pop()
+	if feeds != 1 or total is None or limit < 1:
+		return None
+	firstWanted = max(1, total - limit + 1)
+	candidates = []
+	for previous, index, identifier in buttons:
+		following = articles[index] if index < len(articles) else total + 1
+		if max(previous + 1, firstWanted) < following:
+			# Claude can reuse the same button while advancing through pages.
+			# Include the gap so a progressed button can be activated again.
+			candidates.append((following, (*identifier, previous, following, total)))
+	if not candidates:
+		return None
+	lastGap = max(position for position, _ in candidates)
+	matching = [identifier for position, identifier in candidates if position == lastGap]
+	return matching[0] if len(matching) == 1 else None
 
 
 def _readArticle(article, deadline):
