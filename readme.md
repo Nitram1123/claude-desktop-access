@@ -53,7 +53,9 @@ All rows require live tester verification; automated checks cover shared logic a
 
 In the navigation dialog, type to filter, Tab to the list, and use the Arrow keys. Enter or **Move to item** focuses the selected control. **Activate item** performs its native action. Escape closes. Scans happen only on request, stop at a bounded limit, and yield between slices. Native accessibility calls can still be slow on some machines; report delays.
 
-In the Claude Code editor, use Up/Down in focus mode to recall prompts through Claude's own input history. When Claude replaces the editor text, the add-on reads the recalled prompt, including multiple lines. It uses the accessible editor contents without matching the translated history announcement or keeping a separate prompt history. Ordinary line movement and selection retain NVDA's standard behavior. Live verification with Claude and NVDA remains pending.
+In the Claude Code editor, use Up/Down in focus mode to recall prompts through Claude's own input history. When Claude replaces the editor text, the add-on reads the recalled prompt, including multiple lines. It uses the accessible editor contents without matching the translated history announcement or keeping a separate prompt history. Ordinary line movement and selection retain NVDA's standard behavior.
+
+The recalled prompt is editable immediately. Use Left/Right, Control+Left/Right and Home/End to position the caret, then type your changes. In a single-line prompt, Up/Down can continue recalling history because Claude handles those keys at the first or last visual line. If the keys read the page instead of moving the editing caret, return to the editor and use NVDA+Space to enable focus mode. Prompt recall and editing were tested with the French Claude interface and NVDA; multiline recall still needs live verification.
 
 Completion is inferred from exposed activity and the disappearance of a Stop control after a settling delay. It means generation appears to have ended, not that Claude's work succeeded. Cancel/error scenarios are particularly important beta tests.
 
