@@ -36,9 +36,14 @@ from .browserAccess import (
 )
 from .browserNavigatorDialog import BrowserNavigatorDialog
 from .chatHistoryDialog import ChatHistoryDialog
-from .core import AnnouncementHistory, CATEGORY_SETTING, announcementPriority, backgroundActivityName, brailleStatusMessage, brailleTypingGestureCommitsText, bufferInspectionDue, categoryOutputActions, changelogForDisplay, chatActionMatches, chatHistorySnapshotDecision, chatMessagesFromTokens, chatTitleMatches, coalescedPollDelay, completedTextDelta, confirmedUserMessageSubmission, conversationModeFromDocumentNames, conversationModeFromSwitchLabel, conversationWindowShouldDetach, currentActivitySummary, duplicateChannelActions, elapsedSeconds, firstStatusLabel, focusStateTransition, formatCommandSpeech, formatCustomAnnouncement, formatElapsedDuration, intermediateCompletionCategory, isBrailleTypingGestureIdentifier, isChatHistoryConversationBoundary, isChatHistoryInterfaceText, isCodePromptLabel, isKnownNonStatusButton, isPermissionDecisionLabel, isPermissionPromptText, isPromptSubmissionGestureIdentifier, isResponseCompletionMarkerText, isStopControlLabel, isTaskCompletionLabel, looksLikeBlankCodeConversation, mergeSupportedAppNames, modeSpecificRecentChatTitles, nextBusyState, outputActions, pendingChatTitle, pluginInstallProgress, pluginProgressBusyTransition, pollDelay, previewSelection, promptControlKind, promptSubmissionGestureShouldStart, promptSubmissionTransition, redactSensitive, repairConfigurationValues, responseCompletionScanMarker, responseCompletionTransition, shouldFinalizeResponseCompletion, shouldLogDiagnosticSnapshot, shouldPlayContinuousWorkingClick, shouldPreserveBrailleComposition, shouldReplaceScheduledPoll, shouldSuppressNativeConversationUpdate, shouldSuppressRoutineBraille, shouldSuppressSemanticDuplicate, soundKey, statusDetails, statusMessage, stopControlTransition, supersedesResponseCompletionCandidate, usageLimitNotice, userMessageNumber, userMessageSubmissionTransition, viewerTitleMatches
+from .core import AnnouncementHistory, CATEGORY_SETTING, announcementPriority, backgroundActivityName, brailleStatusMessage, brailleTypingGestureCommitsText, bufferInspectionDue, categoryOutputActions, changelogForDisplay, chatActionMatches, chatHistorySnapshotDecision, chatMessagesFromTokens, chatTitleMatches, coalescedPollDelay, completedTextDelta, confirmedUserMessageSubmission, conversationModeFromDocumentNames, conversationModeFromSwitchLabel, conversationWindowShouldDetach, currentActivitySummary, duplicateChannelActions, elapsedSeconds, firstStatusLabel, focusStateTransition, formatCommandSpeech, formatCustomAnnouncement, formatElapsedDuration, intermediateCompletionCategory, isBrailleTypingGestureIdentifier, isChatHistoryConversationBoundary, isChatHistoryInterfaceText, isCodePromptLabel, isKnownNonStatusButton, isPermissionDecisionLabel, isPermissionPromptText, isPromptSubmissionGestureIdentifier, isResponseCompletionMarkerText, isStopControlLabel, isTaskCompletionLabel, looksLikeBlankCodeConversation, mergeSupportedAppNames, modeSpecificRecentChatTitles, nextBusyState, outputActions, pendingChatTitle, pluginInstallProgress, pluginProgressBusyTransition, pollDelay, previewSelection, promptControlKind, promptSubmissionGestureShouldStart, promptSubmissionTransition, redactSensitive, repairConfigurationValues, responseCompletionScanMarker, responseCompletionTransition, shouldFinalizeResponseCompletion, shouldLogDiagnosticSnapshot, shouldPreserveBrailleComposition, shouldReplaceScheduledPoll, shouldSuppressNativeConversationUpdate, shouldSuppressRoutineBraille, shouldSuppressSemanticDuplicate, soundKey, statusDetails, statusMessage, stopControlTransition, supersedesResponseCompletionCandidate, usageLimitNotice, userMessageNumber, userMessageSubmissionTransition, viewerTitleMatches
 from .core import voiceControlKind
 from .claudeAdapter import modeDisplayName, speakerFromLabel, modeFromTab, promptLabel, navigationKind, conversationDocumentMode, messageTokens
+from .bufferUpdates import BufferUpdateObserver
+from .claudeAdapter import (
+	codeDocumentUrl, codeFeedTaskProgress, isCodeDocument, isCodeTaskFeed,
+	isNativeComposer, isTaskTimerObject, nativeCodeFeedTaskProgress,
+)
 from .claudeNavigator import ClaudeNavigator, NavigationScan
 from .soundOutput import playProgressSound as _playProgressSound, safeBeep as _safeBeep
 
@@ -164,6 +169,7 @@ config.conf.spec[CONFIG_SECTION] = {
 	"continuousWorkingClicks": "boolean(default=True)",
 	"workingClickIntervalMs": "integer(default=1400, min=500, max=5000)",
 	"workingClickStartDelayMs": "integer(default=750, min=0, max=10000)",
+	"announceHeartbeat": "boolean(default=True)",
 	"promptSubmissionClick": "boolean(default=True)",
 	"monitoringFocusClicks": "boolean(default=True)",
 	"maximumBusyMinutes": "integer(default=60, min=1, max=240)",
@@ -182,7 +188,6 @@ config.conf.spec[CONFIG_SECTION] = {
 	"announceCompletions": "boolean(default=True)",
 	"announceOther": "boolean(default=True)",
 	"announceCommentary": "boolean(default=True)",
-	"announceHeartbeat": "boolean(default=True)",
 	"announceAttention": "boolean(default=True)",
 	"outputThinking": "option('all', 'speech', 'sound', 'braille', 'off', default='all')",
 	"outputWorking": "option('all', 'speech', 'sound', 'braille', 'off', default='all')",
@@ -246,7 +251,7 @@ def _repairConfiguration():
 		"speech": True, "braille": True, "protectBrailleReading": True,
 		"interruptUrgentSpeech": True, "redactSensitive": False,
 		"completionSound": False, "soundWhenSpeechUnavailable": True,
-		"continuousWorkingClicks": True, "promptSubmissionClick": True,
+		"continuousWorkingClicks": True, "promptSubmissionClick": True, "announceHeartbeat": True,
 		"monitoringFocusClicks": True, "welcomeShown": False,
 		"diagnosticLogging": False,
 		"announceEmbeddedBrowserProgress": True, "announceThinking": True,
@@ -254,7 +259,7 @@ def _repairConfiguration():
 		"announceSearches": True, "announceFiles": True,
 		"announceBuilds": True, "announceTools": True,
 		"announceCompletions": True, "announceOther": True,
-		"announceCommentary": True, "announceHeartbeat": True,
+		"announceCommentary": True,
 		"announceAttention": True,
 	}.items())
 	repaired = repairConfigurationValues(
@@ -480,7 +485,7 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 		)
 		self.clickVolume.SetSelection(CLICK_VOLUME_CHOICES.index(conf["clickVolume"]))
 		self.continuousWorkingClicks = helper.addItem(wx.CheckBox(
-			soundsPage, label=_("Play a continuous &Working sound while Claude is busy"),
+			soundsPage, label=_("Play a recurring &Working sound while Claude Code is working"),
 		))
 		self.continuousWorkingClicks.SetValue(conf["continuousWorkingClicks"])
 		self.workingClickIntervalMs = helper.addLabeledControl(
@@ -506,10 +511,10 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 
 		activityPage, helper = self._addPage(_("Activity Output"))
 		helper.addItem(wx.StaticText(activityPage, label=_(
-			"Configure background timing, then choose each activity category to review its enabled state and output route."
+			"Choose an activity category to review its enabled state and output route."
 		)))
 		self.workingIntervalSeconds = helper.addLabeledControl(
-			_("Background progress &interval (seconds):"), wx.SpinCtrl,
+			_("Progress announcement &interval (seconds):"), wx.SpinCtrl,
 			min=1, max=300, initial=conf["workingIntervalSeconds"],
 		)
 		self.maximumBusyMinutes = helper.addLabeledControl(
@@ -517,7 +522,7 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 			min=1, max=240, initial=conf["maximumBusyMinutes"],
 		)
 		self.announceHeartbeat = helper.addItem(wx.CheckBox(
-			activityPage, label=_("Announce a recurring background progress &pulse"),
+			activityPage, label=_("Announce a recurring progress &pulse while Claude Code is working"),
 		))
 		self.announceHeartbeat.SetValue(conf["announceHeartbeat"])
 		self._activityCategories = (
@@ -826,10 +831,10 @@ class ClaudeDesktopAccessSettingsPanel(SettingsPanel):
 		self.progressSounds.SetValue(conf["soundWhenSpeechUnavailable"])
 		self.progressSoundStyle.SetSelection(SOUND_STYLE_CHOICES.index(conf["progressSoundStyle"]))
 		self.clickVolume.SetSelection(CLICK_VOLUME_CHOICES.index(conf["clickVolume"]))
+		self.promptSubmissionClick.SetValue(conf["promptSubmissionClick"])
 		self.continuousWorkingClicks.SetValue(conf["continuousWorkingClicks"])
 		self.workingClickIntervalMs.SetValue(conf["workingClickIntervalMs"])
 		self.workingClickStartDelayMs.SetValue(conf["workingClickStartDelayMs"])
-		self.promptSubmissionClick.SetValue(conf["promptSubmissionClick"])
 		self.monitoringFocusClicks.SetValue(conf["monitoringFocusClicks"])
 		self.maximumBusyMinutes.SetValue(conf["maximumBusyMinutes"])
 		self._categoryEnabledValues = {
@@ -905,14 +910,18 @@ def _isClaudeObject(obj):
 def _conversationModeForObject(obj):
 	if not _isClaudeObject(obj):
 		return ""
-	current, names = obj, []
-	for _ in range(20):
+	current, documents = obj, []
+	for _ in range(40):
 		if current is None:
 			break
 		if _roleName(current) == "document":
-			names.append(getattr(current, "name", ""))
+			if isCodeDocument(current):
+				return "" if documents else "code"
+			documents.append(current)
 		current = getattr(current, "parent", None)
-	return conversationDocumentMode(names)
+	if len(documents) != 1:
+		return ""
+	return conversationDocumentMode([getattr(documents[0], "name", "")])
 
 
 def _isConversationObject(obj):
@@ -921,6 +930,10 @@ def _isConversationObject(obj):
 
 def _isCodePromptObject(obj):
 	if not _isClaudeObject(obj) or getattr(obj, "role", None) != Role.EDITABLETEXT:
+		return False
+	if isNativeComposer(obj):
+		return True
+	if _conversationModeForObject(obj) == "code":
 		return False
 	return any(promptLabel(getattr(obj, attr, "")) for attr in ("name", "placeholder", "description"))
 
@@ -1062,6 +1075,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._latestFullMessage = ""
 		self._haveBaseline = False
 		self._buffer = None
+		self._nativeTaskObserver = BufferUpdateObserver(self._observeNativeTaskState)
+		self._nativeTaskDocument = ""
+		self._nativeTaskState = None
+		self._nativeTaskStartedAt = None
+		self._nativeTaskSeconds = None
+		self._nativeLastClick = None
+		self._nativeLastPulse = None
+		self._nativePulseCount = 0
+		self._nativeFallbackClock = None
+		self._lastNativeTaskSampleAt = 0.0
 		self._conversationWindowHandle = 0
 		self._conversationWindowUnavailableAt = 0.0
 		self._conversationMode = ""
@@ -1075,23 +1098,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._monitoringAnnounced = False
 		self._lastNoStatusLogAt = 0.0
 		self._active = False
-		self._lastHeartbeatAt = 0.0
 		self._busy = False
-		self._backgroundPulseCount = 0
 		self._commentaryOffsets = {}
 		self._paused = False
 		self._speechHistory = AnnouncementHistory(20)
 		self._brailleHistory = AnnouncementHistory(20)
 		self._history = self._speechHistory
-		self._busyStartedAt = 0.0
+		self._busyWatchdogAt = 0.0
 		self._activeCategory = "other"
-		self._lastProgressSoundAt = 0.0
 		self._appFocusState = None
 		self._promptHadText = None
 		self._latestUserMessageNumber = None
 		self._pendingUserMessageIncrease = False
 		self._stopControlVisible = False
-		self._continuousClicksStartAt = 0.0
 		self._lastStateReason = "startup"
 		self._lastSubmissionSignal = "none"
 		self._documentSwitchCount = 0
@@ -1206,6 +1225,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._whatsNewTimer = wx.CallLater(1500, self._showWhatsNewIfNeeded)
 
 	def terminate(self):
+		self._nativeTaskObserver.detach()
 		global _activePluginInstance
 		if self._claudeNavigationScan:
 			self._claudeNavigationScan.cancel()
@@ -1329,7 +1349,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._latestUserMessageNumber = None
 		self._pendingUserMessageIncrease = False
 		self._stopControlVisible = False
-		self._continuousClicksStartAt = 0.0
 		self._lastUnknownButtons = ()
 		self._lastUnknownButtonsAt = 0.0
 		self._latestResponseMarker = None
@@ -1348,7 +1367,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._lastBrailleMessage = ""
 		self._lastBrailleMessageAt = 0.0
 		self._activeCategory = "other"
-		self._backgroundPulseCount = 0
 
 	def _recordHistory(self, speechMessage, brailleMessage=None):
 		brailleText = str(brailleMessage if brailleMessage is not None else speechMessage or "").strip()
@@ -1667,6 +1685,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			CONVERSATION_WINDOW_CLOSE_GRACE_SECONDS,
 		):
 			return False
+		self._nativeTaskObserver.detach()
+		self._nativeTaskDocument = ""
+		self._nativeTaskState = None
+		self._nativeTaskStartedAt = None
+		self._nativeFallbackClock = None
+		self._updateNativeTaskTimer(None)
 		self._buffer = None
 		self._conversationWindowHandle = 0
 		self._conversationWindowUnavailableAt = 0.0
@@ -3229,6 +3253,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					log.debug("Claude Desktop Access ignored a buffer from a closed or hidden window")
 				continue
 			self._lastRejectedBufferLogAt = 0.0
+			if isCodeDocument(getattr(buffer, "rootNVDAObject", None)):
+				explicitMode = "code"
 			if explicitMode:
 				self._setConversationMode(explicitMode, "mode switch control event", authoritative=True)
 			differentWindow = bool(
@@ -3282,6 +3308,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				else:
 					log.debug("Claude Desktop Access refreshed the Chromium virtual buffer without resetting task state")
 			self._buffer = buffer
+			document = codeDocumentUrl(getattr(buffer, "rootNVDAObject", None)) if resolvedMode == "code" else ""
+			if wasMissing or bufferChanged or document != self._nativeTaskDocument:
+				if document != self._nativeTaskDocument:
+					self._nativeTaskStartedAt = None
+				self._nativeTaskDocument = document
+				self._nativeTaskState = None
+				self._nativeFallbackClock = None
+				self._updateNativeTaskTimer(None)
+				self._nativeTaskObserver.attach(buffer if document else None)
 			if wasMissing or bufferChanged:
 				self._conversationWindowHandle = candidateWindowHandle
 				self._conversationWindowUnavailableAt = 0.0
@@ -3300,6 +3335,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def _updateAppFocusState(self, obj):
 		appFocused = _isClaudeObject(obj)
 		self._appFocusState, cue = focusStateTransition(self._appFocusState, appFocused)
+		if cue and self._nativeTaskSeconds is None:
+			self._nativeTaskState = None
+			self._nativeFallbackClock = None
 		if cue == "inactive":
 			self._promptFocused = False
 			self._brailleCompositionActive = False
@@ -3314,7 +3352,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return cue
 		category = "monitoringActive" if cue == "active" else "monitoringInactive"
 		_playProgressSound(category, cue, conf["progressSoundStyle"], conf["clickVolume"])
-		self._lastProgressSoundAt = time.monotonic()
 		return cue
 
 	def _observeInputGesture(self, gesture):
@@ -3531,7 +3568,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._latestFullMessage = ""
 		self._lastMessage = ""
 		self._lastMessageAt = 0.0
-		self._backgroundPulseCount = 0
 		self._pendingResponseCompletionAt = 0.0
 		self._lastSubmissionSignal = reason
 		self._active = True
@@ -3545,9 +3581,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				_playProgressSound(
 					"submission", _("Prompt submitted"), conf["progressSoundStyle"], conf["clickVolume"],
 				)
-				self._lastProgressSoundAt = time.monotonic()
-		else:
-			self._announceContinuousWorkingClick(force=True)
 		log.info("Claude Desktop Access submission detected: %s", reason)
 
 	def _queueResponseCompletion(self):
@@ -3853,9 +3886,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		log.info("Claude Desktop Access detected activity: %s", safeMessage)
 		self._latestMessage = message
 		fallbackPlayed = self._speakOnce(message, category, action, priority, brailleMessage)
-		if fallbackPlayed:
-			self._lastProgressSoundAt = time.monotonic()
-		self._lastHeartbeatAt = time.monotonic()
 		completionMode = conf[CATEGORY_OUTPUT_CONFIG["completion"]]
 		if category == "completion" and conf["completionSound"] and completionMode in ("all", "sound") and not fallbackPlayed:
 				_safeBeep(880, 80)
@@ -3866,8 +3896,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if label and label != self._lastLabel and supersedesResponseCompletionCandidate(label):
 			self._pendingResponseCompletionAt = 0.0
 		if not label:
-			if not self._busy:
-				self._lastHeartbeatAt = 0.0
 			if not self._haveBaseline:
 				self._haveBaseline, self._lastLabel = True, ""
 				log.info("Claude Desktop Access baseline established: no activity")
@@ -3883,7 +3911,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			baselineCategory = statusDetails(label)[0]
 			stateCategory = baselineCategory if baselineCategory != "completion" or isTaskCompletionLabel(label) else ""
 			self._setBusy(nextBusyState(self._busy, stateCategory), "baseline")
-			self._lastHeartbeatAt = now
 			return
 		if label != self._lastLabel:
 			self._lastLabel = label
@@ -3900,7 +3927,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				conversationDetached = self._detachConversationIfWindowClosed(now)
 			if self._buffer is None and not conversationDetached:
 				self._rememberBuffer(api.getFocusObject())
-			if self._busy and self._busyStartedAt and now - self._busyStartedAt >= _settings()["maximumBusyMinutes"] * 60:
+			if self._busy and self._busyWatchdogAt and now - self._busyWatchdogAt >= _settings()["maximumBusyMinutes"] * 60:
 				self._setBusy(False, "maximum activity timeout")
 			if self._buffer:
 				if not self._conversationModeObserved and (
@@ -3950,17 +3977,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				self._lastScannedLabel = ""
 				self._haveBaseline, self._lastLabel = True, "Response complete"
 				self._announceLabel("Response complete")
-			self._active = bool(self._lastScannedLabel) or self._busy
-			if self._busy:
-				# This is lightweight and internally rate-limited; it must not force a
-				# virtual-buffer traversal merely to maintain background feedback.
-				self._announceBackgroundPulse()
+			self._announceNativeFallbackProgress(now)
+			self._active = bool(self._lastScannedLabel) or self._busy or (
+				self._appFocusState and self._nativeTaskState is True and self._nativeTaskSeconds is None
+			)
 		except Exception:
 			log.debugWarning("Claude Desktop Access polling housekeeping failed", exc_info=True)
 			self._lastInspectionError = "polling housekeeping failed"
 		finally:
 			if self._timer is not None:
-				self._announceContinuousWorkingClick()
 				if self._timer is pollTimer:
 					delay = pollDelay(self._active, _settings()["idlePollMs"])
 					self._timer = wx.CallLater(delay, self._poll)
@@ -4015,82 +4040,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self._busy = busy
 		self._lastStateReason = reason
 		if busy:
-			self._busyStartedAt = time.monotonic()
-			self._lastProgressSoundAt = self._busyStartedAt
-			self._continuousClicksStartAt = self._busyStartedAt + _settings()["workingClickStartDelayMs"] / 1000.0
+			self._busyWatchdogAt = time.monotonic()
 		log.info(
 			"Claude Desktop Access background state: %s (%s)",
 			"active" if busy else "idle", reason,
 		)
 		if not busy:
-			self._lastHeartbeatAt = 0.0
-			self._busyStartedAt = 0.0
-			self._continuousClicksStartAt = 0.0
-
-	def _announceContinuousWorkingClick(self, force=False):
-		if self._pendingResponseCompletionAt:
-			return
-		conf = _settings()
-		now = time.monotonic()
-		if not force and now < self._continuousClicksStartAt:
-			return
-		mode = conf[CATEGORY_OUTPUT_CONFIG.get(self._activeCategory, "outputOther")]
-		actions = categoryOutputActions(mode, conf["speech"], conf["braille"], conf["soundWhenSpeechUnavailable"])
-		interval = 0.0 if force else conf["workingClickIntervalMs"] / 1000.0
-		if not shouldPlayContinuousWorkingClick(
-			self._busy, conf["continuousWorkingClicks"] and not self._paused,
-			conf["progressSoundStyle"], actions["sound"],
-			now - self._lastProgressSoundAt, interval,
-		):
-			return
-		_playProgressSound("working", _("Working"), conf["progressSoundStyle"], conf["clickVolume"])
-		self._lastProgressSoundAt = now
-
-	def _announceBackgroundPulse(self):
-		if self._pendingResponseCompletionAt:
-			return
-		conf = _settings()
-		if not self._busy or not conf["announceHeartbeat"]:
-			return
-		now = time.monotonic()
-		if not self._lastHeartbeatAt:
-			self._lastHeartbeatAt = now
-			return
-		if now - self._lastHeartbeatAt < conf["workingIntervalSeconds"]:
-			return
-		self._lastHeartbeatAt = now
-		self._backgroundPulseCount += 1
-		toneCategory = "backgroundPulse1" if self._backgroundPulseCount % 2 else "backgroundPulse2"
-		elapsed = max(0, round(now - self._busyStartedAt)) if self._busyStartedAt else 0
-		# Use the original detailed status, not customized speech. A custom template
-		# may omit words such as "finished" and must not make a completed file step
-		# sound as though it is still editing.
-		name = _(backgroundActivityName(self._activeCategory, self._latestFullMessage))
-		duration = formatElapsedDuration(elapsed, _)
-		fullMessage = _("{activity} still running, {duration}").format(activity=name, duration=duration)
-		minimalProfile = conf["minimalSpeechProfile"]
-		if conf["verbosity"] == "minimal" and minimalProfile == "essential":
-			message = ""
-		elif conf["verbosity"] == "minimal" and minimalProfile == "balanced" and elapsed < 30:
-			message = _("{activity} still running").format(activity=name)
-		else:
-			message = fullMessage
-		if message:
-			message = _customizeAnnouncement(message, toneCategory, name, elapsed)
-		mode = conf[CATEGORY_OUTPUT_CONFIG.get(self._activeCategory, "outputOther")]
-		actions = categoryOutputActions(mode, conf["speech"], conf["braille"], conf["soundWhenSpeechUnavailable"])
-		if shouldSuppressRoutineBraille(
-			conf["protectBrailleReading"], self._appFocusState, toneCategory, "low",
-			self._conversationBrowseModeActive(),
-		):
-			actions["braille"] = False
-		if not self._paused:
-			played = _send(
-				message, actions["speech"] and bool(message), actions["braille"], toneCategory,
-				actions["sound"], priority="low", brailleMessage=fullMessage,
-			)
-			if played:
-				self._lastProgressSoundAt = time.monotonic()
+			self._busyWatchdogAt = 0.0
 
 	def _announceStatus(self, obj):
 		if getattr(obj, "role", None) != Role.BUTTON or not _isConversationObject(obj):
@@ -4144,8 +4100,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# It may refresh an active task, but must never restart one.
 			self._pluginProgressOwnedBusy.clear()
 			self._setBusy(nextBusyState(self._busy, commentary=True), "commentary")
-			if self._busy:
-				self._lastHeartbeatAt = time.monotonic()
 			log.info("Claude Desktop Access detected activity: Commentary update")
 			conf = _settings()
 			fullMessage = redactSensitive(message) if conf["redactSensitive"] else message
@@ -4165,12 +4119,177 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._speakOnce(message, "commentary", brailleMessage=fullMessage)
 		return True
 
+	def _readNativeTaskProgress(self, buffer, focus=None):
+		root = getattr(buffer, "rootNVDAObject", None)
+		if not isCodeDocument(root):
+			return None, None
+		if getattr(root, "UIAElement", None) is not None:
+			return nativeCodeFeedTaskProgress(root, focus)
+		info = buffer.makeTextInfo(textInfos.POSITION_ALL)
+		return codeFeedTaskProgress(info.getTextWithFields())
+
+	def _recordNativeTaskState(self, state, now):
+		self._nativeTaskState = state
+		if state is not True:
+			self._nativeTaskStartedAt = None
+		elif self._nativeTaskStartedAt is None:
+			self._nativeTaskStartedAt = now
+
+	def _estimatedNativeTaskSeconds(self, now):
+		if self._nativeTaskState is not True or self._nativeTaskStartedAt is None:
+			return None
+		return max(0, int(now - self._nativeTaskStartedAt))
+
+	def _observeNativeTaskState(self, buffer):
+		if buffer is not self._buffer:
+			return
+		now = self._lastNativeTaskSampleAt = time.monotonic()
+		if not self._conversationWindowIsAvailable(self._conversationWindowHandle):
+			self._recordNativeTaskState(None, now)
+			self._updateNativeTaskTimer(None)
+			return
+		document = codeDocumentUrl(buffer.rootNVDAObject)
+		if document != self._nativeTaskDocument:
+			self._nativeTaskDocument = document
+			self._recordNativeTaskState(None, now)
+			self._nativeFallbackClock = None
+			self._updateNativeTaskTimer(None)
+		if not document:
+			self._nativeTaskObserver.detach()
+			return
+		focus = api.getFocusObject()
+		try:
+			state, seconds = self._readNativeTaskProgress(buffer, focus if _isClaudeObject(focus) else None)
+		except Exception:
+			self._recordNativeTaskState(None, now)
+			self._updateNativeTaskTimer(None)
+			raise
+		self._recordNativeTaskState(state, now)
+		if state is not True or seconds is not None:
+			self._nativeFallbackClock = None
+		elif self._appFocusState and self._nativeFallbackClock is None:
+			self._nativeFallbackClock = now, None, now
+			self._nativePulseCount = 0
+		self._updateNativeTaskTimer(seconds)
+
+	def _updateNativeTaskTimer(self, seconds):
+		previous, self._nativeTaskSeconds = self._nativeTaskSeconds, seconds
+		if seconds == previous:
+			return
+		if seconds is None or previous is None or seconds < previous:
+			self._nativeLastClick = self._nativeLastPulse = seconds
+			self._nativePulseCount = 0
+			return
+		conf = _settings()
+		if self._paused or not conf["announceWorking"] or seconds >= conf["maximumBusyMinutes"] * 60:
+			return
+		mode = conf[CATEGORY_OUTPUT_CONFIG["working"]]
+		actions = categoryOutputActions(mode, conf["speech"], conf["braille"], conf["soundWhenSpeechUnavailable"])
+		if conf["announceHeartbeat"] and seconds - self._nativeLastPulse >= conf["workingIntervalSeconds"]:
+			self._nativeLastPulse = seconds
+			if self._emitNativeProgressPulse(seconds, conf, actions):
+				self._nativeLastClick = seconds
+		if (
+			conf["continuousWorkingClicks"] and actions["sound"]
+			and seconds * 1000 >= conf["workingClickStartDelayMs"]
+			and (seconds - self._nativeLastClick) * 1000 >= conf["workingClickIntervalMs"]
+		):
+			self._nativeLastClick = seconds
+			_playProgressSound("working", _("Working"), conf["progressSoundStyle"], conf["clickVolume"])
+
+	def _emitNativeProgressPulse(self, seconds, conf, actions, estimated=False):
+		self._nativePulseCount += 1
+		category = "backgroundPulse1" if self._nativePulseCount % 2 else "backgroundPulse2"
+		activity = _(backgroundActivityName(self._activeCategory, self._latestFullMessage))
+		if seconds is None:
+			fullMessage = _("Claude is still working")
+		else:
+			duration = formatElapsedDuration(seconds, _)
+			if estimated:
+				fullMessage = _("Claude is still working, about {duration} elapsed").format(duration=duration)
+			else:
+				fullMessage = _("{activity} still running, {duration}").format(activity=activity, duration=duration)
+		message = _customizeAnnouncement(fullMessage, category, activity, seconds)
+		speechAllowed = actions["speech"] and self._appFocusState
+		brailleAllowed = actions["braille"] and self._appFocusState and not shouldSuppressRoutineBraille(
+			conf["protectBrailleReading"], self._appFocusState, category, "low", self._conversationBrowseModeActive(),
+		)
+		if conf["verbosity"] == "minimal" and conf["minimalSpeechProfile"] == "essential":
+			speechAllowed = False
+		return _send(message, speechAllowed, brailleAllowed, category, actions["sound"], priority="low", brailleMessage=fullMessage)
+
+	def _announceNativeFallbackProgress(self, now):
+		# The fallback clock schedules sounds. The feed supplies the activity state.
+		if (
+			self._nativeTaskState is not True or self._nativeTaskSeconds is not None
+			or not self._appFocusState or self._paused
+			or not self._conversationWindowIsAvailable(self._conversationWindowHandle)
+			or self._conversationWindowHandleFrom(api.getForegroundObject(), None) != self._conversationWindowHandle
+		):
+			self._nativeFallbackClock = None
+			return
+		root = getattr(self._buffer, "rootNVDAObject", None)
+		if codeDocumentUrl(root) != self._nativeTaskDocument:
+			self._recordNativeTaskState(None, now)
+			self._nativeFallbackClock = None
+			self._nativeTaskObserver.request()
+			return
+		# UIA can miss a busy-state event. Recheck an active UIA feed at a low rate.
+		if getattr(root, "UIAElement", None) is not None and now - self._lastNativeTaskSampleAt >= 5:
+			self._nativeTaskObserver.request()
+			return
+		conf = _settings()
+		if not conf["announceWorking"]:
+			return
+		if self._nativeFallbackClock is None:
+			self._nativeFallbackClock = now, None, now
+			self._nativePulseCount = 0
+		started, lastClick, lastPulse = self._nativeFallbackClock
+		if now - started >= conf["maximumBusyMinutes"] * 60:
+			return
+		mode = conf[CATEGORY_OUTPUT_CONFIG["working"]]
+		actions = categoryOutputActions(mode, conf["speech"], conf["braille"], conf["soundWhenSpeechUnavailable"])
+		if conf["announceHeartbeat"] and now - lastPulse >= conf["workingIntervalSeconds"]:
+			lastPulse = now
+			if self._emitNativeProgressPulse(self._estimatedNativeTaskSeconds(now), conf, actions, estimated=True):
+				lastClick = now
+		if (
+			conf["continuousWorkingClicks"] and actions["sound"]
+			and (now - started) * 1000 >= conf["workingClickStartDelayMs"]
+			and (lastClick is None or (now - lastClick) * 1000 >= conf["workingClickIntervalMs"])
+		):
+			lastClick = now
+			_playProgressSound("working", _("Working"), conf["progressSoundStyle"], conf["clickVolume"])
+		self._nativeFallbackClock = started, lastClick, lastPulse
+
+	def _reportNativeTaskStatus(self):
+		focus = api.getFocusObject()
+		buffer = None
+		try:
+			buffer = self._rememberBuffer(focus)
+			state, seconds = self._readNativeTaskProgress(buffer, focus) if buffer else (None, None)
+		except Exception:
+			log.debugWarning("Claude Desktop Access could not read the native task status", exc_info=True)
+			state, seconds = None, None
+		now = time.monotonic()
+		if buffer is not None:
+			self._recordNativeTaskState(state, now)
+		if seconds is not None:
+			ui.message(formatElapsedDuration(seconds, _))
+		elif state is True:
+			duration = formatElapsedDuration(self._estimatedNativeTaskSeconds(now), _)
+			ui.message(_("Estimated elapsed time is {duration}").format(duration=duration))
+		elif state is False:
+			ui.message(_("No active Claude task"))
+		else:
+			ui.message(_("Claude's native task status is unavailable"))
+
 	@script(description=_("Report current Claude activity or repeat the latest message"))
 	def script_repeatLatestStatus(self, gesture):
-		elapsed = time.monotonic() - self._busyStartedAt if self._busyStartedAt else 0
 		agentName = modeDisplayName(self._conversationMode)
 		message = currentActivitySummary(
-			self._busy, self._activeCategory, self._latestMessage, elapsed, _, agentName,
+			self._nativeTaskState is True if self._nativeTaskDocument else self._busy,
+			self._activeCategory, self._latestMessage, self._nativeTaskSeconds, _, agentName,
 		)
 		conf = _settings()
 		_send(
@@ -4381,6 +4500,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# returning to the now-empty prompt. Preserve draft/submission state across
 			# those in-app focus events; _resetTaskState handles real task switches.
 			if _isClaudeObject(obj):
+				if focusCue == "active":
+					self._nativeTaskObserver.request()
 				# Moving among controls does not change task status. Inspect once when
 				# returning to Claude; a newly attached buffer is already marked dirty.
 				self._schedulePoll(requestInspection=focusCue == "active")
@@ -4396,13 +4517,25 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if self._announceUsageLimit(obj):
 				return
 			if _isClaudeObject(obj):
+				if focusCue == "active":
+					self._nativeTaskObserver.request()
 				self._schedulePoll(requestInspection=focusCue == "active")
 		except Exception:
 			log.debugWarning("Claude Desktop Access foreground-event handling failed", exc_info=True)
 
+	def _requestUIATaskTimerUpdate(self, obj):
+		if (
+			self._nativeTaskDocument and getattr(obj, "UIAElement", None) is not None
+			and _roleName(obj) in ("grouping", "section", "statictext", "statusbar", "textframe", "timer")
+			and _isClaudeObject(obj) and isTaskTimerObject(obj)
+			and self._eventBelongsToRetainedConversationBuffer(obj)
+		):
+			self._nativeTaskObserver.request()
+
 	def event_nameChange(self, obj, nextHandler):
 		nextHandler()
 		try:
+			self._requestUIATaskTimerUpdate(obj)
 			self._noteEmbeddedBrowserDocument(obj)
 			self._rememberBuffer(obj)
 			self._schedulePopupDialogFocus(obj)
@@ -4418,6 +4551,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def event_valueChange(self, obj, nextHandler):
 		nextHandler()
 		try:
+			self._requestUIATaskTimerUpdate(obj)
 			if self._announceUsageLimit(obj):
 				return
 			isPrompt = self._notePromptTyping(obj)
@@ -4441,6 +4575,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		try:
 			if self._observeConversationModeControl(obj, "mode switch state event"):
 				self._schedulePoll(requestInspection=True)
+			if (
+				self._nativeTaskDocument and _roleName(obj) in ("grouping", "section", "feed")
+				and _isClaudeObject(obj) and isCodeTaskFeed(obj)
+				and self._eventBelongsToRetainedConversationBuffer(obj)
+			):
+				self._nativeTaskObserver.request()
 			if self._announceUsageLimit(obj):
 				return
 			self._updateEmbeddedBrowserDocumentBusyState(obj)
@@ -4455,6 +4595,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			text = " ".join(str(
 				getattr(obj, "name", "") or getattr(obj, "value", "") or ""
 			).split())
+			if (
+				self._nativeTaskDocument and getattr(obj, "UIAElement", None) is not None
+				and getattr(obj, "role", None) in (Role.STATUSBAR, Role.ALERT)
+				and self._eventBelongsToRetainedConversationBuffer(obj)
+			):
+				self._nativeTaskObserver.request()
 			limitHandled = self._announceUsageLimit(obj, text)
 			# Chromium can rebuild the event object's tree interceptor while the user
 			# remains in the same conversation buffer. Determine reading mode from the

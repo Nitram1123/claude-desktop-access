@@ -46,6 +46,10 @@ class AppModule(appModuleHandler.AppModule):
 			return
 		handler(*args)
 
+	@script(description=_("Read the Claude Code task timer"), gesture="kb:NVDA+alt+t")
+	def script_reportNativeTaskStatus(self, gesture):
+		self._runToolkitCommand("_reportNativeTaskStatus")
+
 	@script(description=_("Read the most recent Claude message"))
 	def script_readMostRecentChatMessage(self, gesture):
 		self._runToolkitCommand("_readRecentChatMessage", 1)

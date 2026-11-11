@@ -23,6 +23,7 @@ The add-on does not require an API key or a paid subscription. Test whichever Cl
 | Control+0 | Read the tenth most recent exposed message |
 | NVDA+Alt+V | Try the exposed start/end voice control |
 | NVDA+Alt+M | Try the exposed microphone mute/unmute control |
+| NVDA+Alt+T | Read the Claude Code task timer |
 | NVDA+grave accent (backtick) | Open Claude navigation for modes, artifacts and attachments |
 
 Each default is separately assignable under NVDA Preferences > Input Gestures > Claude Desktop Access. Control+number replaces any native Claude action on those keys; remove or reassign the add-on gestures if you prefer Claude's shortcuts. Default gestures apply only while the `claude` application has focus. Terminal-based Claude Code and browser tabs are outside this beta's scope.
@@ -36,8 +37,8 @@ All rows require live tester verification; automated checks cover shared logic a
 | Feature | Implementation in this beta |
 | --- | --- |
 | Speech and Braille | Independent output, verbosity profiles, Braille detail, urgent alerts, custom wording and category routing |
-| Sounds | 17 sound signatures at Soft, Normal and Loud levels; clicks or tones; submission, working, background, completion and focus cues |
-| Activity | Candidate thinking/tool/search/file/build labels, busy-control observation, delayed completion and duplicate suppression |
+| Sounds | 17 sound signatures at Soft, Normal and Loud levels; clicks or tones; submission, activity, completion and focus cues |
+| Activity | Claude Code task status from the native transcript, plus thinking/tool/search/file/build announcements and duplicate suppression |
 | Reading and typing | Inherited reading protection, typing debounce, Braille composition protection and bounded polling |
 | Message review | Explicit named user/assistant regions or speaker markers; drafts and nested documents excluded; no guessed speaker alternation |
 | Conversation history | Search exposed recent buttons/links; native Show more where available; exposed archive controls only |
@@ -52,6 +53,10 @@ All rows require live tester verification; automated checks cover shared logic a
 
 In the navigation dialog, type to filter, Tab to the list, and use the Arrow keys. Enter or **Move to item** focuses the selected control. **Activate item** performs its native action. Escape closes. Scans happen only on request, stop at a bounded limit, and yield between slices. Native accessibility calls can still be slow on some machines; report delays.
 
+The Code task timer reads Claude’s accessible elapsed value when available. In the tested Claude Desktop interface, the visible clock is absent from the accessibility tree, so the add-on estimates elapsed time from the first observed busy state. The timer command and recurring progress announcements identify this duration as an estimate.
+
+Task activity follows the transcript’s native busy state instead of translated status labels. The estimate resets when the transcript becomes idle or the conversation changes. Opening an already active session starts the estimate from the first observed activity in that session. Recurring fallback sounds play while Claude is in the foreground. The existing sound style, volume, intervals, pause setting, and speech and Braille output choices apply to this feedback.
+
 Completion is inferred from exposed activity and the disappearance of a Stop control after a settling delay. It means generation appears to have ended, not that Claude's work succeeded. Cancel/error scenarios are particularly important beta tests.
 
 ## Settings
@@ -64,8 +69,8 @@ Use **Test current announcement outputs** before testing activity detection. Pre
 
 Start with a disposable chat containing no private information:
 
-1. Send a short request; verify submission and working feedback, then a single completion announcement.
-2. Send a longer request and cancel it. Check that the working cue stops and no success claim is made.
+1. In Claude Code, send a short request. Press NVDA+Alt+T during the reply and after it ends to check the native task status.
+2. Send a longer request and cancel it. Check the native task status once Claude returns to idle.
 3. Read messages using Control+1 through Control+0. Confirm speaker and order, and that an unsent draft is never read as a message.
 4. Type with a keyboard and, if available, Braille. Read older text during generation and check for interruptions or lost reading position.
 5. Open navigation, search, move to a control, and separately test explicit activation. Check artifacts, attachments and modes available to your account.
