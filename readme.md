@@ -40,6 +40,7 @@ All rows require live tester verification; automated checks cover shared logic a
 | Activity | Candidate thinking/tool/search/file/build labels, busy-control observation, delayed completion and duplicate suppression |
 | Reading and typing | Inherited reading protection, typing debounce, Braille composition protection and bounded polling |
 | Message review | Explicit named user/assistant regions or speaker markers; drafts and nested documents excluded; no guessed speaker alternation |
+| Prompt recall | Read the text recalled by Up/Down in the native Claude Code editor, including multiline prompts |
 | Conversation history | Search exposed recent buttons/links; native Show more where available; exposed archive controls only |
 | Mode navigation | Selected Chat, Cowork and Code tabs refine monitoring; the navigation dialog finds recognized exposed controls |
 | Artifacts and attachments | Search recognized controls, move focus, or explicitly activate; never automatically publish artifacts or upload files |
@@ -51,6 +52,8 @@ All rows require live tester verification; automated checks cover shared logic a
 **Known limits:** Some Claude message containers may be unlabeled, causing recent-message review to report no messages. History is limited to what the app exposes; it does not retrieve hidden account history, read private databases, or assume Codex storage formats. Archive/pin actions are experimental and only work when matching native controls exist. Account-wide quotas, model identity, and complete artifact contents are not independently queried. English recognition patterns need tester samples before translation to other interface languages. Claude may change its interface without notice.
 
 In the navigation dialog, type to filter, Tab to the list, and use the Arrow keys. Enter or **Move to item** focuses the selected control. **Activate item** performs its native action. Escape closes. Scans happen only on request, stop at a bounded limit, and yield between slices. Native accessibility calls can still be slow on some machines; report delays.
+
+In the Claude Code editor, use Up/Down in focus mode to recall prompts through Claude's own input history. When Claude replaces the editor text, the add-on reads the recalled prompt, including multiple lines. It uses the accessible editor contents without matching the translated history announcement or keeping a separate prompt history. Ordinary line movement and selection retain NVDA's standard behavior. Live verification with Claude and NVDA remains pending.
 
 Completion is inferred from exposed activity and the disappearance of a Stop control after a settling delay. It means generation appears to have ended, not that Claude's work succeeded. Cancel/error scenarios are particularly important beta tests.
 

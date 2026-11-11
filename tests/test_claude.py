@@ -27,7 +27,103 @@ def field(role, name="", **attrs):
 END = SimpleNamespace(command="controlEnd", field={})
 
 
+def node(role, name, *children, classes="", aria="", props="", accelerator="", **attrs):
+	obj = SimpleNamespace(role=role, name=name, firstChild=children[0] if children else None,
+		lastChild=children[-1] if children else None,
+		UIAElement=SimpleNamespace(currentClassName=classes, currentAriaRole=aria,
+			currentAriaProperties=props, currentAcceleratorKey=accelerator), **attrs)
+	for child in children:
+		child.parent = obj
+	for previous, following in zip(children, children[1:]):
+		previous.next, following.previous = following, previous
+	return obj
+
+
 class ClaudeContracts(unittest.TestCase):
+	def test_code_document_uses_native_url_without_its_title(self):
+		for name in ("", "Beliebiger Titel", "セッション"):
+			self.assertTrue(adapter.isCodeDocument(node("document", name, value="https://claude.ai/epitaxy/session")))
+		for value in ("https://other.test/epitaxy/", "https://claude.ai/epitaxy-other", "https://claude.ai/settings"):
+			self.assertFalse(adapter.isCodeDocument(node("document", "Claude Code", value=value)))
+		self.assertTrue(adapter.isCodeDocument(node("document", "", value="", IAccessibleObject=SimpleNamespace(
+			accValue=lambda child: "https://claude.ai/epitaxy/session",
+		))))
+
+	def test_prompt_editor_requires_native_composer_ancestry(self):
+		for editor in (
+			node("editabletext", "", classes="ProseMirror"),
+			node("editabletext", "", IA2Attributes={"class": "ProseMirror"}),
+		):
+			self.assertFalse(adapter.isNativeComposer(editor))
+			node("section", "", editor, classes="rounded-composer")
+			self.assertTrue(adapter.isNativeComposer(editor))
+			# A nested artifact document must not inherit the outer editor's context.
+			node("section", "", node("document", "", editor), classes="rounded-composer")
+			self.assertFalse(adapter.isNativeComposer(editor))
+
+	def test_code_composer_announces_recalled_text_and_preserves_plain_caret_movement(self):
+		tree = ast.parse((ROOT / "appModules/claude.py").read_text(encoding="utf-8"))
+		mixin = next(item for item in tree.body if isinstance(item, ast.ClassDef) and item.name == "ClaudeComposer")
+		calls = []
+		state = SimpleNamespace(focus=None, waiting=False, sayAll=False)
+		env = {
+			"api": SimpleNamespace(getFocusObject=lambda: state.focus),
+			"ui": SimpleNamespace(message=lambda text: calls.append(("say", text))),
+			"textInfos": SimpleNamespace(POSITION_ALL="all", UNIT_LINE="line"),
+			"isScriptWaiting": lambda: state.waiting,
+			"willSayAllResume": lambda gesture: state.sayAll,
+		}
+		import builtins
+		realImport = builtins.__import__
+		def importAdapter(name, *args):
+			return adapter if name == "globalPlugins.claudeDesktopAccess.claudeAdapter" else realImport(name, *args)
+		env["__builtins__"] = dict(vars(builtins), __import__=importAdapter)
+		exec(compile(ast.Module(body=[mixin], type_ignores=[]), "composer", "exec"), env)
+
+		class Editable:
+			text = ""
+			treeInterceptor = SimpleNamespace(rootNVDAObject=node(
+				"document", "Claude Code", value="https://claude.ai/epitaxy/local_test",
+			))
+
+			def makeTextInfo(self, position):
+				return SimpleNamespace(text=self.text)
+
+			def _caretMovementScriptHelper(self, gesture, unit):
+				calls.append(("send", gesture.identifiers[0]))
+				self.text = gesture.replacement
+				self._caretScriptPostMovedHelper(unit, gesture)
+
+			def _caretScriptPostMovedHelper(self, unit, gesture, info):
+				calls.append(("caret", unit))
+
+		class Composer(env["ClaudeComposer"], Editable):
+			pass
+
+		composer = state.focus = Composer()
+		for gesture, replacement, expected, guard in (
+			("kb:upArrow", "Texte rappelé\nDeuxième ligne", [("caret", None), ("say", "Texte rappelé\nDeuxième ligne")], ""),
+			("kb:upArrow", "Texte rappelé\nDeuxième ligne", [("caret", "line")], ""),
+			("kb:downArrow", "Message plus récent", [("caret", None), ("say", "Message plus récent")], ""),
+			("kb:shift+downArrow", "Brouillon", [("caret", "line")], ""),
+			("kb:upArrow", "En attente", [("caret", "line")], "waiting"),
+			("kb:upArrow", "Dire tout", [("caret", "line")], "sayAll"),
+			("kb:upArrow", "Autre champ", [("caret", "line")], "focus"),
+			("kb:upArrow", "Autre vue", [("caret", "line")], "document"),
+			("kb:downArrow", "", [("caret", "line")], ""),
+			("kb:upArrow", "", [("caret", "line")], ""),
+		):
+			with self.subTest(gesture=gesture, replacement=replacement):
+				calls.clear()
+				state.waiting, state.sayAll = guard == "waiting", guard == "sayAll"
+				state.focus = None if guard == "focus" else composer
+				composer.treeInterceptor.rootNVDAObject.value = (
+					"https://claude.ai/chat/local_test" if guard == "document" else "https://claude.ai/epitaxy/local_test"
+				)
+				composer._caretMovementScriptHelper(SimpleNamespace(identifiers=[gesture], replacement=replacement), "line")
+				self.assertEqual([("send", gesture), *expected], calls)
+				self.assertIsNone(getattr(composer, "_claudeTextBeforeArrow", None))
+
 	def scanClass(self):
 		tree = ast.parse((PLUGIN / "claudeNavigator.py").read_text(encoding="utf-8"))
 		node = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == "NavigationScan")

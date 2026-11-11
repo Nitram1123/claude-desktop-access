@@ -1,9 +1,12 @@
 """Application-scoped commands for the Claude desktop app."""
 
 import addonHandler
+import api
 import appModuleHandler
+import textInfos
 import ui
-from scriptHandler import script
+from editableText import EditableText
+from scriptHandler import isScriptWaiting, script, willSayAllResume
 
 
 addonHandler.initTranslation()
@@ -16,6 +19,52 @@ def _activeToolkitPlugin():
 		return claudeDesktopAccess._activePluginInstance
 	except Exception:
 		return None
+
+
+class ClaudeComposer:
+	"""Report text replaced by Claude while NVDA handles a native arrow key."""
+
+	def _readComposerText(self):
+		try:
+			return self.makeTextInfo(textInfos.POSITION_ALL).text.strip()
+		except Exception:
+			return None
+
+	def _caretMovementScriptHelper(self, gesture, unit):
+		from globalPlugins.claudeDesktopAccess.claudeAdapter import isCodeDocument, isComposerArrowGestureIdentifier
+
+		# Other arrow gestures still use NVDA's standard line and selection handling.
+		if unit != textInfos.UNIT_LINE or not any(
+			isComposerArrowGestureIdentifier(identifier) for identifier in gesture.identifiers
+		):
+			return super()._caretMovementScriptHelper(gesture, unit)
+		try:
+			root = getattr(getattr(self, "treeInterceptor", None), "rootNVDAObject", None)
+			before = self._readComposerText() if isCodeDocument(root) else None
+		except Exception:
+			# The Chromium document can disappear while focus is changing.
+			before = None
+		if before is None:
+			return super()._caretMovementScriptHelper(gesture, unit)
+		self._claudeTextBeforeArrow = before
+		try:
+			return super()._caretMovementScriptHelper(gesture, unit)
+		finally:
+			self._claudeTextBeforeArrow = None
+
+	def _caretScriptPostMovedHelper(self, speakUnit, gesture, info=None):
+		before = getattr(self, "_claudeTextBeforeArrow", None)
+		if (
+			before is not None and speakUnit == textInfos.UNIT_LINE and self == api.getFocusObject()
+			and not isScriptWaiting() and not willSayAllResume(gesture)
+		):
+			recalled = self._readComposerText()
+			if recalled and recalled != before:
+				# Keep NVDA's normal caret, review and braille updates.
+				super()._caretScriptPostMovedHelper(None, gesture, info)
+				ui.message(recalled)
+				return
+		return super()._caretScriptPostMovedHelper(speakUnit, gesture, info)
 
 
 class AppModule(appModuleHandler.AppModule):
@@ -37,6 +86,13 @@ class AppModule(appModuleHandler.AppModule):
 		"kb:NVDA+alt+m": "toggleMicrophoneMute",
 		"kb:NVDA+`": "toggleConversationMode",
 	}
+
+	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
+		if any(issubclass(cls, EditableText) for cls in clsList):
+			from globalPlugins.claudeDesktopAccess.claudeAdapter import isNativeComposer
+
+			if isNativeComposer(obj):
+				clsList.insert(0, ClaudeComposer)
 
 	def _runToolkitCommand(self, methodName, *args):
 		plugin = _activeToolkitPlugin()

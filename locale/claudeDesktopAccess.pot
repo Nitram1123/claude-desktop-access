@@ -290,7 +290,7 @@ msgstr ""
 msgid "Claude announcements: {mode}"
 msgstr ""
 
-#: appModules/claude.py:24 globalPlugins/claudeDesktopAccess/__init__.py:1021 globalPlugins/claudeDesktopAccess/__init__.py:389
+#: appModules/claude.py:73 globalPlugins/claudeDesktopAccess/__init__.py:1021 globalPlugins/claudeDesktopAccess/__init__.py:389
 msgid "Claude Desktop Access"
 msgstr ""
 
@@ -310,7 +310,7 @@ msgstr ""
 msgid "Claude Desktop Access is not currently running"
 msgstr ""
 
-#: appModules/claude.py:45
+#: appModules/claude.py:101
 msgid "Claude Desktop Access is not ready"
 msgstr ""
 
@@ -738,7 +738,7 @@ msgstr ""
 msgid "Moved to {item}"
 msgstr ""
 
-#: appModules/claude.py:93
+#: appModules/claude.py:149
 msgid "Mute or unmute the Claude microphone"
 msgstr ""
 
@@ -830,7 +830,7 @@ msgstr ""
 msgid "Open Claude help"
 msgstr ""
 
-#: appModules/claude.py:97
+#: appModules/claude.py:153
 msgid "Open Claude navigation for modes, artifacts and attachments"
 msgstr ""
 
@@ -986,19 +986,19 @@ msgstr ""
 msgid "Raw — exact exposed Claude progress text"
 msgstr ""
 
-#: appModules/claude.py:77
+#: appModules/claude.py:133
 msgid "Read the eighth-most-recent Claude message"
 msgstr ""
 
-#: appModules/claude.py:65
+#: appModules/claude.py:121
 msgid "Read the fifth-most-recent Claude message"
 msgstr ""
 
-#: appModules/claude.py:61
+#: appModules/claude.py:117
 msgid "Read the fourth-most-recent Claude message"
 msgstr ""
 
-#: appModules/claude.py:49
+#: appModules/claude.py:105
 msgid "Read the most recent Claude message"
 msgstr ""
 
@@ -1006,7 +1006,7 @@ msgstr ""
 msgid "Read the next Claude announcement"
 msgstr ""
 
-#: appModules/claude.py:81
+#: appModules/claude.py:137
 msgid "Read the ninth-most-recent Claude message"
 msgstr ""
 
@@ -1014,23 +1014,23 @@ msgstr ""
 msgid "Read the previous Claude announcement"
 msgstr ""
 
-#: appModules/claude.py:53
+#: appModules/claude.py:109
 msgid "Read the second-most-recent Claude message"
 msgstr ""
 
-#: appModules/claude.py:73
+#: appModules/claude.py:129
 msgid "Read the seventh-most-recent Claude message"
 msgstr ""
 
-#: appModules/claude.py:69
+#: appModules/claude.py:125
 msgid "Read the sixth-most-recent Claude message"
 msgstr ""
 
-#: appModules/claude.py:85
+#: appModules/claude.py:141
 msgid "Read the tenth-most-recent Claude message"
 msgstr ""
 
-#: appModules/claude.py:57
+#: appModules/claude.py:113
 msgid "Read the third-most-recent Claude message"
 msgstr ""
 
@@ -1230,7 +1230,7 @@ msgstr ""
 msgid "Standard — action, target, counts, and useful timing"
 msgstr ""
 
-#: appModules/claude.py:89
+#: appModules/claude.py:145
 msgid "Start or end Claude voice mode"
 msgstr ""
 
