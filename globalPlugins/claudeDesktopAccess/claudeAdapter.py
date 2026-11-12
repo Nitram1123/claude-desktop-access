@@ -5,6 +5,7 @@ No conversation text is sent to a service or written to disk by this module.
 """
 
 import re
+from urllib.parse import urlsplit
 
 
 def normalized(value):
@@ -56,6 +57,59 @@ def speakerFromLabel(label, structural=False):
 
 def roleName(role):
 	return str(getattr(role, "name", role) or "").casefold().replace(" ", "").replace("_", "")
+
+
+def _uiaProperty(obj, name):
+	try:
+		return getattr(getattr(obj, "UIAElement", None), name, None)
+	except Exception:
+		# A UIA provider can disappear when Claude replaces a panel.
+		return None
+
+
+def nativeClasses(obj):
+	attrs = getattr(obj, "IA2Attributes", None) or {}
+	return set(str(attrs.get("class") or _uiaProperty(obj, "cachedClassName") or _uiaProperty(obj, "currentClassName") or "").split())
+
+
+def isCodeDocument(obj):
+	if roleName(getattr(obj, "role", None)) != "document":
+		return False
+	value = getattr(obj, "value", "")
+	if not value:
+		try:
+			# Chromium IA2 exposes the document URL through MSAA, even when NVDA's value is empty.
+			value = obj.IAccessibleObject.accValue(0)
+		except Exception:
+			return False
+	try:
+		url = urlsplit(value or "")
+		return url.scheme == "https" and url.hostname == "claude.ai" and (
+			url.path == "/epitaxy" or url.path.startswith("/epitaxy/")
+		)
+	except ValueError:
+		return False
+
+
+def _ancestors(obj, limit=12):
+	for _ in range(limit):
+		obj = getattr(obj, "parent", None)
+		if obj is None or roleName(getattr(obj, "role", None)) == "document":
+			break
+		yield obj
+
+
+def _inside(obj, className):
+	return any(className in nativeClasses(parent) for parent in _ancestors(obj))
+
+
+def isNativeComposer(obj):
+	return "ProseMirror" in nativeClasses(obj) and _inside(obj, "rounded-composer")
+
+
+def isComposerArrowGestureIdentifier(identifier):
+	source, _, key = str(identifier or "").casefold().rpartition(":")
+	return source.startswith("kb") and key in ("uparrow", "downarrow")
 
 
 def messageTokens(fields):
